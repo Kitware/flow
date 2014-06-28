@@ -1,2 +1,2 @@
-tangelo-hub
+Tangelo Hub
 ===========
