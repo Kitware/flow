@@ -37,8 +37,8 @@ module.exports = function (grunt) {
             },
             core: {
                 files: {
-                    'static/templates.js': [
-                        'src/templates/**/*.jade'
+                    'app/templates.js': [
+                        'app/src/templates/**/*.jade'
                     ]
                 }
             }
@@ -47,8 +47,8 @@ module.exports = function (grunt) {
         stylus: {
             core: {
                 files: {
-                    'static/app.min.css': [
-                        'src/stylesheets/**/*.styl'
+                    'app/app.min.css': [
+                        'app/src/stylesheets/**/*.styl'
                     ]
                 }
             }
@@ -80,24 +80,24 @@ module.exports = function (grunt) {
             },
             app: {
                 files: {
-                    'static/app.min.js': [
-                        'static/templates.js',
-                        'src/util.js',
-                        'src/workflow.js',
-                        'src/collections/**/*.js',
-                        'src/ItemsView.js',
-                        'src/plugins/**/*.js',
-                        'src/views/**/*.js',
-                        'src/app.js'
+                    'app/app.min.js': [
+                        'app/templates.js',
+                        'app/src/util.js',
+                        'app/src/workflow.js',
+                        'app/src/collections/**/*.js',
+                        'app/src/ItemsView.js',
+                        'app/src/plugins/**/*.js',
+                        'app/src/views/**/*.js',
+                        'app/src/app.js'
                     ],
-                    'static/main.min.js': [
-                        'src/main.js'
+                    'app/main.min.js': [
+                        'app/src/main.js'
                     ]
                 }
             },
             libs: {
                 files: {
-                    'static/libs.min.js': [
+                    'app/libs.min.js': [
                         'node_modules/jquery-browser/lib/jquery.js',
                         'node_modules/jqueryui-browser/ui/jquery-ui.js',
                         'node_modules/jade/runtime.js',
@@ -107,6 +107,12 @@ module.exports = function (grunt) {
                         'lib/js/bootstrap.js',
                         'lib/js/vega-1.3.3.min.js',
                         'lib/js/tangelo.js'
+                    ],
+                    'app/testing.min.js': [
+                        'test/lib/jasmine-1.3.1/jasmine.js',
+                        'node_modules/blanket/dist/jasmine/blanket_jasmine.js',
+                        'test/lib/jasmine-1.3.1/ConsoleReporter.js',
+                        'test/testUtils.js'
                     ]
                 }
             }
@@ -114,17 +120,17 @@ module.exports = function (grunt) {
 
         watch: {
             js_core: {
-                files: ['src/**/*.js'],
+                files: ['app/src/**/*.js'],
                 tasks: ['uglify:app'],
                 options: {failOnError: false}
             },
             jade: {
-                files: ['src/templates/**/*.jade'],
+                files: ['app/src/templates/**/*.jade'],
                 tasks: ['build-js'],
                 options: {failOnError: false}
             },
             jade_index: {
-                files: ['clients/web/src/templates/index.jadehtml'],
+                files: ['app/src/templates/index.jadehtml'],
                 tasks: ['jade-index'],
                 options: {failOnError: false}
             },
@@ -151,7 +157,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('jade-index', 'Build index.html using jade', function () {
         var jade = require('jade');
-        var buffer = fs.readFileSync('src/templates/index.jadehtml');
+        var buffer = fs.readFileSync('app/src/templates/index.jadehtml');
 
         var fn = jade.compile(buffer, {
             client: false,
@@ -166,14 +172,42 @@ module.exports = function (grunt) {
                       'app.min.js',
                       'main.min.js']
         });
-        fs.writeFileSync('static/index.html', html);
+        fs.writeFileSync('app/index.html', html);
         console.log('Built index.html.');
+    });
+
+    grunt.registerTask('test-env-html', 'Build the phantom test html page.', function () {
+        var buffer = fs.readFileSync('test/testEnv.jadehtml');
+        var globs = grunt.config('uglify.app.files')['app/app.min.js'];
+        var inputs = [];
+        globs.forEach(function (glob) {
+            var files = grunt.file.expand(glob);
+            files.forEach(function (file) {
+                inputs.push('/' + file.split('/').slice(1).join('/'));
+            });
+        });
+
+        var fn = jade.compile(buffer, {
+            client: false,
+            pretty: true
+        });
+        fs.writeFileSync('app/testEnv.html', fn({
+            stylesheets: ['../../test/lib/jasmine-1.3.1/jasmine.css',
+                          'lib/bootstrap/css/bootstrap.min.css',
+                          'app.min.css'],
+            scripts: ['testing.min.js',
+                      'libs.min.js',
+                      'lib/ace-builds/src-noconflict/ace.js',
+                      '/girder/static/built/app.min.js'],
+            blanketScripts: inputs
+        }));
     });
 
     grunt.registerTask('build-js', [
         'jade',
         'jade-index',
-        'uglify:app'
+        'uglify:app',
+        'test-env-html'
     ]);
 
     grunt.registerTask('init', [
