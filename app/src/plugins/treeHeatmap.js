@@ -1,16 +1,15 @@
-/*jslint browser: true, unparam: true, nomen: true */
-var app = {key: null};
-
-function stop_vtkweb() {
-    "use strict";
-    if (app.key) {
-        tangelo.vtkweb.terminate(app.key);
-        app.key = null;
-    }
-}
-
 (function (tangelo, $) {
     "use strict";
+
+    var app = {key: null};
+
+    function stop_vtkweb() {
+        if (app.key) {
+            tangelo.vtkweb.terminate(app.key);
+            app.key = null;
+        }
+    }
+
     // When the page is closed, make sure to close any processes
     // that were running.
     $(window).on('unload', stop_vtkweb);
@@ -23,7 +22,7 @@ function stop_vtkweb() {
     tangelo.widget("tangelo.treeHeatmap", {
         options: {
             table: null,
-            tree: null,
+            tree: null
         },
 
         _create: function () {

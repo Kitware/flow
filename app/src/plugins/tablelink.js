@@ -1,5 +1,3 @@
-/*jslint browser: true, unparam: true */
-
 (function ($, d3, tangelo, vg) {
     "use strict";
 
