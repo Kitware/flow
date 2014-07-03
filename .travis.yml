@@ -1,0 +1,23 @@
+language: cpp
+services: mongodb
+compiler:
+    - gcc
+before_install:
+    - sudo apt-get install npm
+    - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
+install:
+    - sudo pip install tangelo
+    - git clone https://github.com/girder/girder.git
+    - cd girder
+    - sudo pip install -r requirements.txt
+    - sudo pip install pep8 coverage
+    - sudo python setup.py install
+    - npm install -g grunt grunt-cli
+    - npm install
+    - cd ..
+    - npm install
+script:
+    - mkdir build
+    - cd build
+    - cmake -D PYTHON_COVERAGE:BOOL=ON ..
+    - ctest -VV -S ../cmake/travis_continuous.cmake

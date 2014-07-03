@@ -1,5 +1,3 @@
-/*jslint browser: true, nomen: true, unparam: true */
-
 (function (flow, $, _, ace, Backbone, Blob, d3, FileReader, girder, tangelo, URL, workflow) {
     "use strict";
 

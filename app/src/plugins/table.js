@@ -1,5 +1,3 @@
-/*jslint browser: true, unparam: true, nomen: true */
-
 (function (tangelo, $) {
     "use strict";
 
@@ -27,27 +25,27 @@
             this.div.empty();
 
             if (fields) {
-                $.each(fields, function(index, value) {
+                $.each(fields, function (index, value) {
                     header += "<th>" + value + "</th>";
                 });
-                $.each(rows, function(index, value) {
+                $.each(rows, function (index, value) {
                     if (index >= 200) {
                         return;
                     }
                     var row = "<tr>";
-                    $.each(fields, function(index, field) {
+                    $.each(fields, function (index, field) {
                         row += "<td>" + value[field] + "</td>";
                     });
                     row += "</tr>";
                     body += row;
                 });
             } else {
-                $.each(rows, function(key, value) {
+                $.each(rows, function (key, value) {
                     if (key >= 200) {
                         return;
                     }
                     var row = "<tr>";
-                    $.each(value, function(key, value) {
+                    $.each(value, function (key, value) {
                         row += "<td>" + value + "</td>";
                         if (!headerSet) {
                             header += "<th>" + key + "</th>";

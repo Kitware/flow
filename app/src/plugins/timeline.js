@@ -1,5 +1,3 @@
-/*jslint browser: true, unparam: true */
-
 (function ($, tangelo, vg) {
     "use strict";
 
@@ -34,7 +32,7 @@
         });
 
         function resize() {
-            vg.parse.spec("timeline.json", function(chart) {
+            vg.parse.spec("timeline.json", function (chart) {
                 console.log($(that).width() + "," + $(that).height());
                 if ($(that).width() > 0 && $(that).height() > 0) {
                     chart(opt).width($(that).width() - 70).height($(that).height() - 70).update();
@@ -43,22 +41,6 @@
         }
         $(window).resize(resize);
         resize();
-
-                // .on("mouseover", function (event, d) {
-                //     // if (on.mouseover) {
-                //     //     on.mouseover(d);
-                //     // }
-                // })
-                // .on("mouseout", function (event, d) {
-                //     // if (on.mouseout) {
-                //     //     on.mouseout(d);
-                //     // }
-                // })
-                // .on("click", function (event, d) {
-                //     // if (on.click) {
-                //     //     on.click(d);
-                //     // }
-                // })
 
         return that;
     };

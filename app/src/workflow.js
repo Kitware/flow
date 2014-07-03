@@ -1,4 +1,3 @@
-/*jslint browser: true, unparam: true, nomen: true */
 /*globals d3, $, _ */
 
 var workflow;
@@ -29,21 +28,21 @@ workflow = function (selection) {
         dist = Math.sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
         offset = 0.4 * dist - 50;
         offset = offset < 0 ? 0 : offset;
-        return "M " + (d.outputStep.x + 150 + portOffset) + " " + (d.outputStep.y + d.outputPos)
-            + " C " + (d.outputStep.x + 150 + portOffset + offset) + " " + (d.outputStep.y + d.outputPos)
-            + " " + (d.inputStep.x  - portOffset - offset) + " " + (d.inputStep.y + d.inputPos)
-            + " " + (d.inputStep.x - portOffset) + " " + (d.inputStep.y + d.inputPos);
+        return "M " + (d.outputStep.x + 150 + portOffset) + " " + (d.outputStep.y + d.outputPos) +
+            " C " + (d.outputStep.x + 150 + portOffset + offset) + " " + (d.outputStep.y + d.outputPos) +
+            " " + (d.inputStep.x  - portOffset - offset) + " " + (d.inputStep.y + d.inputPos) +
+            " " + (d.inputStep.x - portOffset) + " " + (d.inputStep.y + d.inputPos);
     }
 
     function updateConnections() {
         function connectionKey(d) {
-            return d.inputStep.id
-                + "$"
-                + d.inputIndex
-                + "$"
-                + d.outputStep.id
-                + "$"
-                + d.outputIndex;
+            return d.inputStep.id +
+                "$" +
+                d.inputIndex +
+                "$" +
+                d.outputStep.id +
+                "$" +
+                d.outputIndex;
         }
         conn.selectAll("path").data(workflow.connections, connectionKey).enter().append("path")
             .style("stroke", strokeColor)
@@ -54,27 +53,28 @@ workflow = function (selection) {
     }
 
     function updateStep(step) {
+        /*jshint validthis:true */
 
         function portShape(type, x, y) {
             if (type === "table") {
-                return "M " + x + " " + y
-                    + "m -10, -10"
-                    + "l 20, 0"
-                    + "l 0, 20"
-                    + "l -20, 0"
-                    + "Z";
+                return "M " + x + " " + y +
+                    "m -10, -10" +
+                    "l 20, 0" +
+                    "l 0, 20" +
+                    "l -20, 0" +
+                    "Z";
             }
             if (type === "tree") {
-                return "M " + x + " " + y
-                    + "m -10, 10"
-                    + "l 20, 0"
-                    + "l -10, -20"
-                    + "Z";
+                return "M " + x + " " + y +
+                    "m -10, 10" +
+                    "l 20, 0" +
+                    "l -10, -20" +
+                    "Z";
             }
-            return "M " + x + " " + y
-                + " m -10,0"
-                + " a 10,10 0 1,0 20,0"
-                + " a 10,10 0 1,0 -20,0";
+            return "M " + x + " " + y +
+                " m -10,0" +
+                " a 10,10 0 1,0 20,0" +
+                " a 10,10 0 1,0 -20,0";
         }
 
         d3.select(this).selectAll("path.input-line")
@@ -123,8 +123,8 @@ workflow = function (selection) {
             .on("mouseout", function (d) { d3.select(this).style("fill", "whitesmoke"); })
             .on("mouseup", function (d, i) {
                 var existing;
-                if (outputStep !== undefined
-                        && outputStep.outputs[outputIndex].type === step.inputs[i].type) {
+                if (outputStep !== undefined &&
+                        outputStep.outputs[outputIndex].type === step.inputs[i].type) {
 
                     // Remove any existing connection to this input
                     workflow.connections.forEach(function (c, ci) {

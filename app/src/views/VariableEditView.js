@@ -25,7 +25,7 @@
                 'geometry:vtkpolydata'
             ]},
             description: {name: "Description", type: "string", format: "text"},
-            default: {name: "Default", type: "string", format: "text"},
+            'default': {name: "Default", type: "string", format: "text"},
             values: {name: "Comma-separated list of values", type: "string", format: "text"},
             columnNamesInput: {name: "Input for column names", type: "string", format: "text"}
         },
@@ -46,7 +46,7 @@
                     model.description = values.Description.data;
                 }
                 if (values.Default && values.Default.data !== '') {
-                    model.default = values.Default.data;
+                    model['default'] = values.Default.data;
                 }
                 var list = values['Comma-separated list of values'];
                 if (list && list.data !== '') {
@@ -61,7 +61,7 @@
             }
         },
 
-        initialize: function(settings) {
+        initialize: function (settings) {
             this.model = settings.model;
             this.input = settings.input;
             this.inputsView = new flow.InputsView({
@@ -73,20 +73,20 @@
 
         render: function () {
             // Load model properties into variable properties
-            this.variableProperties.name.default = {data: this.model.get('name')};
-            this.variableProperties.type.default = {data: this.model.get('type') + ':' + this.model.get('format')};
-            this.variableProperties.description.default = {data: this.model.get('description')};
-            this.variableProperties.default.default = {data: this.model.get('default')};
+            this.variableProperties.name['default'] = {data: this.model.get('name')};
+            this.variableProperties.type['default'] = {data: this.model.get('type') + ':' + this.model.get('format')};
+            this.variableProperties.description['default'] = {data: this.model.get('description')};
+            this.variableProperties['default']['default'] = {data: this.model.get('default')};
 
             // Set the domain-specific fields
-            this.variableProperties.values.default = {data: ''};
-            this.variableProperties.columnNamesInput.default = {data: ''};
+            this.variableProperties.values['default'] = {data: ''};
+            this.variableProperties.columnNamesInput['default'] = {data: ''};
             var domain = this.model.get('domain');
             if (domain) {
                 if (tangelo.isArray(domain)) {
-                    this.variableProperties.values.default = {data: domain.join(',')};
+                    this.variableProperties.values['default'] = {data: domain.join(',')};
                 } else {
-                    this.variableProperties.columnNamesInput.default = {data: domain.input};
+                    this.variableProperties.columnNamesInput['default'] = {data: domain.input};
                 }
             }
 
@@ -96,7 +96,7 @@
             this.inputsView.render();
             this.$el.modal('show');
             return this;
-        },
+        }
 
     });
 
