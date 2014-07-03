@@ -1,4 +1,4 @@
-(function (flow, $, _, Backbone, Blob, d3, FileReader, girder, girderUpload, URL) {
+(function (flow, $, _, Backbone, Blob, d3, FileReader, girder, URL) {
     "use strict";
 
     // The view for managing data saving and downloading
@@ -38,7 +38,7 @@
                         extension = this.extensions[dataset.get('type') + ":" + format],
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension;
-                    girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'));
+                    flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'));
                     dataset.set({collection: flow.saveLocation});
                 }, this));
             },
@@ -185,4 +185,4 @@
         }
     });
 
-}(window.flow, window.$, window._, window.Backbone, window.Blob, window.d3, window.FileReader, window.girder, window.girderUpload, window.URL));
+}(window.flow, window.$, window._, window.Backbone, window.Blob, window.d3, window.FileReader, window.girder, window.URL));
