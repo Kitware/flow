@@ -6,3 +6,6 @@ libs.min.js
 libs.min.map
 main.min.js
 main.min.map
+testEnv.html
+testing.min.js
+testing.min.map

@@ -1,0 +1,262 @@
+doctype html
+html(lang="en")
+    head
+        title Tangelo Hub test environment
+
+        each css in stylesheets
+            link(href="#{css}", rel="stylesheet", type="text/css")
+        each js in scripts
+            script(src="#{js}")
+        each js in blanketScripts
+            script(src="#{js}", data-cover)
+
+        script(type="text/javascript").
+            (function () {
+                var jasmineEnv = jasmine.getEnv();
+                var consoleReporter = new jasmine.ConsoleReporter();
+                window.jasmine_phantom_reporter = consoleReporter;
+
+                jasmineEnv.addReporter(consoleReporter);
+
+                var currentWindowOnload = window.onload;
+
+                window.onload = function () {
+                    if (currentWindowOnload) {
+                        currentWindowOnload();
+                    }
+                    jasmineEnv.execute();
+                };
+            })();
+
+    body
+        .container(style="width:100%;height:100%")
+            #intro
+                .row.text-center
+                    img(src="arbor.jpg", alt="Arbor Logo", class="img-rounded")
+                .row
+                    p.lead.text-center
+                        | Use the panel below to visualize, analyze, or manage your data.
+            #vis.hidden
+            #editor.hidden
+                #code-editor.hidden
+                #workflow-editor.hidden
+        #control-panel
+            .container
+                .row.login-view
+                    .col-sm-12
+                        span#logged-in
+                            span#name
+                            | &nbsp;
+                            a#logout(href="#")
+                                | Log Out
+                        span#logged-out
+                            a#login(href="#")
+                                | Log In
+                            |  or&nbsp;
+                            a#register(href="#")
+                                | Register
+                ul.nav.nav-tabs
+                    li.active
+                        a(href="#data_tab", data-toggle="tab")
+                            | Data Management
+                    li
+                        a(href="#analysis_tab", data-toggle="tab")
+                            | Analysis
+                    li
+                        a(href="#vis_tab", data-toggle="tab")
+                            | Visualization
+            .tab-content
+                .tab-pane.active#data_tab
+                    .container
+                        #dataset-management
+                            .row
+                                .col-sm-6
+                                    #upload.btn.btn-primary
+                                        i.glyphicon.glyphicon-file
+                                        |  Browse or drop files
+                                    .form-group.hide
+                                        input#g-files(type="file", multiple="multiple")
+                                .col-sm-6
+                                    ul#collections.list-group
+                            .row
+                                .col-sm-12
+                                    label
+                                        | Save or download data
+                                    .form-inline
+                                        select.form-control.datasets
+                                        span.dataset-save-form
+                                            input.dataset-name.form-control(type="text", placeholder="Name")
+                                            select.dataset-format-select.form-control
+                                            button.dataset-download.btn.btn-primary
+                                                | Download
+                                            button.dataset-save.btn.btn-primary.hidden
+                                                | Save to checked collection
+                                        button.dataset-delete.btn.btn-default(title="Delete dataset")
+                                            span.glyphicon.glyphicon-trash
+                .tab-pane#analysis_tab
+                    .container#analysis-management
+                        .row
+                            .col-sm-6
+                                .form-group
+                                    label(for="analysis")
+                                        | Select analysis
+                                    select.form-control#analysis
+                            .col-sm-6
+                                .hidden#new-analysis-form
+                                    label
+                                        | Create new analysis
+                                    .form-inline
+                                        .btn.btn-primary#analysis-upload
+                                            | Upload ...
+                                        .form-group.hide
+                                            input#analysis-files(type="file", multiple="multiple")
+                                        input.form-control#analysis-name(placeholder="Name", type="text")
+                                        button.btn.btn-primary#analysis-new
+                                            span.glyphicon.glyphicon-plus
+                                            |  New analysis
+                                        button.btn.btn-primary#workflow-new
+                                            span.glyphicon.glyphicon-plus
+                                            |  New workflow
+                        .form-inline#analysis-form
+                            button.btn.btn-primary#setup
+                                span.glyphicon.glyphicon-play#run-icon
+                                |  Setup and run
+                            button.btn.btn-primary#analysis-download
+                                | Download
+                            button.btn.btn-default#show-script(data-toggle="button")
+                                span.glyphicon.glyphicon-eye-open#show-script-icon
+                                | &nbsp;
+                                span#show-script-text
+                                    | Show script
+                            button.btn.btn-default.hidden#edit(data-toggle="button")
+                                span.glyphicon.glyphicon-edit
+                                |  Edit
+                            span.edit-controls.hidden
+                                input.form-control.analysis-edit-name(placeholder="Name", type="text")
+                                span.analysis-edit-controls
+                                    select.form-control#mode
+                                        option(value="r")
+                                            | R
+                                        option(value="python")
+                                            | Python
+                                button.btn.btn-default#save
+                                    span.glyphicon.glyphicon-save
+                                    |  Save
+                                button.delete-analysis.btn.btn-default(title="Delete analysis")
+                                    span.glyphicon.glyphicon-trash
+                        .row.spacer.edit-controls
+                            .col-sm-6.workflow-edit-controls
+                                .form-group
+                                    label(for="workstep")
+                                        | Select analysis
+                                    select.form-control#workstep
+                                button.btn.btn-primary#add-workstep
+                                    span.glyphicon.glyphicon-plus
+                                    | Add to workflow
+                        .row.spacer.edit-controls
+                            .col-sm-6.analysis-edit-controls
+                                label
+                                    | Inputs
+                                button.btn.btn-sm.btn-link
+                                    span.glyphicon.glyphicon-plus.add-input-variable
+                                .input-variables
+                            .col-sm-6.analysis-edit-controls
+                                label
+                                    | Outputs
+                                button.btn.btn-sm.btn-link
+                                    span.glyphicon.glyphicon-plus.add-output-variable
+                                .output-variables
+                .tab-pane#vis_tab
+                    .container#visualization-management
+                        .row
+                            .col-sm-6
+                                .form-group
+                                    label(for="visualization")
+                                        | Select visualization
+                                    select.form-control#visualization
+                            .col-sm-6
+                                .inputs
+                        .form-inline
+                            button.btn.btn-primary#show
+                                span.glyphicon.glyphicon-stats#show-icon
+                                span#show-text
+                                    |  Update
+                        .row
+                            .col-sm-12
+                                pre.hidden #prov
+            .row.spacer
+                .col-sm-12
+        .modal.fade#analysis-setup-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title.analysis-setup-title
+                    .modal-body
+                        p.row.hidden.bg-success.success-message
+                        p.row.hidden.bg-info.info-message
+                        p.row.hidden.bg-danger.error-message
+                        .inputs
+                        button.btn.btn-primary.run
+                            span.glyphicon.glyphicon-play.run-icon
+                            |  Run
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure input
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#output-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure output
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#confirm-delete(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Confirm delete
+                    .modal-body
+                        This analysis will be permanently deleted. Continue?
+                    .modal-footer
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Cancel
+                        button.btn.btn-danger.really-delete-analysis
+                            | Delete
+        .modal.fade#g-dialog-container
+            .hidden#template-container
+                #collection-template
+                    span.active-state.glyphicon.glyphicon-eye-open(title="Toggle collection visibility")
+                    | &nbsp;
+                    span.save-location.glyphicon.glyphicon-pencil(title="Save to this collection")
+                    | &nbsp;
+                    span.name
+                #variable-template
+                    span.edit.glyphicon.glyphicon-pencil(title="Edit variable")
+                    | &nbsp;
+                    span.name
+                    | &nbsp;
+                    span.delete.glyphicon.glyphicon-trash.pull-right(title="Delete variable")
