@@ -21,16 +21,11 @@ import os
 import subprocess
 import sys
 
-# from girder.constants import ROOT_DIR
 from . import base
-
-ROOT_DIR = '/code/tangelo-hub'
 
 
 def setUpModule():
     os.environ['PORT'] = '50001'
-    os.environ['TANGELO'] = '/code/tangelo-build/venv/bin/tangelo'
-    os.environ['PYTHONPATH'] = '/code/girder'
     base.startServer()
 
 
@@ -48,8 +43,10 @@ class WebClientTestCase(base.TestCase):
 
         cmd = (
             os.path.join(
-                ROOT_DIR, 'node_modules', 'phantomjs', 'bin', 'phantomjs'),
-            os.path.join(ROOT_DIR, 'test', 'specRunner.js'),
+                os.environ['ROOT_DIR'],
+                'node_modules', 'phantomjs', 'bin', 'phantomjs'),
+            os.path.join(
+                os.environ['ROOT_DIR'], 'test', 'specRunner.js'),
             'http://localhost:50001/testEnv.html',
             self.specFile,
             self.coverageFile

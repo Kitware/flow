@@ -8,7 +8,6 @@ enable_testing()
 find_program(PYTHON_EXECUTABLE python)
 find_program(JSHINT_EXECUTABLE jshint ${PROJECT_SOURCE_DIR}/node_modules/jshint/bin)
 find_program(TANGELO_EXECUTABLE tangelo)
-find_path(GIRDER_PATH girder)
 
 include(test/JavascriptTests.cmake)
 add_subdirectory(test)

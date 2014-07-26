@@ -41,7 +41,7 @@ function(add_web_client_test name specFile)
     "GIRDER_TEST_DB=girder_test_webclient"
     "GIRDER_TEST_ASSETSTORE=webclient"
     "TANGELO=${TANGELO_EXECUTABLE}"
-    "PYTHONPATH=${GIRDER_PATH}"
+    "ROOT_DIR=${PROJECT_SOURCE_DIR}"
   )
   set_property(TEST ${testname} APPEND PROPERTY DEPENDS js_coverage_reset)
   set_property(TEST js_coverage_combine_report APPEND PROPERTY DEPENDS ${testname})

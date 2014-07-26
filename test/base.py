@@ -40,6 +40,7 @@ from . import mock_smtp
 # local = cherrypy.lib.httputil.Host('127.0.0.1', 50000, '')
 # remote = cherrypy.lib.httputil.Host('127.0.0.1', 50001, '')
 enabledPlugins = []
+process = None
 
 
 def startServer():
@@ -48,18 +49,15 @@ def startServer():
     function in their setUpModule() function.
     """
     # Start tangelo on the testing port, and bail out with error if it fails.
-    result = subprocess.call([os.environ['TANGELO'], "restart",
-                              "--host", "127.0.0.1",
-                              "--port", os.environ['PORT'],
-                              "--root", "app",
-                              "--logdir", ".",
-                              "--girder-path", "/girder",
-                              "--no-config"])
-
-    if result != 0:
-        print(
-            "fatal error: could not start Tangelo on port " +
-            os.environ['PORT'])
+    global process
+    process = subprocess.Popen([os.environ['TANGELO'], "start",
+                                "--host", "127.0.0.1",
+                                "--port", os.environ['PORT'],
+                                "--root", "app",
+                                "-nd",
+                                "--logdir", ".",
+                                "--girder-path", "/girder",
+                                "--no-config"])
 
 
 def stopServer():
@@ -67,13 +65,12 @@ def stopServer():
     Test cases that communicate with the server should call this
     function in their tearDownModule() function.
     """
-    # Shut the server down.
-    shutdown = subprocess.call([os.environ['TANGELO'], "stop",
-                                "--port", os.environ['PORT']])
-
-    # If there was an error shutting down, report it and fail the test.
-    if shutdown != 0:
-        print "fatal error: could not shut down Tangelo after test finished"
+    global process
+    code = process.poll()
+    if code is not None:
+        print("Tangelo exited prematurely with code{}.".format(code))
+    else:
+        process.kill()
 
 
 def dropTestDatabase():
