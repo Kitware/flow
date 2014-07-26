@@ -1,6 +1,6 @@
 language: cpp
 services: mongodb
-env: PYTHONPATH=${TRAVIS_BUILD_DIR}/girder
+env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder
 compiler:
     - gcc
 before_install:
