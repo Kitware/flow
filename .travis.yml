@@ -1,5 +1,6 @@
 language: cpp
 services: mongodb
+env: PYTHONPATH=${TRAVIS_BUILD_DIR}/girder
 compiler:
     - gcc
 before_install:
@@ -7,12 +8,11 @@ before_install:
     - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
 install:
     - sudo pip install tangelo
+    - sudo pip install pep8 coverage
+    - npm install -g grunt grunt-cli
     - git clone https://github.com/girder/girder.git
     - cd girder
     - sudo pip install -r requirements.txt
-    - sudo pip install pep8 coverage
-    - sudo python setup.py install
-    - npm install -g grunt grunt-cli
     - npm install
     - cd ..
     - npm install
