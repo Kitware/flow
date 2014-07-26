@@ -7,6 +7,8 @@ before_install:
     - sudo apt-get install npm
     - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
 install:
+    - pwd
+    - echo $PYTHONPATH
     - sudo pip install tangelo
     - sudo pip install pep8 coverage
     - npm install -g grunt grunt-cli
