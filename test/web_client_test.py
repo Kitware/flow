@@ -57,6 +57,11 @@ class WebClientTestCase(base.TestCase):
 
         (stdoutdata, stderrdata) = process.communicate()
 
+        print()
+        print("====stdout:")
         print(stdoutdata)
+        print()
+        print("====stderr:")
+        print(stderrdata)
 
         self.assertEqual(process.returncode, 0)
