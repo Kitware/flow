@@ -27,6 +27,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 import unittest
 import urllib
 import uuid
@@ -59,6 +60,9 @@ def startServer():
                                 "--logdir", ".",
                                 "--girder-path", "/girder",
                                 "--no-config"])
+
+    # Give it time to spin up
+    time.sleep(5)
 
 
 def stopServer():
