@@ -50,20 +50,15 @@ def startServer():
     """
     # Start tangelo on the testing port, and bail out with error if it fails.
     global process
+    appPath = os.path.join(os.environ['ROOT_DIR'], "app")
     process = subprocess.Popen([os.environ['TANGELO'], "start",
                                 "--host", "127.0.0.1",
                                 "--port", os.environ['PORT'],
-                                "--root", "app",
+                                "--root", appPath,
                                 "-nd",
                                 "--logdir", ".",
                                 "--girder-path", "/girder",
                                 "--no-config"])
-
-    (stdoutdata, stderrdata) = process.communicate()
-    print('>>>>tangelo stdout')
-    print(stdoutdata)
-    print('>>>>tangelo stderr')
-    print(stderrdata)
 
 
 def stopServer():
