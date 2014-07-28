@@ -59,6 +59,12 @@ def startServer():
                                 "--girder-path", "/girder",
                                 "--no-config"])
 
+    (stdoutdata, stderrdata) = process.communicate()
+    print('>>>>tangelo stdout')
+    print(stdoutdata)
+    print('>>>>tangelo stderr')
+    print(stderrdata)
+
 
 def stopServer():
     """
