@@ -52,14 +52,18 @@ def startServer():
     # Start tangelo on the testing port, and bail out with error if it fails.
     global process
     appPath = os.path.join(os.environ['ROOT_DIR'], "app")
-    process = subprocess.Popen([os.environ['TANGELO'], "start",
-                                "--host", "127.0.0.1",
-                                "--port", os.environ['PORT'],
-                                "--root", appPath,
-                                "-nd",
-                                "--logdir", ".",
-                                "--girder-path", "/girder",
-                                "--no-config"])
+    tangeloArgs = [
+        os.environ['TANGELO'], "start",
+        "--host", "127.0.0.1",
+        "--port", os.environ['PORT'],
+        "--root", appPath,
+        "-nd",
+        "--logdir", ".",
+        "--girder-path", "/girder",
+        "--no-config"
+    ]
+    print(" ".join(tangeloArgs))
+    process = subprocess.Popen(tangeloArgs)
 
     # Give it time to spin up
     time.sleep(5)
@@ -73,7 +77,7 @@ def stopServer():
     global process
     code = process.poll()
     if code is not None:
-        print("Tangelo exited prematurely with code{}.".format(code))
+        print("Tangelo exited prematurely with code {}.".format(code))
     else:
         process.kill()
 
