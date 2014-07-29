@@ -14,6 +14,7 @@ install:
     - npm install -g grunt grunt-cli
     - git clone https://github.com/girder/girder.git
     - cd girder
+    - git checkout routing-option
     - sudo pip install -r requirements.txt
     - npm install
     - cd ..

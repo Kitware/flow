@@ -3,6 +3,7 @@
  */
 $(function () {
     girder.apiRoot = '/girder/api/v1';
+    girder.handleRouting = false;
     var app = new flow.App();
     app.render();
 });
@@ -13,4 +14,16 @@ describe('App is running', function () {
             expect($('#control-panel').length).toBe(1);
         });
     });
+});
+
+describe('Able to create account', function () {
+    it('account created',
+        tangeloHubTest.createUser(
+            'admin',
+            'admin@email.com',
+            'Admin',
+            'Admin',
+            'adminpassword!'
+        )
+    );
 });

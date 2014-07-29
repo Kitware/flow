@@ -3,3 +3,5 @@ npm-debug.log
 build
 tangelo.log
 *.pyc
+.vagrant
+Vagrantfile
