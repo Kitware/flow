@@ -17,7 +17,7 @@
             // as the domain of another input
             this.collection.forEach(_.bind(function (input) {
                 var view, referredInput;
-                if (input.get('type') === 'string' || input.get('type') === 'number' || input.get('type') === 'json') {
+                if (input.get('type') === 'string' || input.get('type') === 'accessor' || input.get('type') === 'number' || input.get('type') === 'json') {
                     if (input.get('domain') && tangelo.isObject(input.get('domain'))) {
                         referredInput = this.collection.findWhere({name: input.get('domain').input});
                         view = this.itemViews[referredInput.cid];

@@ -14,7 +14,8 @@
             string: {inputMode: "line"},
             number: {inputMode: "line"},
             json: {inputMode: "line"},
-            geometry: {inputMode: "dataset"}
+            geometry: {inputMode: "dataset"},
+            accessor: {inputMode: "line"}
         },
 
         initialize: function (settings) {
