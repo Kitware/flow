@@ -13,9 +13,9 @@
             {
                 name: "timeline",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"},
-                    {name: "date", type: "string", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "string", domain: {input: "data", format: "column.names"}}
+                    {name: "data", type: "table", format: "objectlist"},
+                    {name: "x", type: "accessor", domain: {input: "data", format: "column.names"}},
+                    {name: "y", type: "accessor", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
@@ -94,6 +94,7 @@
 
             'click #show': function () {
                 this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (options) {
+                    console.log(options);
                     var inner = $('<div style="width:100%;height:100%"></div>');
                     $("#vis").empty();
                     $("#vis").append(inner);
@@ -175,6 +176,8 @@
                 options[input.get('name')] = parseFloat(value);
             } else if (input.get('type') === 'json') {
                 options[input.get('name')] = JSON.parse(value);
+            } else if (input.get('type') === 'accessor') {
+                options[input.get('name')] = {field: value};
             }
             this.loadInputs(inputViews, options, done);
         }

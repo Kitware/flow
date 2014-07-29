@@ -1,7 +1,7 @@
 (function ($, tangelo, vg) {
     "use strict";
 
-    $.fn.timeline = function (spec) {
+    $.fn.timelineVega = function (spec) {
         var y,
             date = tangelo.accessor({field: spec.date}),
             data = spec.data,
