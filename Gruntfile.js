@@ -112,6 +112,7 @@ module.exports = function (grunt) {
                         'test/lib/jasmine-1.3.1/jasmine.js',
                         'node_modules/blanket/dist/jasmine/blanket_jasmine.js',
                         'test/lib/jasmine-1.3.1/ConsoleReporter.js',
+                        'test/lib/blob/Blob.js',
                         'test/testUtils.js'
                     ]
                 }
