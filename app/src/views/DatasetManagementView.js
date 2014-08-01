@@ -48,13 +48,18 @@
                     format = this.$('.dataset-format-select').val(),
                     dataset = this.datasets.get(this.$('.datasets').val());
                 flow.retrieveDatasetAsFormat(dataset, dataset.get('type'), format, false, _.bind(function (error, converted) {
+                    if (error) {
+                        console.log(error.responseText);
+                        console.log(error.statusText);
+                        return;
+                    }
                     var blob = new Blob([converted.get('data')]),
                         extension = this.extensions[dataset.get('type') + ":" + format],
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
                         anchor = $('<a href="' + URL.createObjectURL(blob) + '" download="' + nameWithExtension + '" class="hidden"></a>');
                     $('body').append(anchor);
-                    anchor[0].click();
+                    anchor.trigger('click');
                 }, this));
             },
 
@@ -185,4 +190,4 @@
         }
     });
 
-}(window.flow, window.$, window._, window.Backbone, window.Blob, window.d3, window.FileReader, window.girder, window.URL));
+}(window.flow, window.$, window._, window.Backbone, window.Blob, window.d3, window.FileReader, window.girder, window.URL || window.webkitURL));

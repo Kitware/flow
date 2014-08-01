@@ -38,6 +38,7 @@ var terminate = function () {
         }
     });
 
+    console.log("terminating...");
     if (status) {
         phantom.exit(0);
     }
