@@ -24,20 +24,17 @@ import sys
 from . import base
 
 
-def setUpModule():
-    os.environ['PORT'] = '50001'
-    base.startServer()
-
-
-def tearDownModule():
-    base.stopServer()
-
-
 class WebClientTestCase(base.TestCase):
     def setUp(self):
+        os.environ['PORT'] = '50001'
         self.specFile = os.environ['SPEC_FILE']
         self.coverageFile = os.environ['COVERAGE_FILE']
         base.TestCase.setUp(self)
+        base.startServer()
+
+    def tearDown(self):
+        base.stopServer()
+        base.TestCase.tearDown(self)
 
     def testWebClientSpec(self):
 
@@ -52,8 +49,11 @@ class WebClientTestCase(base.TestCase):
             self.coverageFile
         )
 
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
 
         (stdoutdata, stderrdata) = process.communicate()
 
@@ -63,5 +63,6 @@ class WebClientTestCase(base.TestCase):
         print()
         print("====stderr:")
         print(stderrdata)
+        sys.stdout.flush()
 
         self.assertEqual(process.returncode, 0)

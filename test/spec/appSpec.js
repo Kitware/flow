@@ -24,9 +24,11 @@ describe('Able to upload data', function () {
             file.name = 'test.csv';
             app.datasetsView.upload(file);
         });
+
         waitsFor(function () {
             return app.datasetsView.datasets.length === 1;
-        });
+        }, 'dataset model to be available');
+
         runs(function () {
             var table = app.datasetsView.datasets.at(0);
             expect(table.get('data')).toBe('a,b,c\n1,2,3');
@@ -34,6 +36,51 @@ describe('Able to upload data', function () {
             expect(table.get('format')).toBe('csv');
         });
     });
+
+    it('data downloaded', function () {
+        var blob = null,
+            data = null,
+            URL = window.URL || window.webkitURL;
+
+        URL.createObjectURL = function (b) {
+            blob = b;
+            return "blob:";
+        };
+
+        runs(function () {
+            $('.dataset-format-select').val('rows.json');
+            $('.dataset-download').trigger('click');
+        });
+
+        waitsFor(function () {
+            return $(':last').attr('download') === 'test.csv.rows-json';
+        }, 'converted data to be stored');
+
+        runs(function () {
+            var reader = new window.FileReader();
+
+            reader.onerror = function(event) {
+                console.log("File could not be read! Code " + event.target.error.code);
+            };
+
+            reader.onload = function(event) {
+                data = JSON.parse(reader.result);
+            };
+            reader.readAsText(blob);
+        });
+
+        waitsFor(function () {
+            return data !== null;
+        });
+
+        runs(function () {
+            expect(data).toEqual({
+                fields: ['a', 'b', 'c'],
+                rows: [{a: 1, b: 2, c: 3}]
+            });
+        });
+    });
+
 });
 
 describe('Able to create account', function () {

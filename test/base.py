@@ -40,7 +40,6 @@ from . import mock_smtp
 
 # local = cherrypy.lib.httputil.Host('127.0.0.1', 50000, '')
 # remote = cherrypy.lib.httputil.Host('127.0.0.1', 50001, '')
-enabledPlugins = []
 process = None
 
 
@@ -63,10 +62,14 @@ def startServer():
         "--no-config"
     ]
     print(" ".join(tangeloArgs))
-    process = subprocess.Popen(tangeloArgs)
+    process = subprocess.Popen(
+        tangeloArgs,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
 
     # Give it time to spin up
-    time.sleep(5)
+    time.sleep(1)
 
 
 def stopServer():
@@ -115,6 +118,7 @@ class TestCase(unittest.TestCase, model_importer.ModelImporter):
             os.environ.get('GIRDER_TEST_ASSETSTORE', 'test'))
         self.model('assetstore').createFilesystemAssetstore(
             name='Test', root=assetstorePath)
+        self.model('setting').set('core.plugins_enabled', ['romanesco'])
 
     def assertStatusOk(self, response):
         """

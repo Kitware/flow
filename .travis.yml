@@ -1,6 +1,6 @@
 language: cpp
 services: mongodb
-env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder
+env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder:~/vtk-precise64/lib/python2.7/site-packages:~/vtk-precise64/lib R_LIBS_USER=~/R LD_LIBRARY_PATH=~/vtk-precise64/lib
 compiler:
     - gcc
 before_install:
@@ -12,14 +12,44 @@ install:
     - sudo pip install tangelo
     - sudo pip install pep8 coverage
     - npm install -g grunt grunt-cli
+
+    # Girder
     - git clone https://github.com/girder/girder.git
-    - cd girder
+    - cd $TRAVIS_BUILD_DIR/girder
     - sudo pip install -r requirements.txt
     - npm install
-    - cd ..
+
+    # VTK
+    - cd $TRAVIS_BUILD_DIR
+    - wget http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz -O vtk-precise64.tar.gz
+    - tar xzvf vtk-precise64.tar.gz -C ~
+
+    # R
+    - sudo apt-add-repository -y "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/"
+    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+    - sudo apt-get update
+    - sudo apt-get install -y r-base-dev zlib1g-dev
+    - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
+    - R --version
+    - R -e '.libPaths(); sessionInfo()'
+
+    # R packages
+    # - Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))'
+    # - R -e 'options(repos="http://cran.cnr.Berkeley.edu");library(devtools);install_github("cardoonTools", "hafen")'
+
+    # Romanesco
+    - cd $TRAVIS_BUILD_DIR/girder/plugins
+    - git clone https://github.com/arborworkflows/romanesco.git
+    - cd $TRAVIS_BUILD_DIR/girder/plugins/romanesco
+    - sudo pip install -r requirements.txt
+    - python -m romanesco &
+
+    # TangeloHub
+    - cd $TRAVIS_BUILD_DIR
     - npm install
+
 script:
     - mkdir build
     - cd build
-    - cmake -D PYTHON_COVERAGE:BOOL=ON ..
+    - cmake ..
     - ctest -VV -S ../cmake/travis_continuous.cmake
