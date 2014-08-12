@@ -42,6 +42,21 @@ describe('Able to upload data', function () {
             data = null,
             URL = window.URL || window.webkitURL;
 
+        if (!HTMLElement.prototype.click) {
+            HTMLElement.prototype.click = function() {
+                var ev = document.createEvent('MouseEvent');
+                ev.initMouseEvent(
+                    'click',
+                    /*bubble*/true, /*cancelable*/true,
+                    window, null,
+                    0, 0, 0, 0, /*coordinates*/
+                    false, false, false, false, /*modifier keys*/
+                    0/*button=left*/, null
+                );
+                this.dispatchEvent(ev);
+            };
+        }
+
         URL.createObjectURL = function (b) {
             blob = b;
             return "blob:";
@@ -93,4 +108,72 @@ describe('Able to create account', function () {
             'adminpassword!'
         )
     );
+});
+
+describe('Able to create collection', function () {
+    it('collection created', function () {
+        runs(function () {
+            $('.new-collection-name').val('Collection');
+            $('.new-collection').click();
+        });
+
+        waitsFor(function () {
+            return $('#collections .name').text() === 'Collection';
+        }, 'collection to be available');
+
+        runs(function () {
+            expect(app.collection.length).toBe(1);
+            expect(app.collection.at(0).get('name')).toBe('Collection');
+        });
+    });
+});
+
+describe('Able to create analysis', function () {
+    it('analysis created', function () {
+        runs(function () {
+            $('.save-location').first().click();
+        });
+
+        waitsFor(function () {
+            return flow.saveLocation !== null && flow.saveLocation.get('analysisFolder') !== undefined;
+        }, 'save location to be updated');
+
+        runs(function () {
+            $('#analysis-name').val('Test');
+            $('#analysis-new').click();
+        });
+
+        waitsFor(function () {
+            return app.analysesView.analyses.findWhere({name: 'Test'}) !== undefined;
+        }, 'test analysis to be created');
+
+        runs(function() {
+            $('#show-script').click();
+            $('#edit').click();
+            app.analysesView.editor.setValue('output = 2 + 2');
+            $('.add-output-variable').click();
+            var controls = $('#output-variable-edit-dialog .form-control');
+            controls.eq(0).val('output');
+            controls.eq(1).val('number:number');
+            $('#output-variable-edit-dialog .update').click();
+            $('#save').click();
+        });
+
+        waitsFor(function () {
+            return !$('#save').hasClass('disabled');
+        }, 'save to complete');
+
+        runs(function() {
+            $('#setup').click();
+            $('#analysis-setup-dialog .run').click();
+        });
+
+        waitsFor(function () {
+            return !$('#analysis-setup-dialog .success-message').hasClass("hidden");
+        }, 'success message');
+
+        runs(function () {
+            expect(app.datasetsView.datasets.findWhere({type: 'number'}).get('data')).toBe(4);
+        });
+    });
 });

@@ -15,7 +15,8 @@
             png: {type: 'image', format: 'png'},
             rds: {type: 'r', format: 'serialized'},
             'objectlist-json': {type: 'table', format: 'objectlist.json'},
-            'rows-json': {type: 'table', format: 'rows.json'}
+            'rows-json': {type: 'table', format: 'rows.json'},
+            'number-json': {type: 'number', format: 'json'}
         },
 
         setDisplay: function (mode) {
@@ -52,6 +53,9 @@
                 }
                 if (dataset.get('type') === 'tree' && dataset.get('format') === 'nested') {
                     dataset = new Backbone.Model({type: 'tree', format: 'nested.json', data: JSON.stringify(dataset.get('data'))});
+                }
+                if (dataset.get('type') === 'number' && dataset.get('format') === 'number') {
+                    dataset = new Backbone.Model({type: 'number', format: 'json', data: JSON.stringify(dataset.get('data'))});
                 }
                 if (dataset.get('format') === format) {
                     done(null, dataset);

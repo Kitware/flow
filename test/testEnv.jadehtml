@@ -76,6 +76,15 @@ html(lang="en")
                                         |  Browse or drop files
                                     .form-group.hide
                                         input#g-files(type="file", multiple="multiple")
+                                    .form-inline.spacer.hidden.new-collection-form
+                                        input.form-control.new-collection-name(placeholder="Name", type="text")
+                                        .checkbox
+                                            label
+                                                input.new-collection-public(type="checkbox")
+                                                |  Public
+                                        button.btn.btn-primary.new-collection
+                                            span.glyphicon.glyphicon-plus
+                                            |  New collection
                                 .col-sm-6
                                     ul#collections.list-group
                             .row
@@ -247,16 +256,16 @@ html(lang="en")
                         button.btn.btn-danger.really-delete-analysis
                             | Delete
         .modal.fade#g-dialog-container
-            .hidden#template-container
-                #collection-template
-                    span.active-state.glyphicon.glyphicon-eye-open(title="Toggle collection visibility")
-                    | &nbsp;
-                    span.save-location.glyphicon.glyphicon-pencil(title="Save to this collection")
-                    | &nbsp;
-                    span.name
-                #variable-template
-                    span.edit.glyphicon.glyphicon-pencil(title="Edit variable")
-                    | &nbsp;
-                    span.name
-                    | &nbsp;
-                    span.delete.glyphicon.glyphicon-trash.pull-right(title="Delete variable")
+        .hidden#template-container
+            #collection-template
+                span.active-state.glyphicon.glyphicon-eye-open(title="Toggle collection visibility")
+                | &nbsp;
+                span.save-location.glyphicon.glyphicon-pencil(title="Save to this collection")
+                | &nbsp;
+                span.name
+            #variable-template
+                span.edit.glyphicon.glyphicon-pencil(title="Edit variable")
+                | &nbsp;
+                span.name
+                | &nbsp;
+                span.delete.glyphicon.glyphicon-trash.pull-right(title="Delete variable")
