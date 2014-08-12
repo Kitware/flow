@@ -38,7 +38,7 @@
                     confirmCallback: _.bind(function () {
                         girder.restRequest({
                             path: 'collection/' + this.model.get('id'),
-                            type: 'delete',
+                            type: 'delete'
                         }).done(_.bind(function (collection) {
                             this.model.set({active: false});
                             this.model.set({saveLocation: false});
