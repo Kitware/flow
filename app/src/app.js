@@ -37,6 +37,7 @@
                         'public': isPublic
                     }
                 }).done(_.bind(function (collection) {
+                    $('.new-collection-name').val('');
                     this.collection.fetch({}, true);
                 }, this)).error(_.bind(function (xhr, status, message) {
                     $('.new-collection-name').val('');
@@ -64,7 +65,12 @@
             this.collection.pageLimit = 100;
             this.collection.fetch();
 
-            this.view = new flow.CollectionsView({el: this.$('#collections'), itemView: flow.CollectionView, collection: this.collection});
+            this.view = new flow.CollectionsView({
+                el: this.$('#collections'),
+                itemView: flow.CollectionView,
+                itemOptions: {collection: this.collection},
+                collection: this.collection
+            });
             this.view.on('flow:change-active', this.collectionVisibilityChange, this);
             this.view.render();
 
