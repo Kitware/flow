@@ -177,3 +177,27 @@ describe('Able to create analysis', function () {
         });
     });
 });
+
+describe('Able to delete collection', function () {
+    it('collection deleted', function () {
+        runs(function () {
+            $('#collections .delete').click();
+        });
+
+        waitsFor(function () {
+            return $('#g-confirm-button').length > 0;
+        }, 'confirm dialog to appear');
+
+        runs(function () {
+            $('#g-confirm-button').click();
+        });
+
+        waitsFor(function () {
+            return $('#collections .name').text() === '';
+        }, 'collection to be deleted');
+
+        runs(function () {
+            expect(app.collection.length).toBe(0);
+        });
+    });
+});

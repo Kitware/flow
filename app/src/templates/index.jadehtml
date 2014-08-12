@@ -234,12 +234,6 @@ html(lang="en")
                             | Delete
         .modal.fade#g-dialog-container
         .hidden#template-container
-            #collection-template
-                span.active-state.glyphicon.glyphicon-eye-open(title="Toggle collection visibility")
-                | &nbsp;
-                span.save-location.glyphicon.glyphicon-pencil(title="Save to this collection")
-                | &nbsp;
-                span.name
             #variable-template
                 span.edit.glyphicon.glyphicon-pencil(title="Edit variable")
                 | &nbsp;

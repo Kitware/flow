@@ -25,24 +25,45 @@
                 this.model.set({active: !this.model.get('active')});
                 if (!this.model.get('active')) {
                     this.model.set({saveLocation: false});
-                    flow.saveLocation = null;
-                    flow.events.trigger('flow:change-save-location');
-                    d3.select("#new-analysis-form").classed("hidden", true);
-                    d3.select("#dataset-save").classed("hidden", true);
+                    if (flow.saveLocation === this.model) {
+                        flow.saveLocation = null;
+                        flow.events.trigger('flow:change-save-location');
+                    }
                 }
+            },
+            'click .delete': function () {
+                girder.confirm({
+                    text: 'All data and analyses in this collection will be deleted forever. Continue?',
+                    yesText: 'Delete',
+                    confirmCallback: _.bind(function () {
+                        girder.restRequest({
+                            path: 'collection/' + this.model.get('id'),
+                            type: 'delete',
+                        }).done(_.bind(function (collection) {
+                            this.model.set({active: false});
+                            this.model.set({saveLocation: false});
+                            if (flow.saveLocation === this.model) {
+                                flow.saveLocation = null;
+                                flow.events.trigger('flow:change-save-location');
+                            }
+                            this.collection.fetch({}, true);
+                        }, this)).error(_.bind(function (xhr, status, message) {
+                            console.error(message);
+                        }, this));
+                    }, this)
+                });
             }
         },
 
-        initialize: function () {
+        initialize: function (settings) {
+            this.collection = settings.collection;
             this.model.on('change', this.render, this);
         },
 
         render: function () {
-            this.$el.html($('#collection-template').html());
-            this.$('.active-state').toggleClass('disabled-icon', !this.model.get('active'));
-            this.$('.save-location').toggleClass('disabled-icon', !this.model.get('saveLocation'));
-            this.$('.save-location').toggleClass('hidden', this.model.get('_accessLevel') <= 0);
-            this.$('.name').text(this.model.get('name'));
+            this.$el.html(jade.templates.collection({
+                model: this.model
+            }));
             return this;
         }
     });
