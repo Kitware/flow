@@ -9,14 +9,14 @@ before_install:
 install:
     - pwd
     - echo $PYTHONPATH
-    - pip install tangelo
-    - pip install pep8 coverage
+    - sudo pip install tangelo
+    - sudo pip install pep8 coverage
     - npm install -g grunt grunt-cli
 
     # Girder
     - git clone https://github.com/girder/girder.git
     - cd $TRAVIS_BUILD_DIR/girder
-    - pip install -r requirements.txt
+    - sudo pip install -r requirements.txt
     - npm install
 
     # VTK
@@ -41,7 +41,7 @@ install:
     - cd $TRAVIS_BUILD_DIR/girder/plugins
     - git clone https://github.com/arborworkflows/romanesco.git
     - cd $TRAVIS_BUILD_DIR/girder/plugins/romanesco
-    - pip install -r requirements.txt
+    - sudo pip install -r requirements.txt
     - python -m romanesco &
 
     # TangeloHub
