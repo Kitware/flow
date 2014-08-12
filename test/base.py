@@ -69,7 +69,7 @@ def startServer():
     )
 
     # Give it time to spin up
-    time.sleep(1)
+    time.sleep(2)
 
 
 def stopServer():
