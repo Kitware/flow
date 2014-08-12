@@ -248,8 +248,8 @@ workflow = function (selection) {
                 outputs: a.outputs,
                 analysis: a
             };
-        step.inputScale = d3.scale.linear().domain([0, a.inputs.length - 1]).range([25, 75]);
-        step.outputScale = d3.scale.linear().domain([0, a.outputs.length - 1]).range([25, 75]);
+        step.inputScale = d3.scale.linear().domain([0, a.inputs.length - 1]).range([10, 90]);
+        step.outputScale = d3.scale.linear().domain([0, a.outputs.length - 1]).range([10, 90]);
         step.inputMap = {};
         step.inputs.forEach(function (inp, i) {
             step.inputMap[inp.name] = i;
