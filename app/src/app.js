@@ -22,6 +22,26 @@
 
             'click #register': function () {
                 girder.events.trigger('g:registerUi');
+            },
+
+            'click .new-collection': function () {
+                var name = $('.new-collection-name').val(),
+                    isPublic = $('.new-collection-public').is(':checked');
+
+                girder.restRequest({
+                    path: 'collection/romanesco/module',
+                    type: 'post',
+                    data: {
+                        'name': name,
+                        'description': '',
+                        'public': isPublic
+                    }
+                }).done(_.bind(function (collection) {
+                    this.collection.fetch({}, true);
+                }, this)).error(_.bind(function (xhr, status, message) {
+                    $('.new-collection-name').val('');
+                    console.error(message);
+                }, this));
             }
         },
 
@@ -77,6 +97,7 @@
                 this.$("#logged-in").addClass("hidden");
                 this.$("#logged-out").removeClass("hidden");
             }
+            this.$('.new-collection-form').toggleClass('hidden', girder.currentUser === null);
         },
 
         /**

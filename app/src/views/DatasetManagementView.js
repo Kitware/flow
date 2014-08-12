@@ -8,7 +8,8 @@
             tree: ['nested.json', 'nexus', 'newick', 'vtktree.serialized'],
             image: ['png'],
             r: ['serialized'],
-            geometry: ['vtkpolydata.serialized']
+            geometry: ['vtkpolydata.serialized'],
+            number: ['json']
         },
 
         extensions: {
@@ -23,7 +24,8 @@
             "tree:vtktree.serialized": "vtk",
             "image:png": "png",
             "r:serialized": "rds",
-            "geometry:vtkpolydata.serialized": "vtk"
+            "geometry:vtkpolydata.serialized": "vtk",
+            "number:json": "number-json"
         },
 
         events: {
@@ -59,7 +61,7 @@
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
                         anchor = $('<a href="' + URL.createObjectURL(blob) + '" download="' + nameWithExtension + '" class="hidden"></a>');
                     $('body').append(anchor);
-                    anchor.trigger('click');
+                    anchor[0].click();
                 }, this));
             },
 

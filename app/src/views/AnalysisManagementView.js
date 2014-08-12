@@ -31,6 +31,7 @@
             'click #save': function () {
                 var info, curWorkflow;
                 if (this.analysis) {
+                    $("#save").addClass("disabled");
                     info = this.analysis.get('meta').analysis;
                     info.name = this.$(".analysis-edit-name").val();
                     if (info.mode === "workflow") {
@@ -50,6 +51,7 @@
                             $("#analysis").change();
                             // Trigger updating this analysis views
                             this.analysis.set('name', info.name);
+                            $("#save").removeClass("disabled");
                         }, this));
                     }, this));
                 }
@@ -252,6 +254,9 @@
 
         createAnalysis: function (analysis) {
             d3.json(girder.apiRoot + '/item/?name=' + encodeURIComponent(analysis.name) + '&folderId=' + flow.saveLocation.get('analysisFolder')).post(_.bind(function (error, result) {
+                if (error) {
+                    console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
+                }
                 var analysisUri = girder.apiRoot + '/item/' + result._id;
                 d3.json(analysisUri + '/metadata').send('put', JSON.stringify({analysis: analysis}), _.bind(function (error, result) {
                     var model = new Backbone.Model(result);
