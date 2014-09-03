@@ -106,6 +106,8 @@ module.exports = function (grunt) {
                         'lib/js/d3.js',
                         'lib/js/bootstrap.js',
                         'lib/js/vega-1.3.3.min.js',
+                        'lib/js/autobahn.min.js',
+                        'lib/js/vtkweb-all.min.js',
                         'lib/js/tangelo.js'
                     ],
                     'app/testing.min.js': [
