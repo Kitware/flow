@@ -28,8 +28,24 @@
             "number:json": "number-json"
         },
 
+        defaultViews: {
+            "table": "table",
+            "string": "string",
+            "tree": "dendrogram",
+            "image": "image"
+        },
+
         events: {
             'change .datasets': 'updateDataset',
+
+            'click .dataset-quick-view': function () {
+                var dataset = this.datasets.get(this.$('.datasets').val()),
+                    viewName = this.defaultViews[dataset.get('type')],
+                    vis = window.app.visualizationsView.visualizations.findWhere({name: viewName});
+                $('#visualization').val(vis.cid).change();
+                $('#visualization-management .inputs select').first().val(dataset.cid);
+                $('#show').click();
+            },
 
             'click .dataset-save': function () {
                 var name = this.$('.dataset-name').val(),

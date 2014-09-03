@@ -70,6 +70,8 @@ html(lang="en")
                                         | Save or download data
                                     .form-inline
                                         select.form-control.datasets
+                                        button.dataset-quick-view.btn.btn-primary
+                                            | Quick view
                                         span.dataset-save-form
                                             input.dataset-name.form-control(type="text", placeholder="Name")
                                             select.dataset-format-select.form-control
