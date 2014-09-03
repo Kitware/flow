@@ -6,7 +6,7 @@
     $(document).ready(function () {
         girder.apiRoot = '/girder/api/v1';
         girder.handleRouting = false;
-        var app = new flow.App();
-        app.render();
+        window.app = new flow.App();
+        window.app.render();
     });
 }(window.flow, window.$, window.girder));
