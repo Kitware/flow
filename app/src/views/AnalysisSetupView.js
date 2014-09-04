@@ -73,7 +73,7 @@
                                 .classed('btn-default', false)
                                 .attr('disabled', null);
                             d3.select('.success-message').classed('hidden', true);
-                            d3.select('.error-message').classed('hidden', false).text('Error: ' + result.error);
+                            d3.select('.error-message').classed('hidden', false).html('Error: <pre>' + result.message + '</pre>');
                             d3.select('.info-message').classed('hidden', true);
                             return;
                         }
@@ -143,7 +143,7 @@
                     console.log(result);
                     d3.select('.success-message').classed('hidden', true);
                     d3.select('.info-message').classed('hidden', true);
-                    d3.select('.error-message').classed('hidden', false).text('Operation Failed. ' + result.message);
+                    d3.select('.error-message').classed('hidden', false).html('Operation Failed. <pre>' + result.message + '</pre>');
                 } else {
                     setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }
