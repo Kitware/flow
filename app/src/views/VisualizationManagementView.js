@@ -30,7 +30,8 @@
                 name: "dendrogram",
                 inputs: [
                     {name: "data", type: "tree", format: "nested"},
-                    {name: "distance", type: "json", "default": {format: "inline", data: {"field": "edge_data.weight"}}},
+                    {name: "distance", type: "accessor", "default": {format: "text", data: "edge_data.weight"}},
+                    {name: "label", type: "accessor", "default": {format: "text", data: "node_data.node name"}},
                     {name: "lineStyle", type: "string", domain: ["axisAligned", "curved"]},
                     {name: "orientation", type: "string", domain: ["horizontal", "vertical"]}
                 ]
