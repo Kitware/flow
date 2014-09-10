@@ -95,6 +95,10 @@
                         dataIsURI: true
                     }
                 ]
+            },
+            {
+                name: "edgebundling",
+                inputs: [{name: "data", type: "table", format: "rows"}]
             }
         ],
 
