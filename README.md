@@ -31,10 +31,19 @@ Or as a contributor:
 
     git clone https://github.com/tangelo-hub/tangelo-hub.git
 
-Enter the source folder and build out all the npm dependencies, and build the app:
+Enter the source folder and build out all the npm dependencies:
 
     cd tangelo-hub
     npm install
+
+Now we're ready to build the TangeloHub app:
+
+    grunt init
+    grunt
+
+Activate Tangelo's Python virtual environment:
+
+    source /path/to/tangelo_bin/venv/bin/activate
 
 Ensure the Girder source directory is in your Python path:
 
