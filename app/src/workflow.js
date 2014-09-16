@@ -221,7 +221,7 @@ workflow = function (selection) {
             .style("stroke", strokeColor)
             .style("stroke-width", 2);
 
-        g.append("text")
+        var t = g.append("text")
             .attr("x", 75)
             .attr("y", 50)
             .style("fill", strokeColor)
@@ -231,6 +231,7 @@ workflow = function (selection) {
             .style("user-select", "none")
             .style("-webkit-user-select", "none")
             .style("pointer-events", "none");
+        wrap(t, 150);
 
         // icon to delete this workflow step
         g.append("text")
@@ -435,6 +436,41 @@ workflow = function (selection) {
 
     function zoom() {
         vis.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
+    // Modified from http://bl.ocks.org/mbostock/7555321
+    function wrap(text, width) {
+      text.each(function() {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            tspan = text.text(null).append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .style("text-anchor", "middle")
+                .style("alignment-baseline", "central");
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", ++lineNumber * lineHeight + "em")
+                .style("text-anchor", "middle")
+                .style("alignment-baseline", "central")
+                .text(word);
+          }
+        }
+      });
     }
 
     // Create main SVG object
