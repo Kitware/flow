@@ -195,7 +195,7 @@ workflow = function (selection) {
         // delete this step from the workflow
         d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
             var r = confirm("Remove the step '" + step.id + "' from this workflow?");
-            if (r == true) {
+            if (r === true) {
                 deleteStep(step);
             }
         });
