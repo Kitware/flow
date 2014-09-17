@@ -191,6 +191,14 @@ workflow = function (selection) {
                 d3.event.stopPropagation();
             })
             .call(dragPort);
+
+        // delete this step from the workflow
+        d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
+            var r = confirm("Remove the step '" + step.id + "' from this workflow?");
+            if (r === true) {
+                deleteStep(step);
+            }
+        });
     }
 
     function updateSteps() {
@@ -224,10 +232,42 @@ workflow = function (selection) {
             .style("-webkit-user-select", "none")
             .style("pointer-events", "none");
 
-        g.each(updateStep);
+        // icon to delete this workflow step
+        g.append("text")
+            .attr("width", 10)
+            .attr("height", 10)
+            .attr("x", 70)
+            .attr("y", 98)
+            .attr("class", "delete-step")
+            .style("fill", "crimson")
+            .text("X");
 
-        vis.selectAll("g.step").selectAll("rect")
-            .style("fill", "whitesmoke");
+        g.each(updateStep);
+    }
+
+    function deleteStep(step) {
+        var index = workflow.steps.indexOf(step);
+        if (index > -1) {
+
+            // Our first step is to remove any connections to/from this step.
+            // To avoid modifying this list while iterating over it,
+            // we make a copy of the connections list while neglecting to
+            // copy over the items that should be deleted.
+            var conn = [];
+            workflow.connections.forEach(function (c, ci) {
+                if (c.inputStep !== step && c.outputStep !== step) {
+                    conn.push(c);
+                }
+            });
+            workflow.connections = conn;
+
+            // now that its connections have been removed it is safe
+            // to remove the workflow step itself.
+            workflow.steps.splice(index, 1);
+
+            updateSteps();
+            updateConnections();
+        }
     }
 
     that = {};
