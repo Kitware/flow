@@ -56,7 +56,7 @@
                         extension = this.extensions[dataset.get('type') + ":" + format],
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension;
-                    flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'));
+                    flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false);
                     dataset.set({collection: flow.saveLocation});
                 }, this));
             },
