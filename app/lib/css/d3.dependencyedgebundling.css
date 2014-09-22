@@ -1,0 +1,115 @@
+<style type="text/css">
+.node {
+  /* font: 400 14px "Helvetica Neue", Helvetica, Arial, sans-serif; */
+  font-weight: 400;
+  font-size: 13px;
+  fill: #888;
+  font-family: 'Open Sans', sans-serif;
+  opacity: 0.8;
+}
+
+.node:hover {
+  fill: #000;
+}
+
+.link {
+  stroke: steelblue;
+  stroke-opacity: .2;
+  fill: none;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+.node:hover,
+.node--source,
+.node--target {
+  fill: #000;
+  font-weight: 700;
+  opacity: 1;
+}
+
+.node--source {
+  fill: #2ca02c;
+}
+
+.node--target {
+  fill: #d62728;
+}
+
+.link--source,
+.link--target {
+  stroke-opacity: 1;
+  stroke-width: 2px;
+  opacity: 1;
+}
+
+.link--source {
+  stroke: #d62728;
+}
+
+.link--target {
+  stroke: #2ca02c;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+
+.axis,
+.frame {
+  shape-rendering: crispEdges;
+}
+
+.axis line {
+  stroke: #ddd;
+}
+
+.axis path {
+  display: none;
+}
+
+.heatmap {
+  font-size: 9px;
+  font-family: sans-serif;
+}
+
+text.mono {
+  font-size: 9px;
+  font-family: sans-serif;
+  fill: #000;
+}
+
+text.legendElement {
+  font-size: 10px;
+}
+
+text.hover {
+  font-weight: bold;
+  fill: #66F;
+  font-background: #000;
+}
+
+svg {
+  font: 14px sans-serif;
+  padding: 10px;
+}
+
+
+
+.frame {
+  fill: none;
+  stroke: #aaa;
+}
+
+circle {
+  fill-opacity: .7;
+}
+</style>
