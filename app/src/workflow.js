@@ -440,37 +440,40 @@ workflow = function (selection) {
 
     // Modified from http://bl.ocks.org/mbostock/7555321
     function wrap(text, width) {
-      text.each(function() {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // ems
-            x = text.attr("x"),
-            y = text.attr("y"),
-            tspan = text.text(null).append("tspan")
-                .attr("x", x)
-                .attr("y", y)
-                .style("text-anchor", "middle")
-                .style("alignment-baseline", "central");
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan")
-                .attr("x", x)
-                .attr("y", y)
-                .attr("dy", ++lineNumber * lineHeight + "em")
-                .style("text-anchor", "middle")
-                .style("alignment-baseline", "central")
-                .text(word);
-          }
-        }
-      });
+        text.each(function () {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                x = text.attr("x"),
+                y = text.attr("y"),
+                tspan = text.text(null).append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .style("text-anchor", "middle")
+                    .style("alignment-baseline", "central");
+            word = words.pop();
+            while (word) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > width) {
+                    lineNumber += 1;
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", lineNumber * lineHeight + "em")
+                        .style("text-anchor", "middle")
+                        .style("alignment-baseline", "central")
+                        .text(word);
+                }
+                word = words.pop();
+            }
+        });
     }
 
     // Create main SVG object
