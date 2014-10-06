@@ -97,6 +97,10 @@
                 ]
             },
             {
+                name: "edgebundling",
+                inputs: [{name: "data", type: "table", format: "rows"}]
+            },
+            {
                 name: "interactiveheatmap",
                 inputs: [{name: "data", type: "table", format: "rows"}]
             },

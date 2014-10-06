@@ -106,6 +106,7 @@ module.exports = function (grunt) {
                         'lib/js/d3.js',
                         'lib/js/d3.interactiveheatmap.js',
                         'lib/js/d3.scatterplotmatrix.js',
+                        'lib/js/d3.edgebundling.js',
                         'lib/js/bootstrap.js',
                         'lib/js/vega-1.3.3.min.js',
                         'lib/js/autobahn.min.js',
@@ -171,6 +172,7 @@ module.exports = function (grunt) {
         var html = fn({
             stylesheets: ['lib/bootstrap/css/bootstrap.min.css',
                           'lib/css/d3.dependencyedgebundling.css',
+                          'lib/css/d3.edgebundling.css',
                           'app.min.css'],
             scripts: ['libs.min.js',
                       'lib/ace-builds/src-noconflict/ace.js',
@@ -201,6 +203,7 @@ module.exports = function (grunt) {
             stylesheets: ['../../test/lib/jasmine-1.3.1/jasmine.css',
                           'lib/bootstrap/css/bootstrap.min.css',
                           'lib/css/d3.dependencyedgebundling.css',
+                          'lib/css/d3.edgebundling.css',
                           'app.min.css'],
             scripts: ['testing.min.js',
                       'libs.min.js',
