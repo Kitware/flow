@@ -63,8 +63,8 @@
   font-size: 11px;
 }
 
-.axis,
-.frame {
+.axis
+{
   shape-rendering: crispEdges;
 }
 
@@ -103,13 +103,5 @@ svg {
 }
 
 
-
-.frame {
-  fill: none;
-  stroke: #aaa;
-}
-
-circle {
-  fill-opacity: .7;
 }
 </style>
