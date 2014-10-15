@@ -1,4 +1,4 @@
-(function (tangelo, $, flow) {
+(function (tangelo, $) {
     "use strict";
 
     if (!($ && $.widget)) {
@@ -7,21 +7,23 @@
 
     tangelo.widget("tangelo.table", {
         options: {
-            data: null
+            data: null,
+            modified: null
         },
 
         _create: function () {
-            if (flow.saveLocation) {
+            var that = this, saveButton;
+
+            if (this.options.modified) {
 
                 // create editable table
                 this.table = $('<table contenteditable class="table table-bordered table-striped"></table>');
 
                 // create save button
-                var save_button = $('<button id="table-save" class="btn btn-primary save-button">Save</button>');
-                save_button.click(function () {
+                saveButton = $('<button id="table-save" class="btn btn-primary save-button">Save</button>');
+                saveButton.click(function () {
                     // grab the current table data and format it as CSV
-                    var csv =
-                    $(this.nextSibling).map(function () {
+                    var csv = $(this.nextSibling).map(function () {
                         return $(this).find('tr').map(function () {
                             return $(this).find('th,td').map(function () {
                                 return $(this).html();
@@ -29,9 +31,10 @@
                         }).get().join('\n');
                     }).get().join();
 
-                    // trigger the save event in TangeloHub
-                    $(window.app.visualizationsView.el).trigger(
-                        "save-modified-data", {name: "data", "data": csv});
+                    // trigger the save event
+                    if (that.options.modified) {
+                        that.options.modified('data', csv);
+                    }
 
                     // give the user some visual feedback
                     $(this).removeClass("btn-primary");
@@ -44,9 +47,8 @@
                     });
 
                 });
-                this.element.append(save_button);
-            }
-            else {
+                this.element.append(saveButton);
+            } else {
                 // Read-only mode.
                 this.table = $('<table class="table table-bordered table-striped"></table>');
             }
@@ -100,4 +102,4 @@
             this.table.append(body);
         }
     });
-}(window.tangelo, window.jQuery, window.flow));
+}(window.tangelo, window.jQuery));

@@ -9,8 +9,7 @@
             {
                 name: "table",
                 inputs: [
-                    {name: "data", type: "table", format: "rows",
-                     inputMode: "dataset"}
+                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
                 ]
             },
             {
@@ -103,13 +102,15 @@
 
         events: {
             'change #visualization': 'changeVisualization',
-            'save-modified-data': 'saveModifiedData',
             'click #show': function () {
                 this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (options) {
                     var inner = $('<div style="width:100%;height:100%"></div>');
                     $("#vis").empty();
                     $("#vis").append(inner);
                     flow.setDisplay('vis');
+
+                    options.modified = _.bind(this.saveModifiedData, this);
+
                     setTimeout(_.bind(function () {
                         inner[this.visualization.get('name')](options);
                     }, this), 1000);
@@ -131,7 +132,6 @@
                 el: this.$('.inputs'),
                 datasets: this.datasets
             });
-
 
             this.visualizations = new Backbone.Collection(this.visualizationDescriptors);
             this.visualizationsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
@@ -195,12 +195,7 @@
             this.loadInputs(inputViews, options, done);
         },
 
-        saveModifiedData: function (event, params) {
-
-            // Unpack input parameters.
-            var inputName = params.name;
-            var newDataValue = params.data;
-
+        saveModifiedData: function (inputName, newDataValue) {
             // Find the index of the input that we're saving a new version of.
             var found = false;
             var inputIndex;
@@ -224,16 +219,24 @@
             var datasetIndex = inputView.view.$el.val();
             var dataset = this.datasets.get(datasetIndex);
 
-            /* Upload the new version of this dataset to Girder.    */
-            /* TODO: convert back to the dataset's original format. */
-            /* (For now we just assume everything is CSV...)        */
-            var blob = new Blob([newDataValue]);
-            flow.girderUpload(blob, dataset.get("name"),
-                              flow.saveLocation.get('dataFolder'),
-                              dataset.id);
+            // Save the data locally
+            dataset.set('data', newDataValue);
+            // TODO: Do not require this step.
+            dataset.set('format', 'csv');
 
-            /* Also TODO: check for confirmation from Girder that   */
-            /* this new version was actually saved successfully.    */
+            // If it is from a collection try to save it back
+            // TODO: check for collection edit permission here before
+            // attempting to save.
+            if (dataset.get('collection')) {
+                // Upload the new version of this dataset to Girder.
+                // TODO: convert back to the dataset's original format.
+                // (For now we just assume everything is CSV...)
+                var blob = new Blob([newDataValue]);
+                flow.girderUpload(blob, dataset.get("name"), null, dataset.id);
+                // Also TODO: check for confirmation from Girder that
+                // this new version was actually saved successfully.
+            }
+
         }
 
     });
