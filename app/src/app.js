@@ -32,9 +32,9 @@
                     path: 'collection/romanesco/module',
                     type: 'post',
                     data: {
-                        'name': name,
-                        'description': '',
-                        'public': isPublic
+                        name: name,
+                        description: '',
+                        public: isPublic
                     }
                 }).done(_.bind(function (collection) {
                     $('.new-collection-name').val('');

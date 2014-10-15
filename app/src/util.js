@@ -36,8 +36,7 @@
                 byteArray,
                 i;
             if (dataIsURI && dataset.id) {
-                dataset.set({data: girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' +
-                    dataset.get('format') + '/' + format});
+                dataset.set({data: girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format});
                 if (girder.currentUser) {
                     dataset.set({data: dataset.get('data') + '?token=' + girder.currentUser.get('token')});
                 }
@@ -87,7 +86,7 @@
 
         // Run an analysis.
         performAnalysis: function (analysisId, inputs, outputs, done) {
-            var bindings = {'inputs': inputs, 'outputs': outputs};
+            var bindings = {inputs: inputs, outputs: outputs};
             d3.json(girder.apiRoot + '/item/' + analysisId + '/romanesco').post(JSON.stringify(bindings), done);
         },
 
@@ -131,11 +130,11 @@
                 dataType: 'json',
                 type: 'POST',
                 data: {
-                    'parentType': 'folder',
-                    'parentId': folder,
-                    'name': name,
-                    'size': data.size,
-                    'mimeType': "text/plain"
+                    parentType: 'folder',
+                    parentId: folder,
+                    name: name,
+                    size: data.size,
+                    mimeType: "text/plain"
                 },
                 success: function (upload) {
                     if (data.size > 0) {

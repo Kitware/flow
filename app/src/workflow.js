@@ -251,14 +251,14 @@ workflow = function (selection) {
     }
 
     function deleteStep(step) {
-        var index = workflow.steps.indexOf(step);
+        var conn, index = workflow.steps.indexOf(step);
         if (index > -1) {
 
             // Our first step is to remove any connections to/from this step.
             // To avoid modifying this list while iterating over it,
             // we make a copy of the connections list while neglecting to
             // copy over the items that should be deleted.
-            var conn = [];
+            conn = [];
             workflow.connections.forEach(function (c, ci) {
                 if (c.inputStep !== step && c.outputStep !== step) {
                     conn.push(c);
@@ -478,7 +478,7 @@ workflow = function (selection) {
             }
             // Center the text
             text.selectAll("tspan")
-                .attr("dy", function (d, i) { return (i - lineNumber / 2) * lineHeight + "em" });
+                .attr("dy", function (d, i) { return (i - lineNumber / 2) * lineHeight + "em"; });
         });
     }
 

@@ -29,10 +29,10 @@
         },
 
         defaultViews: {
-            "table": "table",
-            "string": "string",
-            "tree": "dendrogram",
-            "image": "image"
+            table: "table",
+            string: "string",
+            tree: "dendrogram",
+            image: "image"
         },
 
         events: {

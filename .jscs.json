@@ -1,0 +1,6 @@
+{
+    "preset": "crockford",
+    "disallowDanglingUnderscores": null,
+    "validateQuoteMarks": null,
+    "requireCamelCaseOrUpperCaseIdentifiers": null
+}

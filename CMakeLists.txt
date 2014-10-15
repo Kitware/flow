@@ -7,6 +7,7 @@ enable_testing()
 
 find_program(PYTHON_EXECUTABLE python)
 find_program(JSHINT_EXECUTABLE jshint ${PROJECT_SOURCE_DIR}/node_modules/jshint/bin)
+find_program(JSCS_EXECUTABLE jscs ${PROJECT_SOURCE_DIR}/node_modules/jscs/bin)
 find_program(TANGELO_EXECUTABLE tangelo)
 
 include(test/JavascriptTests.cmake)

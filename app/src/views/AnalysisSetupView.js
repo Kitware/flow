@@ -48,7 +48,7 @@
                 this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
                     outputs[output.name] = {type: output.type, format: this.webFormat[output.type]};
                 }, this));
-                this.taskBindings = {'inputs': inputs, 'outputs': outputs};
+                this.taskBindings = {inputs: inputs, outputs: outputs};
 
                 d3.select('.success-message').classed('hidden', true);
                 d3.select('.error-message').classed('hidden', true);
