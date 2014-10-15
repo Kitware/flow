@@ -202,7 +202,7 @@ workflow = function (selection) {
     }
 
     function updateSteps() {
-        var g = vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
+        var t, g = vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
             .enter().append("g")
             .classed("step", true);
 
@@ -224,6 +224,7 @@ workflow = function (selection) {
         g.append("text")
             .attr("x", 75)
             .attr("y", 50)
+            .attr("class", "step-name")
             .style("fill", strokeColor)
             .style("text-anchor", "middle")
             .style("alignment-baseline", "central")
@@ -243,6 +244,10 @@ workflow = function (selection) {
             .text("X");
 
         g.each(updateStep);
+
+        // Text wrapping
+        t = vis.selectAll("text.step-name");
+        wrap(t, 150 - 10);
     }
 
     function deleteStep(step) {
@@ -435,6 +440,46 @@ workflow = function (selection) {
 
     function zoom() {
         vis.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
+    // Modified from http://bl.ocks.org/mbostock/7555321
+    function wrap(text, width) {
+        text.each(function () {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                x = text.attr("x"),
+                y = text.attr("y"),
+                tspan = text.text(null).append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .style("text-anchor", "middle")
+                    .style("alignment-baseline", "central");
+            word = words.pop();
+            while (word) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > width) {
+                    lineNumber += 1;
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .style("text-anchor", "middle")
+                        .style("alignment-baseline", "central")
+                        .text(word);
+                }
+                word = words.pop();
+            }
+            // Center the text
+            text.selectAll("tspan")
+                .attr("dy", function (d, i) { return (i - lineNumber / 2) * lineHeight + "em" });
+        });
     }
 
     // Create main SVG object

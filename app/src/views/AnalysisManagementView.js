@@ -12,6 +12,10 @@
                 d3.select("#show-script-icon").classed("glyphicon-eye-open", hide);
                 d3.select("#show-script-icon").classed("glyphicon-eye-close", !hide);
                 d3.select("#show-script-text").text(hide ? "Show script" : "Hide script");
+
+                // This may be showing the workflow view for the first time, so
+                // make sure to redraw it.
+                this.workflowEditor.update();
             },
 
             'click #edit': function () {
