@@ -202,7 +202,7 @@ workflow = function (selection) {
     }
 
     function updateSteps() {
-        var g = vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
+        var t, g = vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
             .enter().append("g")
             .classed("step", true);
 
@@ -221,9 +221,10 @@ workflow = function (selection) {
             .style("stroke", strokeColor)
             .style("stroke-width", 2);
 
-        var t = g.append("text")
+        g.append("text")
             .attr("x", 75)
             .attr("y", 50)
+            .attr("class", "step-name")
             .style("fill", strokeColor)
             .style("text-anchor", "middle")
             .style("alignment-baseline", "central")
@@ -231,7 +232,6 @@ workflow = function (selection) {
             .style("user-select", "none")
             .style("-webkit-user-select", "none")
             .style("pointer-events", "none");
-        wrap(t, 150);
 
         // icon to delete this workflow step
         g.append("text")
@@ -244,6 +244,10 @@ workflow = function (selection) {
             .text("X");
 
         g.each(updateStep);
+
+        // Text wrapping
+        t = vis.selectAll("text.step-name");
+        wrap(t, 150 - 10);
     }
 
     function deleteStep(step) {
@@ -466,13 +470,15 @@ workflow = function (selection) {
                     tspan = text.append("tspan")
                         .attr("x", x)
                         .attr("y", y)
-                        .attr("dy", lineNumber * lineHeight + "em")
                         .style("text-anchor", "middle")
                         .style("alignment-baseline", "central")
                         .text(word);
                 }
                 word = words.pop();
             }
+            // Center the text
+            text.selectAll("tspan")
+                .attr("dy", function (d, i) { return (i - lineNumber / 2) * lineHeight + "em" });
         });
     }
 
