@@ -10,6 +10,7 @@
 
         extensionToType: {
             phy: {type: 'tree', format: 'newick'},
+            nex: {type: 'tree', format: 'nexus'},
             csv: {type: 'table', format: 'csv'},
             tsv: {type: 'table', format: 'tsv'},
             png: {type: 'image', format: 'png'},
