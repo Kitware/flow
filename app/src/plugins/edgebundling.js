@@ -1,7 +1,7 @@
-(function (tangelo, $) {
+(function (tangelo, $, d3) {
     "use strict";
 
-    if (!($ && $.widget)) {
+    if (!($ && $.widget && d3)) {
         return;
     }
 
@@ -11,7 +11,6 @@
         },
 
         _create: function () {
-
             var div1 = $('<div"> 0.0 <input id="edgebundle_slider" type="range" name="slider" min="0" max="1.0" value="0.95" step="0.005"/> 1.0</div>');
             var div2 = $('<div id="edgebundle"></div>');
 
@@ -21,14 +20,14 @@
 
         _update: function () {
             var chart = d3.chart.edgebundling();
-            var rows = this.options.data.rows;
+            var data = this.options.data;
             d3.select('#edgebundle')
-                .datum(rows)
+                .datum(data)
                 .call(chart);
 
-            d3.select("#edgebundle_slider").on('change', function(d) {
-              rerender(rows, this.value);
+            d3.select("#edgebundle_slider").on('change', function (d) {
+                rerender(data, this.value);
             });
         }
     });
-}(window.tangelo, window.jQuery));
+}(window.tangelo, window.jQuery, window.d3));
