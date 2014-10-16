@@ -26,7 +26,7 @@
                 .call(chart);
 
             d3.select("#edgebundle_slider").on('change', function (d) {
-                rerender(data, this.value);
+                rerender(this.value);
             });
         }
     });
