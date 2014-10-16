@@ -8,7 +8,9 @@
         visualizationDescriptors: [
             {
                 name: "table",
-                inputs: [{name: "data", type: "table", format: "rows"}]
+                inputs: [
+                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
+                ]
             },
             {
                 name: "timeline",
@@ -100,14 +102,15 @@
 
         events: {
             'change #visualization': 'changeVisualization',
-
             'click #show': function () {
                 this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (options) {
-                    console.log(options);
                     var inner = $('<div style="width:100%;height:100%"></div>');
                     $("#vis").empty();
                     $("#vis").append(inner);
                     flow.setDisplay('vis');
+
+                    options.modified = _.bind(this.saveModifiedData, this);
+
                     setTimeout(_.bind(function () {
                         inner[this.visualization.get('name')](options);
                     }, this), 1000);
@@ -123,6 +126,7 @@
 
         initialize: function (settings) {
             this.datasets = settings.datasets;
+
             this.inputsView = new flow.InputsView({
                 collection: new Backbone.Collection(),
                 el: this.$('.inputs'),
@@ -130,8 +134,8 @@
             });
 
             this.visualizations = new Backbone.Collection(this.visualizationDescriptors);
-            this.visualizaitonsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
-            this.visualizaitonsView.render();
+            this.visualizationsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
+            this.visualizationsView.render();
             this.changeVisualization();
         },
 
@@ -189,6 +193,50 @@
                 options[input.get('name')] = {field: value};
             }
             this.loadInputs(inputViews, options, done);
+        },
+
+        saveModifiedData: function (inputName, newDataValue) {
+            // Find the index of the input that we're saving a new version of.
+            var found = false;
+            var inputIndex;
+            var visualizationInputs = this.visualization.get("inputs");
+            for (inputIndex = 0; inputIndex < visualizationInputs.length;
+                 inputIndex += 1) {
+                if (visualizationInputs[inputIndex].name === inputName) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                console.log("ERROR: could not find input named " + inputName);
+                return;
+            }
+
+            // Now that we have that index, get the original dataset
+            // so we can save the new version back to Girder.
+            // dump from the other function where we do this:
+            var inputView = _.values(this.inputsView.itemViews)[inputIndex];
+            var datasetIndex = inputView.view.$el.val();
+            var dataset = this.datasets.get(datasetIndex);
+
+            // Save the data locally
+            dataset.set('data', newDataValue);
+            // TODO: Do not require this step.
+            dataset.set('format', 'csv');
+
+            // If it is from a collection try to save it back
+            // TODO: check for collection edit permission here before
+            // attempting to save.
+            if (dataset.get('collection')) {
+                // Upload the new version of this dataset to Girder.
+                // TODO: convert back to the dataset's original format.
+                // (For now we just assume everything is CSV...)
+                var blob = new Blob([newDataValue]);
+                flow.girderUpload(blob, dataset.get("name"), null, dataset.id);
+                // Also TODO: check for confirmation from Girder that
+                // this new version was actually saved successfully.
+            }
+
         }
 
     });

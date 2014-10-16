@@ -7,12 +7,52 @@
 
     tangelo.widget("tangelo.table", {
         options: {
-            data: null
+            data: null,
+            modified: null
         },
 
         _create: function () {
-            this.div = $('<table class="table table-bordered table-striped"></table>');
-            this.element.append(this.div);
+            var that = this, saveButton;
+
+            if (this.options.modified) {
+
+                // create editable table
+                this.table = $('<table contenteditable class="table table-bordered table-striped"></table>');
+
+                // create save button
+                saveButton = $('<button id="table-save" class="btn btn-primary save-button">Save</button>');
+                saveButton.click(function () {
+                    // grab the current table data and format it as CSV
+                    var csv = $(this.nextSibling).map(function () {
+                        return $(this).find('tr').map(function () {
+                            return $(this).find('th,td').map(function () {
+                                return $(this).html();
+                            }).get().join(',');
+                        }).get().join('\n');
+                    }).get().join();
+
+                    // trigger the save event
+                    if (that.options.modified) {
+                        that.options.modified('data', csv);
+                    }
+
+                    // give the user some visual feedback
+                    $(this).removeClass("btn-primary");
+                    $(this).text("Saved!");
+                    $(this).addClass("btn-success").delay(3000).queue(function (next) {
+                        $(this).removeClass("btn-success");
+                        $(this).addClass("btn-primary");
+                        $(this).text("Save");
+                        next();
+                    });
+
+                });
+                this.element.append(saveButton);
+            } else {
+                // Read-only mode.
+                this.table = $('<table class="table table-bordered table-striped"></table>');
+            }
+            this.element.append(this.table);
         },
 
         _update: function () {
@@ -22,7 +62,7 @@
                 fields = this.options.data.fields,
                 rows = this.options.data.rows || this.options.data;
 
-            this.div.empty();
+            this.table.empty();
 
             if (fields) {
                 $.each(fields, function (index, value) {
@@ -58,8 +98,8 @@
             }
             header += "</thead>";
             body += "</tbody>";
-            this.div.append(header);
-            this.div.append(body);
+            this.table.append(header);
+            this.table.append(body);
         }
     });
 }(window.tangelo, window.jQuery));
