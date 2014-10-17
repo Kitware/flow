@@ -8,10 +8,6 @@
   opacity: 0.8;
 }
 
-.node:hover {
-  fill: #000;
-}
-
 .link {
   stroke: steelblue;
   stroke-opacity: .2;
@@ -21,33 +17,33 @@
 }
 
 .node:hover,
-.node--source,
-.node--target {
-  fill: #000;
+.node--positive,
+.node--negative {
   font-weight: 700;
   opacity: 1;
 }
 
-.node--source {
+.node--positive {
   fill: #2ca02c;
 }
 
-.node--target {
+.node--negative {
   fill: #d62728;
 }
 
-.link--source,
-.link--target {
+.link--negative,
+.link--positive {
   stroke-opacity: 1;
   stroke-width: 2px;
   opacity: 1;
 }
 
-.link--source {
+.link--negative {
   stroke: #d62728;
 }
 
-.link--target {
+.link--positive {
   stroke: #2ca02c;
 }
+
 </style>
