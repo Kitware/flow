@@ -243,4 +243,4 @@ html(lang="en")
                 | &nbsp;
                 span.delete.glyphicon.glyphicon-trash.pull-right(title="Delete variable")
         each js in scripts
-            script(src="#{js}")
+            script(src="#{js}", charset="utf-8")
