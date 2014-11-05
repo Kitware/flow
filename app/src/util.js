@@ -127,6 +127,24 @@
             }
 
             // Authenticate and generate the upload token for this file
+<<<<<<< HEAD
+            $.ajax({
+                url: '/girder/api/v1/file',
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    parentType: 'folder',
+                    parentId: folder,
+                    name: name,
+                    size: data.size,
+                    mimeType: "text/plain"
+                },
+                success: function (upload) {
+                    if (data.size > 0) {
+                        // Begin uploading chunks of this file
+                        startByte = 0;
+                        uploadChunk(upload._id);
+=======
             if (itemToOverwrite) {
                 // We have the dataset's itemid, but we need its fileid.
                 $.get(
@@ -150,6 +168,7 @@
                                 }
                             }
                         });
+>>>>>>> master
                     }
                 );
             } else {

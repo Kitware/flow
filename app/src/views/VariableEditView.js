@@ -25,7 +25,7 @@
                 'geometry:vtkpolydata'
             ]},
             description: {name: "Description", type: "string", format: "text"},
-            'default': {name: "Default", type: "string", format: "text"},
+            default: {name: "Default", type: "string", format: "text"},
             values: {name: "Comma-separated list of values", type: "string", format: "text"},
             columnNamesInput: {name: "Input for column names", type: "string", format: "text"}
         },
@@ -36,8 +36,8 @@
 
         events: {
             'click .update': function () {
-                var values = this.inputsView.values();
-                var model = {
+                var model, list, columnNamesInput, values = this.inputsView.values();
+                model = {
                     name: values.Name.data,
                     type: values.Type.data.split(':')[0],
                     format: values.Type.data.split(':')[1]
@@ -48,11 +48,11 @@
                 if (values.Default && values.Default.data !== '') {
                     model['default'] = values.Default.data;
                 }
-                var list = values['Comma-separated list of values'];
+                list = values['Comma-separated list of values'];
                 if (list && list.data !== '') {
                     model.domain = _.map(list.data.split(','), function (d) { return d.trim(); });
                 }
-                var columnNamesInput = values['Input for column names'];
+                columnNamesInput = values['Input for column names'];
                 if (columnNamesInput && columnNamesInput.data !== '') {
                     model.domain = {format: 'column.names', input: columnNamesInput.data};
                 }

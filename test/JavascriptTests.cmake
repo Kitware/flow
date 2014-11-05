@@ -18,11 +18,19 @@ function(javascript_tests_init)
   )
 endfunction()
 
-function(add_javascript_style_test name input)
+function(add_javascript_jshint_test name input)
   add_test(
-    NAME "js_style_${name}"
+    NAME "js_jshint_${name}"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     COMMAND "${JSHINT_EXECUTABLE}" --config "${PROJECT_SOURCE_DIR}/test/jshint.cfg" "${input}"
+  )
+endfunction()
+
+function(add_javascript_jscs_test name input)
+  add_test(
+    NAME "js_jscs_${name}"
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    COMMAND "${JSCS_EXECUTABLE}" --config "${PROJECT_SOURCE_DIR}/.jscs.json" "${input}"
   )
 endfunction()
 

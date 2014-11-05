@@ -6,4 +6,5 @@ javascript_tests_init()
 
 add_web_client_test(app "${PROJECT_SOURCE_DIR}/test/spec/appSpec.js")
 
-add_javascript_style_test(core app/src)
+add_javascript_jscs_test(core app/src)
+add_javascript_jshint_test(core app/src)
