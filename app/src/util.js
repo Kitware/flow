@@ -36,7 +36,9 @@
                 byteArray,
                 i;
             if (dataIsURI && dataset.id) {
-                dataset.set({data: girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format});
+                dataset.set({
+                    data: girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format
+                });
                 if (girder.currentUser) {
                     dataset.set({data: dataset.get('data') + '?token=' + girder.currentUser.get('token')});
                 }
@@ -90,7 +92,7 @@
             d3.json(girder.apiRoot + '/item/' + analysisId + '/romanesco').post(JSON.stringify(bindings), done);
         },
 
-        girderUpload: function (data, name, folder) {
+        girderUpload: function (data, name, folder, itemToOverwrite) {
             var startByte;
 
             /**
@@ -125,6 +127,7 @@
             }
 
             // Authenticate and generate the upload token for this file
+<<<<<<< HEAD
             $.ajax({
                 url: '/girder/api/v1/file',
                 dataType: 'json',
@@ -141,11 +144,55 @@
                         // Begin uploading chunks of this file
                         startByte = 0;
                         uploadChunk(upload._id);
+=======
+            if (itemToOverwrite) {
+                // We have the dataset's itemid, but we need its fileid.
+                $.get(
+                    '/girder/api/v1/item/' + itemToOverwrite + '/files',
+                    function (response, status) {
+                        // Use fileid to begin the upload of the new contents.
+                        var fileid = response[0]._id;
+                        $.ajax({
+                            url: '/girder/api/v1/file/' + fileid + '/contents',
+                            dataType: 'json',
+                            type: 'PUT',
+                            data: {
+                                size: data.size,
+                                id: fileid
+                            },
+                            success: function (upload) {
+                                if (data.size > 0) {
+                                    // Begin uploading chunks of this file
+                                    startByte = 0;
+                                    uploadChunk(upload._id);
+                                }
+                            }
+                        });
+>>>>>>> master
                     }
-                }
-            });
+                );
+            } else {
+                $.ajax({
+                    url: '/girder/api/v1/file',
+                    dataType: 'json',
+                    type: 'POST',
+                    data: {
+                        parentType: 'folder',
+                        parentId: folder,
+                        name: name,
+                        size: data.size,
+                        mimeType: "text/plain"
+                    },
+                    success: function (upload) {
+                        if (data.size > 0) {
+                            // Begin uploading chunks of this file
+                            startByte = 0;
+                            uploadChunk(upload._id);
+                        }
+                    }
+                });
+            }
         }
-
     };
 
 }(window.$, window._, window.atob, window.Backbone, window.d3, window.girder, window.Uint8Array));
