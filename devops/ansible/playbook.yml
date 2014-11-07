@@ -1,0 +1,232 @@
+- hosts: all
+
+  vars:
+    r_url: http://cran.rstudio.com/bin/linux/ubuntu
+    r_mirror: http://cran.cnr.Berkeley.edu
+
+    # Set to true for Arbor bioinformatics tools
+    arbor: true
+
+    # Set to true for Visualization Toolkit tools
+    vtk: false
+
+  handlers:
+
+  - name: restart apache
+    shell: apache2ctl restart
+    sudo: yes
+
+  - name: restart girder
+    shell: stop girder; start girder
+    sudo: yes
+
+  - name: restart romanesco
+    shell: stop romanesco; start romanesco
+    sudo: yes
+
+  tasks:
+
+  - name: mongodb | fetch signing key
+    command: sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    sudo: yes
+
+  - name: mongodb | add repository
+    shell:
+      echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
+      creates=/etc/apt/sources.list.d/mongodb.list
+    sudo: yes
+
+  - name: mongodb | install latest MongoDB release
+    apt: pkg=mongodb-org state=present update_cache=yes
+    sudo: yes
+
+  - name: add nodejs ppa
+    apt_repository: repo='ppa:chris-lea/node.js'
+    sudo: yes
+
+  - name: update apt cache
+    apt: update_cache=yes
+    sudo: yes
+
+  - name: install package dependencies
+    apt: name={{ item }} state=present
+    sudo: yes
+    with_items:
+      - python-pip
+      - python2.7-dev
+      - build-essential
+      - python-software-properties
+      - libffi-dev
+      - nodejs
+      - apache2
+      - cmake
+      - git
+
+  - name: install grunt and grunt-cli globally
+    npm: name={{ item }} global=yes
+    with_items:
+      - grunt
+      - grunt-cli
+    sudo: yes
+
+  - name: install python packages
+    pip: name={{ item }} extra_args='-U'
+    sudo: yes
+    with_items:
+      - pip
+      - pep8
+      - virtualenv
+      - girder
+
+  - name: girder | install girder web client
+    command: girder-install -f web
+    sudo: yes
+
+  - name: r | add R repository
+    shell:
+      echo 'deb {{ r_url }} precise/' | sudo tee /etc/apt/sources.list.d/cran.list
+      creates=/etc/apt/sources.list.d/cran.list
+    sudo: yes
+
+  - name: r | fetch R signing key
+    command: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+    sudo: yes
+
+  - name: r | update apt cache
+    apt: update_cache=yes
+    sudo: yes
+
+  - name: r | install required libraries
+    apt: pkg={{ item }} state=latest
+    sudo: yes
+    with_items:
+      - r-base-dev
+
+  - name: romanesco | checkout romanesco
+    git: repo=https://github.com/arborworkflows/romanesco.git dest=/vagrant/romanesco update=no
+
+  - name: romanesco | install girder plugin
+    command: girder-install -f plugin -s /vagrant/romanesco
+    sudo: yes
+    notify:
+      - restart girder
+
+  - name: romanesco | copy config file to /etc/init/
+    copy: src=romanesco.conf dest=/etc/init/romanesco.conf owner=root group=staff mode=0644
+    sudo: yes
+    notify:
+      - restart romanesco
+
+  - name: tangelo-hub | npm install
+    npm: path=/vagrant
+
+  - name: tangelo-hub | grunt init
+    command: grunt init chdir=/vagrant
+
+  - name: tangelo-hub | grunt
+    command: grunt chdir=/vagrant
+
+  - name: girder | copy upstart script to /etc/init/
+    copy: src=girder.conf dest=/etc/init/girder.conf owner=root group=staff mode=0644
+    sudo: yes
+    notify:
+      - restart girder
+
+  - name: girder | copy config file
+    copy: src=girder.local.cfg dest=/usr/local/lib/python2.7/dist-packages/girder/conf/girder.local.cfg owner=root group=staff mode=0644
+    sudo: yes
+    notify:
+      - restart girder
+
+  - name: girder | restart
+    shell: stop girder; start girder
+    sudo: yes
+
+  - name: girder | wait for girder initialization
+    wait_for: port=9000 delay=2
+
+  - name: girder | setup admin user
+    command: python girder-setup.py chdir=/vagrant/devops/ansible
+    notify:
+      - restart girder
+
+  - name: apache | enable http proxy
+    command: a2enmod proxy_http
+    sudo: yes
+    notify:
+      - restart apache
+
+  - name: apache | copy config
+    copy: src=default dest=/etc/apache2/sites-available/default owner=root group=root mode=0644
+    sudo: yes
+    notify:
+      - restart apache
+
+  #---------------------------------------------------------------------------
+  # Arbor configuration
+  #---------------------------------------------------------------------------
+
+  - name: arbor | install required libraries
+    apt: pkg={{ item }} state=latest
+    sudo: yes
+    with_items:
+      - mesa-common-dev
+      - libglu1-mesa-dev
+      - libgsl0-dev
+      - zlib1g-dev
+      - libcurl4-openssl-dev
+      - libx11-dev
+      - xvfb
+    when: arbor
+
+  - name: arbor | start xvfb server
+    command: Xvfb :7 -screen 0 1280x1024x24
+    async: 45
+    poll: 0
+    sudo: yes
+    when: arbor
+
+  - name: arbor | check for package upgrades
+    command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "update.packages(checkBuilt=TRUE, ask=FALSE, repos='{{ r_mirror }}')"
+    sudo: yes
+    when: arbor
+
+  - name: arbor | install packages
+    command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "if (! ('{{ item }}' %in% installed.packages()[,'Package'])) install.packages(pkgs='{{ item }}', repos=c('{{ r_mirror }}'))"
+    sudo: yes
+    with_items:
+      - rgl
+      - ape
+      - geiger
+      - nlme
+      - codetools
+      - devtools
+      - diversitree
+      - phytools
+      - dplyr
+    environment:
+      DISPLAY: :7
+    when: arbor
+
+  - name: arbor | install github packages
+    command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "parts<-unlist(strsplit('{{ item }}', '/'));options(repos='{{ r_mirror }}');library(devtools);install_github(parts[2], parts[1])"
+    sudo: yes
+    with_items:
+      - hafen/cardoonTools
+      - tangelo-hub/romanescoTools
+      - arborworkflows/aRbor
+    environment:
+      DISPLAY: :7
+    when: arbor
+
+  #---------------------------------------------------------------------------
+  # VTK configuration
+  #---------------------------------------------------------------------------
+
+  - name: vtk | download
+    get_url: dest=/home/vagrant/vtk.tar.gz url=http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz
+    when: vtk
+
+  - name: vtk | extract
+    unarchive: copy=no src=/home/vagrant/vtk.tar.gz dest=/home/vagrant/
+    when: vtk

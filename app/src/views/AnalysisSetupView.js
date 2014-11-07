@@ -105,10 +105,16 @@
         },
 
         checkTaskResult: function () {
-            d3.json(girder.apiRoot + '/item/' + this.model.id + '/romanesco/' + this.taskId + '/status', _.bind(function (error, result) {
+            girder.restRequest({
+                path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/status',
+                error: null
+            }).done(_.bind(function (result) {
                 console.log(result.status);
                 if (result.status === 'SUCCESS') {
-                    d3.json(girder.apiRoot + '/item/' + this.model.id + '/romanesco/' + this.taskId + '/result', _.bind(function (error, data) {
+                    girder.restRequest({
+                        path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
+                        error: null
+                    }).done(_.bind(function (data) {
                         var result = data.result,
                             outputMessage = '<ul>';
                         // Put data into list
@@ -134,6 +140,8 @@
                         d3.select('.info-message').classed('hidden', true);
                         d3.select('.success-message').classed('hidden', false).html('Success! Produced the following outputs: ' + outputMessage);
                         console.log(data);
+                    }, this)).error(_.bind(function (error) {
+                        // TODO report error
                     }, this));
                 } else if (result.status === 'FAILURE') {
                     d3.select('.run')
@@ -147,6 +155,8 @@
                 } else {
                     setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }
+            }, this)).error(_.bind(function (error) {
+                // TODO report error
             }, this));
         }
     });

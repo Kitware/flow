@@ -45,18 +45,32 @@
                         info.steps = curWorkflow.steps;
                         info.connections = curWorkflow.connections;
                     } else {
-                        info.script = this.editor.getValue();
+                        info.script = this.editor.getValue().replace(/(?:\r\n|\r)/g, '\n');
                         info.inputs = this.inputVariables.toJSON();
                         info.outputs = this.outputVariables.toJSON();
                     }
-                    d3.json(girder.apiRoot + '/item/' + this.analysis.id + '?name=' + encodeURIComponent(info.name)).send('put', _.bind(function (error, result) {
-                        d3.json(girder.apiRoot + '/item/' + this.analysis.id + '/metadata').send('put', JSON.stringify(this.analysis.get('meta')), _.bind(function () {
+                    girder.restRequest({
+                        path: '/item/' + this.analysis.id + '?name=' + encodeURIComponent(info.name),
+                        type: 'PUT',
+                        error: null
+                    }).done(_.bind(function (result) {
+                        girder.restRequest({
+                            path: '/item/' + this.analysis.id + '/metadata',
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify(this.analysis.get('meta')),
+                            error: null
+                        }).done(_.bind(function () {
                             // Trigger recreating the analysis UI
                             $("#analysis").change();
                             // Trigger updating this analysis views
                             this.analysis.set('name', info.name);
                             $("#save").removeClass("disabled");
+                        }, this)).error(_.bind(function (error) {
+                            // TODO report error
                         }, this));
+                    }, this)).error(_.bind(function (error) {
+                        // TODO report error
                     }, this));
                 }
             },
@@ -193,11 +207,17 @@
 
             $('.really-delete-analysis').click(_.bind(function () {
                 if (this.analysis) {
-                    d3.json(girder.apiRoot + '/item/' + this.analysis.id).send('delete', _.bind(function (error, result) {
+                    girder.restRequest({
+                        path: 'item/' + this.analysis.id,
+                        type: 'DELETE',
+                        error: null
+                    }).done(_.bind(function () {
                         this.analyses.remove(this.analysis);
                         // Trigger recreating the analysis UI
                         $("#analysis").change();
                         $('#confirm-delete').modal('hide');
+                    }, this)).error(_.bind(function (error) {
+                        // TODO report error
                     }, this));
                 }
             }, this));
@@ -257,19 +277,30 @@
         },
 
         createAnalysis: function (analysis) {
-            d3.json(girder.apiRoot + '/item/?name=' + encodeURIComponent(analysis.name) + '&folderId=' + flow.saveLocation.get('analysisFolder')).post(_.bind(function (error, result) {
-                if (error) {
-                    console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
-                }
-                var analysisUri = girder.apiRoot + '/item/' + result._id;
-                d3.json(analysisUri + '/metadata').send('put', JSON.stringify({analysis: analysis}), _.bind(function (error, result) {
+            girder.restRequest({
+                path: 'item/?name=' + encodeURIComponent(analysis.name) + '&folderId=' + flow.saveLocation.get('analysisFolder'),
+                type: 'POST',
+                error: null
+            }).done(_.bind(function (result) {
+                var analysisUri = 'item/' + result._id;
+                girder.restRequest({
+                    path: analysisUri + '/metadata',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({analysis: analysis}),
+                    error: null
+                }).done(_.bind(function (result) {
                     var model = new Backbone.Model(result);
                     model.id = model.get('_id');
                     this.analyses.add(model);
                     $("#analysis").val(model.cid);
                     $("#analysis").change();
                     $("#analysis-name").val("");
+                }, this)).error(_.bind(function (error) {
+                    // TODO report error
                 }, this));
+            }, this)).error(_.bind(function (error) {
+                console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
             }, this));
         },
 
