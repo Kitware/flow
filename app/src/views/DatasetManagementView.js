@@ -87,13 +87,15 @@
                     return;
                 }
                 if (dataset.get('collection')) {
-                    d3.json(girder.apiRoot + '/item/' + dataset.id).send('delete', _.bind(function (error) {
-                        if (error) {
-                            window.alert('You do not have permission to delete this item.');
-                            return;
-                        }
+                    girder.restRequest({
+                        path: '/item/' + dataset.id,
+                        type: 'DELETE',
+                        error: null
+                    }).done(_.bind(function () {
                         this.datasets.remove(dataset);
                         this.$('.datasets').change();
+                    }, this)).error(_.bind(function (error) {
+                        window.alert('You do not have permission to delete this item.');
                     }, this));
                 } else {
                     this.datasets.remove(dataset);

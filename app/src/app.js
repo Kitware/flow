@@ -129,7 +129,11 @@
 
         collectionVisibilityChange: function (collection) {
             if (collection.get('active')) {
-                d3.json(girder.apiRoot + '/folder?parentType=collection&parentId=' + collection.id, _.bind(function (error, folders) {
+
+                girder.restRequest({
+                    path: 'folder?parentType=collection&parentId=' + collection.id,
+                    error: null
+                }).done(_.bind(function (folders) {
                     folders.forEach(function (f) {
                         if (f.name === "Analyses") {
                             collection.set({analysisFolder: f._id});
@@ -155,6 +159,8 @@
                             folderId: collection.get('dataFolder')
                         });
                     }
+                }, this)).error(_.bind(function () {
+                    // TODO error message
                 }, this));
             } else {
                 this.analyses.remove(this.analyses.where({collection: collection}));

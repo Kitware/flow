@@ -6,9 +6,9 @@ html(lang="en")
         each css in stylesheets
             link(href="#{css}", rel="stylesheet", type="text/css")
         each js in scripts
-            script(src="#{js}")
+            script(src="#{js}", charset="utf-8")
         each js in blanketScripts
-            script(src="#{js}", data-cover)
+            script(src="#{js}", charset="utf-8", data-cover)
 
         script(type="text/javascript").
             (function () {

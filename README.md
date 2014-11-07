@@ -63,7 +63,53 @@ After the initial setup, the following will rebuild the application JavaScript a
 
 ## Vagrant setup
 
-A Vagrant virtual machine provisioning of TangeloHub is available at [tangelo-hub-vm](https://github.com/tangelo-hub/tangelo-hub-vm).
+A Vagrant install is an easy way to get everything running in a local virtual machine. This includes an install of MongoDB, Girder, Romanesco, Apache, and the TangeloHub application. To get started, install [Vagrant](http://www.vagrantup.com/), [VirtualBox](https://www.virtualbox.org/), and [Ansible](http://docs.ansible.com/intro_installation.html). It's then a matter of cloning this repository and running `vagrant up`.
+
+```
+git clone https://github.com/tangelo-hub/tangelo-hub.git
+cd tangelo-hub
+vagrant up
+```
+
+When that completes (it will take some time - get a coffee), visit [http://localhost:9080/](http://localhost:9080/) to visit the interface.
+
+To see the Girder interface, visit [http://localhost:9080/girder](http://localhost:9080/girder).
+
+To create new analyses and save data, login to TangeloHub or Girder with username `girder` and password `girder`.
+
+To log in to your virtual machine, run
+
+```
+vagrant ssh
+```
+
+From that environment, you can restart Romanesco:
+
+```
+sudo stop romanesco
+sudo start romanesco
+```
+
+To view the Romanesco log for analysis debugging:
+
+```
+sudo cat /var/log/upstart/romanesco.log
+```
+
+To restart Girder:
+
+```
+sudo stop girder
+sudo start girder
+```
+
+To enter a local MongoDB shell:
+
+```
+mongo
+```
+
+Note that the default Vagrant install will also install several R libraries needed for Arbor analyses, which takes a significant amount of time. To turn off this step, edit `devops/ansible/playbook.yml` and set the `arbor` variable to `false`.
 
 ## Testing
 

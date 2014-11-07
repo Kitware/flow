@@ -51,7 +51,7 @@
             }
         });
 
-        return $(that).nodeLink({
+        return $(that).nodelink({
             data: {nodes: filteredNodes, links: filteredLinks},
             nodeId: {field: "id"},
             nodeSize: {field: "degree"},

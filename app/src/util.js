@@ -74,22 +74,47 @@
                     done(null, new Backbone.Model({type: 'image', format: 'png', data: byteArray}));
                     return;
                 }
-                uri = girder.apiRoot + '/item/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
-                d3.json(uri).post(dataset.get('data'), function (error, converted) {
-                    done(error, new Backbone.Model(converted));
-                });
+                uri = 'item/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
+
+                girder.restRequest({
+                    path: uri,
+                    type: 'POST',
+                    data: dataset.get('data'),
+                    contentType: false,
+                    processData: false,
+                    error: null
+                }).done(_.bind(function (converted) {
+                    done(null, new Backbone.Model(converted));
+                }, this)).error(_.bind(function (error) {
+                    done(error);
+                }, this));
             } else {
-                uri = girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
-                d3.json(uri, function (error, converted) {
-                    done(error, new Backbone.Model(converted));
-                });
+                uri = 'item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
+                girder.restRequest({
+                    path: uri,
+                    error: null
+                }).done(_.bind(function (converted) {
+                    done(null, new Backbone.Model(converted));
+                }, this)).error(_.bind(function (error) {
+                    done(error);
+                }, this));
             }
         },
 
         // Run an analysis.
         performAnalysis: function (analysisId, inputs, outputs, done) {
             var bindings = {inputs: inputs, outputs: outputs};
-            d3.json(girder.apiRoot + '/item/' + analysisId + '/romanesco').post(JSON.stringify(bindings), done);
+            girder.restRequest({
+                path: 'item/' + analysisId + '/romanesco',
+                type: 'POST',
+                data: JSON.stringify(bindings),
+                contentType: 'application/json',
+                error: null
+            }).done(_.bind(function (result) {
+                done(null, result);
+            }), this).error(_.bind(function (error) {
+                done(error);
+            }, this));
         },
 
         girderUpload: function (data, name, folder, itemToOverwrite) {
@@ -109,53 +134,58 @@
                 fd.append('uploadId', uploadId);
                 fd.append('chunk', blob);
 
-                $.ajax({
-                    url: '/girder/api/v1/file/chunk',
+                girder.restRequest({
+                    path: 'file/chunk',
                     type: 'POST',
                     dataType: 'json',
                     data: fd,
                     contentType: false,
                     processData: false,
-                    success: function () {
-                        // overallProgress += endByte - startByte;
-                        if (endByte !== data.size) {
-                            startByte = endByte;
-                            uploadChunk(uploadId);
-                        }
+                    error: null
+                }).done(_.bind(function () {
+                    // overallProgress += endByte - startByte;
+                    if (endByte !== data.size) {
+                        startByte = endByte;
+                        uploadChunk(uploadId);
                     }
-                });
+                }, this)).error(_.bind(function () {
+                    // TODO report error
+                }, this));
             }
 
             // Authenticate and generate the upload token for this file
             if (itemToOverwrite) {
                 // We have the dataset's itemid, but we need its fileid.
-                $.get(
-                    '/girder/api/v1/item/' + itemToOverwrite + '/files',
-                    function (response, status) {
-                        // Use fileid to begin the upload of the new contents.
-                        var fileid = response[0]._id;
-                        $.ajax({
-                            url: '/girder/api/v1/file/' + fileid + '/contents',
-                            dataType: 'json',
-                            type: 'PUT',
-                            data: {
-                                size: data.size,
-                                id: fileid
-                            },
-                            success: function (upload) {
-                                if (data.size > 0) {
-                                    // Begin uploading chunks of this file
-                                    startByte = 0;
-                                    uploadChunk(upload._id);
-                                }
-                            }
-                        });
-                    }
-                );
+                girder.restRequest({
+                    path: 'v1/item/' + itemToOverwrite + '/files',
+                    error: null
+                }).done(_.bind(function (response) {
+                    // Use fileid to begin the upload of the new contents.
+                    var fileid = response[0]._id;
+                    girder.restRequest({
+                        path: 'file/' + fileid + '/contents',
+                        type: 'PUT',
+                        data: JSON.stringify({
+                            size: data.size,
+                            id: fileid
+                        }),
+                        contentType: 'application/json',
+                        error: null
+                    }).done(_.bind(function () {
+                        if (data.size > 0) {
+                            // Begin uploading chunks of this file
+                            startByte = 0;
+                            uploadChunk(upload._id);
+                        }
+                    }, this)).error(_.bind(function () {
+                        // TODO report error
+                    }, this));
+                }, this)).error(_.bind(function () {
+                    // TODO report error
+                }, this));
             } else {
-                $.ajax({
-                    url: '/girder/api/v1/file',
-                    dataType: 'json',
+                girder.restRequest({
+                    path: 'file',
                     type: 'POST',
                     data: {
                         parentType: 'folder',
@@ -164,14 +194,16 @@
                         size: data.size,
                         mimeType: "text/plain"
                     },
-                    success: function (upload) {
-                        if (data.size > 0) {
-                            // Begin uploading chunks of this file
-                            startByte = 0;
-                            uploadChunk(upload._id);
-                        }
+                    error: null
+                }).done(_.bind(function (upload) {
+                    if (data.size > 0) {
+                        // Begin uploading chunks of this file
+                        startByte = 0;
+                        uploadChunk(upload._id);
                     }
-                });
+                }, this)).error(_.bind(function () {
+                    // TODO report error
+                }, this));
             }
         }
     };
