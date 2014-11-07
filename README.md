@@ -66,7 +66,7 @@ Listen 9080
 </VirtualHost>
 ```
 
-After restarting Apache (`sudo apache2ctl restart`), visit your Girder web interface to enable the Romanesco plugin from the admin console. A restart of Girder is required to fully enable the Romanesco plugin.
+After restarting Apache (`sudo apache2ctl restart`), visit your Girder web interface at [http://localhost:9080/girder](http://localhost:9080/girder) to enable the Romanesco plugin from the admin console. A restart of Girder is required to fully enable the Romanesco plugin.
 
 Now you should be able to visit the running TangeloHub instance at [http://localhost:9080](http://localhost:9080).
 
