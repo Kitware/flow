@@ -3,20 +3,33 @@ TangeloHub [![Build Status](https://travis-ci.org/tangelo-hub/tangelo-hub.png?br
 
 ## Local development setup
 
-The TangeloHub application requires [Tangelo](http://tangelo.readthedocs.org/en/latest/installation.html) and [Girder](http://girder.readthedocs.org/en/latest/installation.html). Follow the links for install instructions. After following the Girder install, you should also have a MongoDB instance running on your machine.
+The TangeloHub application requires several components, including [Girder](http://girder.readthedocs.org/en/latest/installation.html). Follow the link for install instructions. After following the Girder install, you should also have a MongoDB instance running on your machine.
 
-We also need the Romanesco Girder plugin. To install it, navigate to your Girder source and checkout Romanesco in the plugins directory:
+We also need the Romanesco Girder plugin and web interface. To install them, use the `girder-install` command:
 
-    cd girder/plugin
+    sudo girder-install -f web
     git clone https://github.com/arborworkflows/romanesco.git
+    sudo girder-install -f plugin -s ./romanesco
 
-Romanesco requires that you first install [R](http://www.r-project.org/). After you have R installed, start a Romanesco worker with:
+Install an appropriate Girder config file:
+
+    sudo cp tangelo-hub/devops/local/girder.local.cfg path/to/site-packages/girder/conf/
+
+You can find your `path/to/site-packages` with:
+
+    python
+    >>> import site
+    >>> site.getsitepackages()
+
+Start Girder:
+
+    python -m girder
+
+Running the Romanesco worker requires that you first install [R](http://www.r-project.org/). After you have R installed, start a Romanesco worker with:
 
     cd romanesco
     sudo pip install -r requirements.txt
     python -m romanesco
-
-Now visit your Girder web interface to enable the Romanesco plugin from the admin console. A restart of Girder is required to fully enable the Romanesco plugin.
 
 TangeloHub requires npm and Grunt, which should already have been installed as part of the Girder installation:
 
@@ -41,19 +54,21 @@ Now we're ready to build the TangeloHub app:
     grunt init
     grunt
 
-Activate Tangelo's Python virtual environment:
+Use something like the following Apache file in the `sites-available` folder (you can simply replace the `default` file there):
 
-    source /path/to/tangelo_bin/venv/bin/activate
+```
+Listen 9080
 
-Ensure the Girder source directory is in your Python path:
+<VirtualHost *:9080>
+    DocumentRoot /path/to/tangelo-hub/app
+    ProxyPass /girder http://localhost:9000
+    ProxyPassReverse /girder http://localhost:9000
+</VirtualHost>
+```
 
-    export PYTHONPATH=$PYTHONPATH:/path/to/girder
+After restarting Apache (`sudo apache2ctl restart`), visit your Girder web interface to enable the Romanesco plugin from the admin console. A restart of Girder is required to fully enable the Romanesco plugin.
 
-Now start up the TangeloHub server:
-
-    tangelo -nd -nc --root ./app --girder-path=/girder start --port 8888
-
-Visit the running TangeloHub instance at [http://localhost:8888](http://localhost:8888).
+Now you should be able to visit the running TangeloHub instance at [http://localhost:9080](http://localhost:9080).
 
 ## Incremental builds
 
