@@ -1,4 +1,4 @@
-TangeloHub [![Build Status](https://travis-ci.org/tangelo-hub/tangelo-hub.png?branch=master)](https://travis-ci.org/tangelo-hub/tangelo-hub)
+TangeloHub [![Build Status](https://travis-ci.org/Kitware/tangelohub.png?branch=master)](https://travis-ci.org/Kitware/tangelohub)
 ===========
 
 ## Local development setup
@@ -8,12 +8,12 @@ The TangeloHub application requires several components, including [Girder](http:
 We also need the Romanesco Girder plugin and web interface. To install them, use the `girder-install` command:
 
     sudo girder-install -f web
-    git clone https://github.com/arborworkflows/romanesco.git
+    git clone https://github.com/Kitware/romanesco.git
     sudo girder-install -f plugin -s ./romanesco
 
 Install an appropriate Girder config file:
 
-    sudo cp tangelo-hub/devops/local/girder.local.cfg path/to/site-packages/girder/conf/
+    sudo cp tangelohub/devops/local/girder.local.cfg path/to/site-packages/girder/conf/
 
 You can find your `path/to/site-packages` with:
 
@@ -38,15 +38,15 @@ TangeloHub requires npm and Grunt, which should already have been installed as p
 
 Now checkout the TangeloHub repository. As a team developer:
 
-    git clone git@github.com:tangelo-hub/tangelo-hub.git
+    git clone git@github.com:Kitware/tangelohub.git
 
 Or as a contributor:
 
-    git clone https://github.com/tangelo-hub/tangelo-hub.git
+    git clone https://github.com/Kitware/tangelohub.git
 
 Enter the source folder and build out all the npm dependencies:
 
-    cd tangelo-hub
+    cd tangelohub
     npm install
 
 Now we're ready to build the TangeloHub app:
@@ -60,7 +60,7 @@ Use something like the following Apache file in the `sites-available` folder (yo
 Listen 9080
 
 <VirtualHost *:9080>
-    DocumentRoot /path/to/tangelo-hub/app
+    DocumentRoot /path/to/tangelohub/app
     ProxyPass /girder http://localhost:9000
     ProxyPassReverse /girder http://localhost:9000
 </VirtualHost>
@@ -81,8 +81,8 @@ After the initial setup, the following will rebuild the application JavaScript a
 A Vagrant install is an easy way to get everything running in a local virtual machine. This includes an install of MongoDB, Girder, Romanesco, Apache, and the TangeloHub application. To get started, install [Vagrant](http://www.vagrantup.com/), [VirtualBox](https://www.virtualbox.org/), and [Ansible](http://docs.ansible.com/intro_installation.html). It's then a matter of cloning this repository and running `vagrant up`.
 
 ```
-git clone https://github.com/tangelo-hub/tangelo-hub.git
-cd tangelo-hub
+git clone https://github.com/Kitware/tangelothub.git
+cd tangelohub
 vagrant up
 ```
 
@@ -128,7 +128,7 @@ Note that the default Vagrant install will also install several R libraries need
 
 ## Testing
 
-Testing is performed with PhantomJS and uses Python to drive the process and setup a sandboxed Girder environment. Tests are performed automatically by [Travis](https://travis-ci.org/tangelo-hub/tangelo-hub) with resulting test data pushed to a [CDash dashboard](http://my.cdash.org/index.php?project=Tangelo+Hub). To initialize the testing environment, create a build folder and run CMake:
+Testing is performed with PhantomJS and uses Python to drive the process and setup a sandboxed Girder environment. Tests are performed automatically by [Travis](https://travis-ci.org/Kitware/tangelohub) with resulting test data pushed to a [CDash dashboard](http://my.cdash.org/index.php?project=Tangelo+Hub). To initialize the testing environment, create a build folder and run CMake:
 
     mkdir build
     cd build
