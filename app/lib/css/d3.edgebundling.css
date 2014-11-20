@@ -1,0 +1,79 @@
+<style type="text/css">
+.node {
+  /* font: 400 14px "Helvetica Neue", Helvetica, Arial, sans-serif; */
+  font-weight: 400;
+  font-size: 13px;
+  fill: #888;
+  font-family: 'Open Sans', sans-serif;
+  opacity: 0.8;
+}
+
+.link {
+  stroke: steelblue;
+  stroke-opacity: .2;
+  fill: none;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+.node:hover,
+.node--positive,
+.node--negative {
+  font-weight: 700;
+  opacity: 1;
+}
+
+.node--positive {
+  fill: #2ca02c;
+}
+
+.node--negative {
+  fill: #d62728;
+}
+
+.link--negative,
+.link--positive {
+  stroke-opacity: 1;
+  stroke-width: 2px;
+  opacity: 1;
+}
+
+.link--negative {
+  stroke: #d62728;
+}
+
+.link--positive {
+  stroke: #2ca02c;
+}
+
+.slideraxis {
+  font: 10px sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.slideraxis .domain {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .3;
+  stroke-width: 10px;
+  stroke-linecap: round;
+}
+
+.slideraxis .halo {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 8px;
+  stroke-linecap: round;
+}
+
+.slider .handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: .5;
+  stroke-width: 1.25px;
+  pointer-events: none;
+}
+
+</style>

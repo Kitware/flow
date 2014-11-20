@@ -97,6 +97,20 @@
                         dataIsURI: true
                     }
                 ]
+            },
+            {
+                name: "edgebundling",
+                inputs: [{name: "data", type: "table", format: "rows"}]
+            },
+            {
+                name: "interactiveheatmap",
+                inputs: [{name: "data", type: "table", format: "rows"}]
+            },
+            {
+                name: "scatterplotmatrix",
+                inputs: [{name: "data", type: "table", format: "rows"},
+                         {name: "y", type: "accessor", domain: {input: "data", format: "column.names"}}
+                ]
             }
         ],
 
