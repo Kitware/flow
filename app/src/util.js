@@ -20,6 +20,16 @@
             'number-json': {type: 'number', format: 'json'}
         },
 
+        webFormat: {
+            table: 'rows',
+            tree: 'nested',
+            string: 'text',
+            number: 'number',
+            image: 'png.base64',
+            r: 'serialized',
+            geometry: 'vtkpolydata.serialized'
+        },
+
         setDisplay: function (mode) {
             ["intro", "vis", "editor"].forEach(function (d) {
                 d3.select("#" + d).classed("hidden", mode !== d);

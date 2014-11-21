@@ -141,6 +141,13 @@ html(lang="en")
                                 button.btn.btn-primary#add-workstep
                                     span.glyphicon.glyphicon-plus
                                     | Add to workflow
+                                .form-group
+                                    label(for="workvis")
+                                        | Select visualization
+                                    select.form-control#workvis
+                                button.btn.btn-primary#add-workvis
+                                    span.glyphicon.glyphicon-plus
+                                    | Add to workflow
                         .row.spacer.edit-controls
                             .col-sm-6.analysis-edit-controls
                                 label
