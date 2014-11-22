@@ -77,9 +77,17 @@ page.onError = function (msg, trace) {
     phantom.exit(1);
 };
 
+page.onResourceError = function (resourceError) {
+    page.reason = resourceError.errorString;
+    page.reason_url = resourceError.url;
+};
+
 page.onLoadFinished = function (status) {
     if (status !== 'success') {
-        console.error('Page load failed');
+        console.log(
+            "Error opening url \"" + page.reason_url
+            + "\": " + page.reason
+        );
         phantom.exit(1);
     }
 
