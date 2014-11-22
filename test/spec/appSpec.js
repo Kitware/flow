@@ -17,6 +17,18 @@ describe('App is running', function () {
     });
 });
 
+describe('Able to create account', function () {
+    it('account created',
+        tangeloHubTest.createUser(
+            'admin',
+            'admin@email.com',
+            'Admin',
+            'Admin',
+            'adminpassword!'
+        )
+    );
+});
+
 describe('Able to upload data', function () {
     it('data uploaded', function () {
         runs(function () {
@@ -43,16 +55,9 @@ describe('Able to upload data', function () {
             URL = window.URL || window.webkitURL;
 
         if (!HTMLElement.prototype.click) {
-            HTMLElement.prototype.click = function() {
+            HTMLElement.prototype.click = function () {
                 var ev = document.createEvent('MouseEvent');
-                ev.initMouseEvent(
-                    'click',
-                    /*bubble*/true, /*cancelable*/true,
-                    window, null,
-                    0, 0, 0, 0, /*coordinates*/
-                    false, false, false, false, /*modifier keys*/
-                    0/*button=left*/, null
-                );
+                ev.initMouseEvent('click', true, true);
                 this.dispatchEvent(ev);
             };
         }
@@ -74,11 +79,11 @@ describe('Able to upload data', function () {
         runs(function () {
             var reader = new window.FileReader();
 
-            reader.onerror = function(event) {
+            reader.onerror = function (event) {
                 console.log("File could not be read! Code " + event.target.error.code);
             };
 
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 data = JSON.parse(reader.result);
             };
             reader.readAsText(blob);
@@ -96,18 +101,6 @@ describe('Able to upload data', function () {
         });
     });
 
-});
-
-describe('Able to create account', function () {
-    it('account created',
-        tangeloHubTest.createUser(
-            'admin',
-            'admin@email.com',
-            'Admin',
-            'Admin',
-            'adminpassword!'
-        )
-    );
 });
 
 describe('Able to create collection', function () {
@@ -147,7 +140,7 @@ describe('Able to create analysis', function () {
             return app.analysesView.analyses.findWhere({name: 'Test'}) !== undefined;
         }, 'test analysis to be created');
 
-        runs(function() {
+        runs(function () {
             $('#show-script').click();
             $('#edit').click();
             app.analysesView.editor.setValue('output = 2 + 2');
@@ -163,7 +156,7 @@ describe('Able to create analysis', function () {
             return !$('#save').hasClass('disabled');
         }, 'save to complete');
 
-        runs(function() {
+        runs(function () {
             $('#setup').click();
             $('#analysis-setup-dialog .run').click();
         });

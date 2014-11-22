@@ -113,6 +113,8 @@
                     // Very strange - order of CSS class names seems to be important here
                     this.$('.th-go')
                         .removeAttr('disabled');
+                } else {
+                    setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }
                 if (result.status === 'SUCCESS') {
                     girder.restRequest({
@@ -151,18 +153,8 @@
                     }, this)).error(_.bind(function (error) {
                         // TODO report error
                     }, this));
-                } else if (result.status === 'FAILURE') {
-                    // btn btn-primary pull-right th-go withripple
-                    // btn pull-right th-go withripple btn-primary
-
-                    // TODO report error (result.message)
-                    // console.log(result);
-                    // d3.select('.success-message').classed('hidden', true);
-                    // d3.select('.info-message').classed('hidden', true);
-                    // d3.select('.error-message').classed('hidden', false).html('Operation Failed. <pre>' + result.message + '</pre>');
-                } else {
-                    setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }
+                // TODO report error if FAILURE
             }, this)).error(_.bind(function (error) {
                 // TODO report error
             }, this));

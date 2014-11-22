@@ -1,5 +1,3 @@
-/*jslint browser: true, nomen: true */
-
 (function (flow, $, Backbone, d3, tangelo) {
     "use strict";
 

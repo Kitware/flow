@@ -122,7 +122,11 @@
             // Find the index of the input that we're saving a new version of.
             var found = false,
                 inputIndex,
-                visualizationInputs = this.visualization.get("inputs");
+                visualizationInputs = this.visualization.get("inputs"),
+                inputView,
+                datasetIndex,
+                dataset,
+                blob;
 
             for (inputIndex = 0; inputIndex < visualizationInputs.length;
                  inputIndex += 1) {
@@ -139,9 +143,9 @@
             // Now that we have that index, get the original dataset
             // so we can save the new version back to Girder.
             // dump from the other function where we do this:
-            var inputView = _.values(this.inputsView.itemViews)[inputIndex];
-            var datasetIndex = inputView.view.$el.val();
-            var dataset = this.datasets.get(datasetIndex);
+            inputView = _.values(this.inputsView.itemViews)[inputIndex];
+            datasetIndex = inputView.view.$el.val();
+            dataset = this.datasets.get(datasetIndex);
 
             // Save the data locally
             dataset.set('data', newDataValue);
@@ -155,7 +159,7 @@
                 // Upload the new version of this dataset to Girder.
                 // TODO: convert back to the dataset's original format.
                 // (For now we just assume everything is CSV...)
-                var blob = new Blob([newDataValue]);
+                blob = new Blob([newDataValue]);
                 flow.girderUpload(blob, dataset.get("name"), null, dataset.id);
                 // Also TODO: check for confirmation from Girder that
                 // this new version was actually saved successfully.
