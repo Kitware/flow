@@ -115,6 +115,39 @@
                         dataIsURI: true
                     }
                 ]
+            },
+            {
+                name: "edgebundling",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows"}
+                ]
+            },
+            {
+                name: "interactiveheatmap",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows"}
+                ]
+            },
+            {
+                name: "scatterplotmatrix",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {
+                        name: "data",
+                        type: "table",
+                        format: "rows"
+                    },
+                    {
+                        name: "y",
+                        type: "accessor",
+                        domain: {input: "data", format: "column.names"}
+                    }
+                ]
             }
         ],
 
