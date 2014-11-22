@@ -132,6 +132,11 @@
                 this.workflowEditor.add(analysis.get("meta").analysis);
             },
 
+            'click #add-workvis': function () {
+                var vis = this.visualizations.get($("#workvis").val());
+                this.workflowEditor.add(vis.toJSON());
+            },
+
             'click #analysis-download': function () {
                 var blob = new Blob([JSON.stringify(this.analysis.get('meta').analysis, null, "    ")]),
                     filename = this.analysis.get('meta').analysis.name + '.json',
@@ -156,10 +161,12 @@
         initialize: function (settings) {
             this.analysis = null;
             this.datasets = settings.datasets;
+            this.visualizations = settings.visualizations;
             this.analysisSetupView = new flow.AnalysisSetupView({
                 el: $('#analysis-setup-dialog'),
                 model: this.analysis,
-                datasets: this.datasets
+                datasets: this.datasets,
+                visualizations: this.visualizations
             });
 
             this.editor = ace.edit("code-editor");
@@ -178,6 +185,9 @@
 
             this.workstepsView = new flow.ItemsView({el: this.$('#workstep'), itemView: flow.ItemOptionView, collection: this.analyses});
             this.workstepsView.render();
+
+            this.workvisView = new flow.ItemsView({el: this.$('#workvis'), itemView: flow.ItemOptionView, collection: this.visualizations});
+            this.workvisView.render();
 
             this.inputVariables = new Backbone.Collection();
             this.outputVariables = new Backbone.Collection();

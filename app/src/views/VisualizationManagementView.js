@@ -5,141 +5,24 @@
 
     flow.VisualizationManagementView = Backbone.View.extend({
 
-        visualizationDescriptors: [
-            {
-                name: "table",
-                inputs: [
-                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
-                ]
-            },
-            {
-                name: "timeline",
-                inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", domain: {input: "data", format: "column.names"}}
-                ]
-            },
-            {
-                name: "scatterplot",
-                inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", domain: {input: "data", format: "column.names"}}
-                ]
-            },
-            {
-                name: "dendrogram",
-                inputs: [
-                    {name: "data", type: "tree", format: "nested"},
-                    {name: "distance", type: "accessor", default: {format: "text", data: "edge_data.weight"}},
-                    {name: "label", type: "accessor", default: {format: "text", data: "node_data.node name"}},
-                    {name: "lineStyle", type: "string", domain: ["axisAligned", "curved"]},
-                    {name: "orientation", type: "string", domain: ["horizontal", "vertical"]}
-                ]
-            },
-            {
-                name: "tablelink",
-                inputs: [
-                    {name: "data", type: "table", format: "rows"},
-                    {name: "source", type: "string", domain: {input: "data", format: "column.names"}},
-                    {name: "target", type: "string", domain: {input: "data", format: "column.names"}}
-                ]
-            },
-            {
-                name: "image",
-                inputs: [
-                    {name: "data", type: "image", format: "png.base64"}
-                ]
-            },
-            {
-                name: "string",
-                inputs: [
-                    {name: "data", type: "string", format: "text", inputMode: "dataset"}
-                ]
-            },
-            {
-                name: "treeHeatmap",
-                inputs: [
-                    {
-                        name: "tree",
-                        type: "tree",
-                        format: "vtktree.serialized",
-                        dataIsURI: true
-                    },
-                    {
-                        name: "table",
-                        type: "table",
-                        format: "vtktable.serialized",
-                        dataIsURI: true
-                    }
-                ]
-            },
-            {
-                name: "tanglegram",
-                inputs: [
-                    {
-                        name: "tree1",
-                        type: "tree",
-                        format: "vtktree.serialized",
-                        dataIsURI: true
-                    },
-                    {
-                        name: "tree2",
-                        type: "tree",
-                        format: "vtktree.serialized",
-                        dataIsURI: true
-                    },
-                    {
-                        name: "table",
-                        type: "table",
-                        format: "csv",
-                        dataIsURI: true
-                    }
-                ]
-            },
-            {
-                name: "edgebundling",
-                inputs: [{name: "data", type: "table", format: "rows"}]
-            },
-            {
-                name: "interactiveheatmap",
-                inputs: [{name: "data", type: "table", format: "rows"}]
-            },
-            {
-                name: "scatterplotmatrix",
-                inputs: [{name: "data", type: "table", format: "rows"},
-                         {name: "y", type: "accessor", domain: {input: "data", format: "column.names"}}
-                ]
-            }
-        ],
-
         events: {
             'change #visualization': 'changeVisualization',
             'click #show': function () {
-                this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (options) {
-                    var inner = $('<div style="width:100%;height:100%"></div>');
-                    $("#vis").empty();
-                    $("#vis").append(inner);
-                    flow.setDisplay('vis');
-
-                    options.modified = _.bind(this.saveModifiedData, this);
-
-                    setTimeout(_.bind(function () {
-                        inner[this.visualization.get('name')](options);
-                    }, this), 1000);
-
-                    // Untoggle the show script button if active
-                    if (d3.select("#show-script").classed("active")) {
-                        $("#show-script").click();
-                        d3.select("#show-script").classed("active", false);
-                    }
-                }, this));
+                var options = {};
+                if (this.visualization.get('mode') === 'preset') {
+                    $.each(this.visualization.get('inputs'), function (name, value) {
+                        options[name] = value.data;
+                    });
+                    this.show(options);
+                } else {
+                    this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(this.show, this));
+                }
             }
         },
 
         initialize: function (settings) {
             this.datasets = settings.datasets;
+            this.visualizations = settings.visualizations;
 
             this.inputsView = new flow.InputsView({
                 collection: new Backbone.Collection(),
@@ -147,7 +30,6 @@
                 datasets: this.datasets
             });
 
-            this.visualizations = new Backbone.Collection(this.visualizationDescriptors);
             this.visualizationsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
             this.visualizationsView.render();
             this.changeVisualization();
@@ -155,7 +37,11 @@
 
         render: function () {
             if (this.visualization) {
-                this.inputsView.collection.set(this.visualization.get('inputs'));
+                if (this.visualization.get('mode') === 'preset') {
+                    this.inputsView.collection.set([]);
+                } else {
+                    this.inputsView.collection.set(this.visualization.get('inputs'));
+                }
                 this.inputsView.render();
             }
             return this;
@@ -209,11 +95,39 @@
             this.loadInputs(inputViews, options, done);
         },
 
+        show: function (options) {
+            var inner = $('<div style="width:100%;height:100%"></div>');
+            $("#vis").empty();
+            $("#vis").append(inner);
+            flow.setDisplay('vis');
+
+            options.modified = _.bind(this.saveModifiedData, this);
+
+            setTimeout(_.bind(function () {
+                if (this.visualization.get('mode') === 'preset') {
+                    inner[this.visualization.get('type')](options);
+                } else {
+                    inner[this.visualization.get('name')](options);
+                }
+            }, this), 1000);
+
+            // Untoggle the show script button if active
+            if (d3.select("#show-script").classed("active")) {
+                $("#show-script").click();
+                d3.select("#show-script").classed("active", false);
+            }
+        },
+
         saveModifiedData: function (inputName, newDataValue) {
             // Find the index of the input that we're saving a new version of.
-            var found = false;
-            var inputIndex;
-            var visualizationInputs = this.visualization.get("inputs");
+            var found = false,
+                inputIndex,
+                visualizationInputs = this.visualization.get("inputs"),
+                inputView,
+                datasetIndex,
+                dataset,
+                blob;
+
             for (inputIndex = 0; inputIndex < visualizationInputs.length;
                  inputIndex += 1) {
                 if (visualizationInputs[inputIndex].name === inputName) {
@@ -229,9 +143,9 @@
             // Now that we have that index, get the original dataset
             // so we can save the new version back to Girder.
             // dump from the other function where we do this:
-            var inputView = _.values(this.inputsView.itemViews)[inputIndex];
-            var datasetIndex = inputView.view.$el.val();
-            var dataset = this.datasets.get(datasetIndex);
+            inputView = _.values(this.inputsView.itemViews)[inputIndex];
+            datasetIndex = inputView.view.$el.val();
+            dataset = this.datasets.get(datasetIndex);
 
             // Save the data locally
             dataset.set('data', newDataValue);
@@ -245,7 +159,7 @@
                 // Upload the new version of this dataset to Girder.
                 // TODO: convert back to the dataset's original format.
                 // (For now we just assume everything is CSV...)
-                var blob = new Blob([newDataValue]);
+                blob = new Blob([newDataValue]);
                 flow.girderUpload(blob, dataset.get("name"), null, dataset.id);
                 // Also TODO: check for confirmation from Girder that
                 // this new version was actually saved successfully.

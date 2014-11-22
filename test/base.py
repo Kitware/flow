@@ -93,7 +93,7 @@ def dropTestDatabase():
     from girder.models import getDbConnection
     db_connection = getDbConnection()
     model_importer.clearModels()  # Must clear the models so indices are rebuit
-    dbName = cherrypy.config['database']['database']
+    dbName = cherrypy.config['database']['uri'].split('/')[-1]
 
     if 'girder_test_' not in dbName:
         raise Exception('Expected a testing database name, but got {}'
@@ -113,9 +113,9 @@ class TestCase(unittest.TestCase, model_importer.ModelImporter):
         can be used without 500 errors.
         """
         dropTestDatabase()
-        assetstorePath = os.path.join(
-            ROOT_DIR, 'tests', 'assetstore',
-            os.environ.get('GIRDER_TEST_ASSETSTORE', 'test'))
+        assetstorePath = os.path.abspath(os.path.join(
+            'tests', 'assetstore',
+            os.environ.get('GIRDER_TEST_ASSETSTORE', 'test')))
         self.model('assetstore').createFilesystemAssetstore(
             name='Test', root=assetstorePath)
         self.model('setting').set('core.plugins_enabled', ['romanesco'])

@@ -15,12 +15,13 @@
  */
 
 module.exports = function (grunt) {
-    var fs = require('fs');
-    var jade = require('jade');
-    var path = require('path');
-    require('colors');
+    var fs = require('fs'),
+        jade = require('jade'),
+        path = require('path'),
+        defaultTasks = ['stylus', 'build-js'],
+        environment;
 
-    var defaultTasks = ['stylus', 'build-js'];
+    require('colors');
 
     // Project configuration.
     grunt.config.init({
@@ -48,7 +49,10 @@ module.exports = function (grunt) {
             core: {
                 files: {
                     'app/app.min.css': [
-                        'app/src/stylesheets/**/*.styl'
+                        'app/src/stylesheets/index.styl'
+                    ],
+                    'app/workflows/app.min.css': [
+                        'app/src/stylesheets/workflowsApp.styl'
                     ]
                 }
             }
@@ -95,6 +99,13 @@ module.exports = function (grunt) {
                     ]
                 }
             },
+            workflows: {
+                files: {
+                    'app/workflows/main.min.js': [
+                        'app/src/workflowsMain.js'
+                    ]
+                }
+            },
             libs: {
                 files: {
                     'app/libs.min.js': [
@@ -111,6 +122,7 @@ module.exports = function (grunt) {
                         'lib/js/vega-1.3.3.min.js',
                         'lib/js/autobahn.min.js',
                         'lib/js/vtkweb-all.min.js',
+                        'lib/js/girder.app.min.js',
                         'lib/js/tangelo.js'
                     ],
                     'app/testing.min.js': [
@@ -125,9 +137,14 @@ module.exports = function (grunt) {
         },
 
         watch: {
+            stylus: {
+                files: ['app/src/stylesheets/**/*.styl'],
+                tasks: ['stylus'],
+                options: {failOnError: false}
+            },
             js_core: {
                 files: ['app/src/**/*.js'],
-                tasks: ['uglify:app'],
+                tasks: ['build-js'],
                 options: {failOnError: false}
             },
             jade: {
@@ -140,6 +157,11 @@ module.exports = function (grunt) {
                 tasks: ['jade-index'],
                 options: {failOnError: false}
             },
+            workflows_index: {
+                files: ['app/src/templates/workflows.jadehtml'],
+                tasks: ['workflows-index'],
+                options: {failOnError: false}
+            },
             sphinx: {
                 files: ['docs/*.rst'],
                 tasks: ['docs'],
@@ -149,7 +171,7 @@ module.exports = function (grunt) {
     });
 
     // Pass a "--env=<value>" argument to grunt. Default value is "dev".
-    var environment = grunt.option('env') || 'dev';
+    environment = grunt.option('env') || 'dev';
 
     if (['dev', 'prod'].indexOf(environment) === -1) {
         grunt.fatal('The "env" argument must be either "dev" or "prod".');
@@ -162,32 +184,64 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.registerTask('jade-index', 'Build index.html using jade', function () {
-        var jade = require('jade');
-        var buffer = fs.readFileSync('app/src/templates/index.jadehtml');
-
-        var fn = jade.compile(buffer, {
-            client: false,
-            pretty: true
-        });
-        var html = fn({
-            stylesheets: ['lib/bootstrap/css/bootstrap.min.css',
-                          'lib/css/d3.dependencyedgebundling.css',
-                          'lib/css/d3.edgebundling.css',
-                          'app.min.css'],
-            scripts: ['libs.min.js',
-                      'lib/ace-builds/src-noconflict/ace.js',
-                      '/girder/static/built/app.min.js',
-                      'app.min.js',
-                      'main.min.js']
-        });
+        var jade = require('jade'),
+            buffer = fs.readFileSync('app/src/templates/index.jadehtml'),
+            fn = jade.compile(buffer, {
+                client: false,
+                pretty: true
+            }),
+            html = fn({
+                stylesheets: [
+                    'lib/bootstrap/css/bootstrap.min.css',
+                    'lib/css/d3.dependencyedgebundling.css',
+                    'lib/css/d3.edgebundling.css',
+                    'app.min.css'
+                ],
+                scripts: [
+                    'libs.min.js',
+                    'lib/ace-builds/src-noconflict/ace.js',
+                    '/girder/static/built/app.min.js',
+                    'app.min.js',
+                    'main.min.js'
+                ]
+            });
         fs.writeFileSync('app/index.html', html);
         console.log('Built index.html.');
     });
 
+    grunt.registerTask('workflows-index', 'Build workflows/index.html using jade', function () {
+        var jade = require('jade'),
+            buffer = fs.readFileSync('app/src/templates/workflows.jadehtml'),
+            fn = jade.compile(buffer, {
+                client: false,
+                pretty: true
+            }),
+            html = fn({
+                stylesheets: [
+                    '../lib/bootstrap/css/bootstrap.min.css',
+                    '../lib/material/css/ripples.min.css',
+                    '../lib/material/css/material-wfont.min.css',
+                    'app.min.css'
+                ],
+                scripts: [
+                    '../libs.min.js',
+                    '/girder/static/built/app.min.js',
+                    '../lib/material/js/ripples.min.js',
+                    '../lib/material/js/material.min.js',
+                    '../app.min.js',
+                    'main.min.js'
+                ]
+            });
+        fs.writeFileSync('app/workflows/index.html', html);
+        console.log('Built workflows/index.html.');
+    });
+
     grunt.registerTask('test-env-html', 'Build the phantom test html page.', function () {
-        var buffer = fs.readFileSync('test/testEnv.jadehtml');
-        var globs = grunt.config('uglify.app.files')['app/app.min.js'];
-        var inputs = [];
+        var buffer = fs.readFileSync('test/testEnv.jadehtml'),
+            globs = grunt.config('uglify.app.files')['app/app.min.js'],
+            inputs = [],
+            fn;
+
         globs.forEach(function (glob) {
             var files = grunt.file.expand(glob);
             files.forEach(function (file) {
@@ -195,20 +249,23 @@ module.exports = function (grunt) {
             });
         });
 
-        var fn = jade.compile(buffer, {
+        fn = jade.compile(buffer, {
             client: false,
             pretty: true
         });
         fs.writeFileSync('app/testEnv.html', fn({
-            stylesheets: ['../../test/lib/jasmine-1.3.1/jasmine.css',
-                          'lib/bootstrap/css/bootstrap.min.css',
-                          'lib/css/d3.dependencyedgebundling.css',
-                          'lib/css/d3.edgebundling.css',
-                          'app.min.css'],
-            scripts: ['testing.min.js',
-                      'libs.min.js',
-                      'lib/ace-builds/src-noconflict/ace.js',
-                      '/girder/static/built/app.min.js'],
+            stylesheets: [
+                '../../test/lib/jasmine-1.3.1/jasmine.css',
+                'lib/bootstrap/css/bootstrap.min.css',
+                'lib/css/d3.dependencyedgebundling.css',
+                'lib/css/d3.edgebundling.css',
+                'app.min.css'
+            ],
+            scripts: [
+                'testing.min.js',
+                'libs.min.js',
+                'lib/ace-builds/src-noconflict/ace.js'
+            ],
             blanketScripts: inputs
         }));
     });
@@ -217,6 +274,8 @@ module.exports = function (grunt) {
         'jade',
         'jade-index',
         'uglify:app',
+        'workflows-index',
+        'uglify:workflows',
         'test-env-html'
     ]);
 

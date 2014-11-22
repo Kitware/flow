@@ -26,6 +26,7 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
             $('#register').click();
         });
 
+        tangeloHubTest.waitForDialog();
         waitsFor(function () {
             return $('input#g-email').length > 0;
         }, 'register dialog to appear');
@@ -42,6 +43,7 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
         waitsFor(function () {
             return $('#name')[0].textContent === 'Logged in as ' + firstName + ' ' + lastName;
         }, 'user to be logged in');
+        tangeloHubTest.waitForLoad();
 
         runs(function () {
             expect(girder.currentUser).not.toBe(null);
@@ -107,4 +109,32 @@ tangeloHubTest.createCollection = function (collName, collDesc) {
                    $('.g-collection-description').text() === collDesc;
         }, 'new collection page to load');
     };
+};
+
+/**
+ * Wait for a dialog to be visible.
+ */
+tangeloHubTest.waitForDialog = function (desc) {
+    desc = desc ? ' (' + desc + ')' : '';
+    waitsFor(function () {
+        return $('#g-dialog-container').data('bs.modal') &&
+               $('#g-dialog-container').data('bs.modal').isShown === true &&
+               $('#g-dialog-container:visible').length > 0;
+    }, 'a dialog to fully render' + desc);
+};
+
+/**
+ * Wait for all loading blocks to be fully loaded.  Also, remove the dialog
+ * backdrop, since it isn't properly removed on phantomJS.  This should not be
+ * called on dialogs.
+ */
+tangeloHubTest.waitForLoad = function (desc) {
+    desc = desc ? ' (' + desc + ')' : '';
+    waitsFor(function () {
+        return $('#g-dialog-container:visible').length === 0;
+    }, 'for the dialog container to be hidden' + desc);
+    waitsFor(function () {
+        return $('#g-dialog-container').data('bs.modal') === undefined ||
+               $('#g-dialog-container').data('bs.modal').isShown === false;
+    }, 'for any modal dialog to be hidden' + desc);
 };

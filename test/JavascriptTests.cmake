@@ -46,7 +46,7 @@ function(add_web_client_test name specFile)
   set_property(TEST ${testname} PROPERTY ENVIRONMENT
     "SPEC_FILE=${specFile}"
     "COVERAGE_FILE=${PROJECT_BINARY_DIR}/js_coverage/${name}.cvg"
-    "GIRDER_TEST_DB=girder_test_webclient"
+    "GIRDER_TEST_DB=mongodb://localhost/girder_test_webclient"
     "GIRDER_TEST_ASSETSTORE=webclient"
     "TANGELO=${TANGELO_EXECUTABLE}"
     "ROOT_DIR=${PROJECT_SOURCE_DIR}"

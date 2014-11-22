@@ -1,5 +1,3 @@
-/*jslint browser: true, nomen: true */
-
 (function ($, _, atob, Backbone, d3, girder, Uint8Array) {
     'use strict';
 
@@ -18,6 +16,16 @@
             'objectlist-json': {type: 'table', format: 'objectlist.json'},
             'rows-json': {type: 'table', format: 'rows.json'},
             'number-json': {type: 'number', format: 'json'}
+        },
+
+        webFormat: {
+            table: 'rows',
+            tree: 'nested',
+            string: 'text',
+            number: 'number',
+            image: 'png.base64',
+            r: 'serialized',
+            geometry: 'vtkpolydata.serialized'
         },
 
         setDisplay: function (mode) {
@@ -142,15 +150,15 @@
                     contentType: false,
                     processData: false,
                     error: null
-                }).done(_.bind(function () {
+                }).done(function () {
                     // overallProgress += endByte - startByte;
                     if (endByte !== data.size) {
                         startByte = endByte;
                         uploadChunk(uploadId);
                     }
-                }, this)).error(_.bind(function () {
+                }).error(function () {
                     // TODO report error
-                }, this));
+                });
             }
 
             // Authenticate and generate the upload token for this file
@@ -171,7 +179,7 @@
                         }),
                         contentType: 'application/json',
                         error: null
-                    }).done(_.bind(function () {
+                    }).done(_.bind(function (upload) {
                         if (data.size > 0) {
                             // Begin uploading chunks of this file
                             startByte = 0;

@@ -3,7 +3,7 @@
 
     // The view for a setting a single input to an analysis or
     // visualization based on its type
-    flow.InputView = Backbone.View.extend({
+    flow.WorkflowInputView = Backbone.View.extend({
         typeMetadata: {
             table: {inputMode: "dataset"},
             tree: {inputMode: "dataset"},
@@ -28,8 +28,7 @@
 
             div = d3.select(this.el).append('div')
                 .classed('form-group', true);
-            div.append('label')
-                .attr('for', this.idPrefix + this.model.get('name'))
+            div.append('h4')
                 .text(this.model.get('name'));
             if (this.inputMode === 'dataset') {
                 this.view = new flow.ItemsView({

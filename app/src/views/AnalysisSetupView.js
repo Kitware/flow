@@ -1,19 +1,7 @@
-/*jslint browser: true, nomen: true */
-
 (function (flow, $, _, Backbone, console, d3, girder) {
     "use strict";
 
     flow.AnalysisSetupView = Backbone.View.extend({
-
-        webFormat: {
-            table: 'rows',
-            tree: 'nested',
-            string: 'text',
-            number: 'number',
-            image: 'png.base64',
-            r: 'serialized',
-            geometry: 'vtkpolydata.serialized'
-        },
 
         events: {
             'click .run': function () {
@@ -46,7 +34,7 @@
                     }
                 }, this));
                 this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
-                    outputs[output.name] = {type: output.type, format: this.webFormat[output.type]};
+                    outputs[output.name] = {type: output.type, format: flow.webFormat[output.type]};
                 }, this));
                 this.taskBindings = {inputs: inputs, outputs: outputs};
 
@@ -85,6 +73,7 @@
 
         initialize: function (settings) {
             this.datasets = settings.datasets;
+            this.visualizations = settings.visualizations;
             this.inputsView = new flow.InputsView({
                 collection: new Backbone.Collection(),
                 idPrefix: 'input-',
@@ -119,6 +108,9 @@
                             outputMessage = '<ul>';
                         // Put data into list
                         $.each(result, _.bind(function (outputName, output) {
+                            if (outputName === '_visualizations') {
+                                return;
+                            }
                             var index = 1;
                             output = new Backbone.Model(output);
                             output.set({name: this.model.get('name') + ' ' + outputName});
@@ -127,10 +119,25 @@
                                 index += 1;
                             }
                             output.set({bindings: this.taskBindings});
-                            console.log(output);
                             this.datasets.off('add', null, 'set-collection').add(output);
                             outputMessage += '<li>' + output.get('name') + ' [' + output.get('type') + ']</li>';
                         }, this));
+
+                        result._visualizations = result._visualizations || [];
+
+                        $.each(result._visualizations, _.bind(function (i, visualization) {
+                            var index = 1,
+                                output = new Backbone.Model(visualization);
+                            output.set({name: this.model.get('name') + ' ' + visualization.type});
+                            while (this.visualizations.findWhere({name: output.get('name')})) {
+                                output.set({name: this.model.get('name') + ' ' + visualization.type + ' (' + index + ')'});
+                                index += 1;
+                            }
+                            output.set({bindings: this.taskBindings});
+                            this.visualizations.off('add', null, 'set-collection').add(output);
+                            outputMessage += '<li>' + output.get('name') + ' [visualization]</li>';
+                        }, this));
+
                         outputMessage += '</ul>';
                         d3.select('.run')
                             .classed('btn-primary', true)

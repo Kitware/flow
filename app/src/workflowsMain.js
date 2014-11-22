@@ -4,7 +4,14 @@
     $(document).ready(function () {
         girder.apiRoot = '/girder/api/v1';
         girder.handleRouting = false;
-        window.app = new flow.App();
+        window.app = new flow.WorkflowsAppView({
+            el: '.app',
+            model: new Backbone.Model({
+                brand: 'Arbor'
+            })
+        });
         window.app.render();
+        $.material.init();
     });
+
 }(window.flow, window.$, window.girder));

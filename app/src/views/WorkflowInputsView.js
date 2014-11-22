@@ -3,10 +3,10 @@
 
     // The view representing the form for a set of inputs to populate
     // for an analysis or visualization
-    flow.InputsView = flow.ItemsView.extend({
+    flow.WorkflowInputsView = flow.ItemsView.extend({
         initialize: function (settings) {
             this.datasets = settings.datasets;
-            flow.ItemsView.prototype.initialize.apply(this, [_.extend(settings, {itemView: flow.InputView, itemOptions: {datasets: this.datasets}})]);
+            flow.ItemsView.prototype.initialize.apply(this, [_.extend(settings, {itemView: flow.WorkflowInputView, itemOptions: {datasets: this.datasets}})]);
         },
 
         render: function () {
@@ -21,10 +21,12 @@
                         view = this.itemViews[referredInput.cid];
                         view.$el.change(_.bind(function () {
                             var dataset = this.datasets.get(view.view.$el.val());
-                            flow.retrieveDatasetAsFormat(dataset, view.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
-                                dataset.get('data').sort();
-                                this.itemViews[input.cid].view.collection.set(dataset.get('data'));
-                            }, this));
+                            if (dataset) {
+                                flow.retrieveDatasetAsFormat(dataset, view.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
+                                    dataset.get('data').sort();
+                                    this.itemViews[input.cid].view.collection.set(dataset.get('data'));
+                                }, this));
+                            }
                         }, this));
                     }
                 }

@@ -5,6 +5,152 @@
     flow.App = Backbone.View.extend({
         el: 'body',
 
+        visualizationDescriptors: [
+            {
+                name: "table",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
+                ]
+            },
+            {
+                name: "timeline",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "objectlist"},
+                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                ]
+            },
+            {
+                name: "scatterplot",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "objectlist"},
+                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                ]
+            },
+            {
+                name: "dendrogram",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "tree", format: "nested"},
+                    {name: "distance", type: "accessor", format: "text", default: {format: "text", data: "edge_data.weight"}},
+                    {name: "label", type: "accessor", format: "text", default: {format: "text", data: "node_data.node name"}},
+                    {name: "lineStyle", type: "string", format: "text", domain: ["axisAligned", "curved"]},
+                    {name: "orientation", type: "string", format: "text", domain: ["horizontal", "vertical"]}
+                ]
+            },
+            {
+                name: "tablelink",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows"},
+                    {name: "source", type: "string", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "target", type: "string", format: "text", domain: {input: "data", format: "column.names"}}
+                ]
+            },
+            {
+                name: "image",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "image", format: "png.base64"}
+                ]
+            },
+            {
+                name: "string",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "string", format: "text", inputMode: "dataset"}
+                ]
+            },
+            {
+                name: "treeHeatmap",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {
+                        name: "tree",
+                        type: "tree",
+                        format: "vtktree.serialized",
+                        dataIsURI: true
+                    },
+                    {
+                        name: "table",
+                        type: "table",
+                        format: "vtktable.serialized",
+                        dataIsURI: true
+                    }
+                ]
+            },
+            {
+                name: "tanglegram",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {
+                        name: "tree1",
+                        type: "tree",
+                        format: "vtktree.serialized",
+                        dataIsURI: true
+                    },
+                    {
+                        name: "tree2",
+                        type: "tree",
+                        format: "vtktree.serialized",
+                        dataIsURI: true
+                    },
+                    {
+                        name: "table",
+                        type: "table",
+                        format: "csv",
+                        dataIsURI: true
+                    }
+                ]
+            },
+            {
+                name: "edgebundling",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows"}
+                ]
+            },
+            {
+                name: "interactiveheatmap",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {name: "data", type: "table", format: "rows"}
+                ]
+            },
+            {
+                name: "scatterplotmatrix",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {
+                        name: "data",
+                        type: "table",
+                        format: "rows"
+                    },
+                    {
+                        name: "y",
+                        type: "accessor",
+                        domain: {input: "data", format: "column.names"}
+                    }
+                ]
+            }
+        ],
+
         events: {
             'click #login': function () {
                 girder.events.trigger('g:loginUi');
@@ -77,16 +223,30 @@
             this.datasets = new flow.DatasetCollection();
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
-            this.datasetsView = new flow.DatasetManagementView({el: this.$('#dataset-management'), datasets: this.datasets});
+            this.datasetsView = new flow.DatasetManagementView({
+                el: this.$('#dataset-management'),
+                datasets: this.datasets
+            });
             this.datasetsView.render();
+
+            this.visualizations = new Backbone.Collection(this.visualizationDescriptors);
 
             this.analyses = new girder.collections.ItemCollection();
             this.analyses.append = true;
             this.analyses.pageLimit = 100;
-            this.analysesView = new flow.AnalysisManagementView({el: this.$('#analysis-management'), analyses: this.analyses, datasets: this.datasets});
+            this.analysesView = new flow.AnalysisManagementView({
+                el: this.$('#analysis-management'),
+                analyses: this.analyses,
+                datasets: this.datasets,
+                visualizations: this.visualizations
+            });
             this.analysesView.render();
 
-            this.visualizationsView = new flow.VisualizationManagementView({el: this.$('#visualization-management'), datasets: this.datasets});
+            this.visualizationsView = new flow.VisualizationManagementView({
+                el: this.$('#visualization-management'),
+                datasets: this.datasets,
+                visualizations: this.visualizations
+            });
             this.visualizationsView.render();
 
             girder.events.on('g:loginUi', this.loginDialog, this);

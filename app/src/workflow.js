@@ -217,7 +217,18 @@ workflow = function (selection) {
             .attr("height", 100)
             .attr("rx", 10)
             .attr("ry", 10)
-            .style("fill", "whitesmoke")
+            .style("fill", function (d) {
+                if (d.visualization) {
+                    return "lightgreen";
+                }
+                if (d.isOutput) {
+                    return "lightblue";
+                }
+                if (d.isInput) {
+                    return "lightblue";
+                }
+                return "whitesmoke";
+            })
             .style("stroke", strokeColor)
             .style("stroke-width", 2);
 
@@ -288,10 +299,14 @@ workflow = function (selection) {
             step = {
                 x: (a.x === undefined ? 200 : a.x),
                 y: (a.y === undefined ? 200 : a.y),
-                id: a.name,
+                id: a.id || a.name,
+                name: a.name,
+                isInput: a.isInput,
+                isOutput: a.isOutput,
                 inputs: a.inputs,
                 outputs: a.outputs,
-                analysis: a
+                analysis: a,
+                visualization: a.visualization
             };
         step.inputScale = d3.scale.linear().domain([0, a.inputs.length - 1]).range([10, 90]);
         step.outputScale = d3.scale.linear().domain([0, a.outputs.length - 1]).range([10, 90]);
@@ -384,26 +399,37 @@ workflow = function (selection) {
 
     // Convert workflow to pure JSON (no references) for serialization
     that.serialize = function () {
-        var serialized = {name: workflow.name, inputs: [], outputs: [], steps: [], connections: []};
+        var serialized = {
+            name: workflow.name,
+            inputs: [],
+            outputs: [],
+            steps: [],
+            connections: []
+        };
+
         workflow.steps.forEach(function (step) {
             var input, output;
             if (step.analysis.isInput) {
                 input = _.clone(step.analysis.outputs[0]);
                 input.x = step.x;
                 input.y = step.y;
-                input.name = step.id;
+                input.id = step.id;
+                input.name = step.name;
                 serialized.inputs.push(input);
             } else if (step.analysis.isOutput) {
                 output = _.clone(step.analysis.inputs[0]);
                 output.x = step.x;
                 output.y = step.y;
-                output.name = step.id;
+                output.id = step.id;
+                output.name = step.name;
                 serialized.outputs.push(output);
             } else {
                 serialized.steps.push({
                     x: step.x,
                     y: step.y,
                     id: step.id,
+                    name: step.name,
+                    visualization: step.visualization,
                     analysis: step.analysis
                 });
             }
