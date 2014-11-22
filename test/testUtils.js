@@ -9,7 +9,7 @@ window.alert = function (msg) {
 };
 
 // Timeout to wait for asynchronous actions
-tangeloHubTest.TIMEOUT = 5000;
+tangeloHubTest.TIMEOUT = 10000;
 
 tangeloHubTest.createUser = function (login, email, firstName, lastName, password) {
 
