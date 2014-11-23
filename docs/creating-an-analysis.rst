@@ -11,8 +11,8 @@ To create an analysis, start with the following steps:
 * Navigate to the Data Management tab.
 * Click the pencil icon on the left for the collection you want
   to add an analysis to. If you do not have edit permissions on
-  any collection, contact kitware@kitware.com to request access
-  with your TangeloHub user name, organization,
+  any collection, `contact Kitware <http://www.tangelohub.org/contact-us/>`_
+  to request access with your user name, organization,
   and desired use case.
 * Navigate to the Analysis tab.
 * Under "Create new analysis", enter an analysis name and
@@ -58,7 +58,7 @@ would be entered from the language shell. Use input variables as if they
 have already been assigned a value, and be sure to create output variables
 whose names match each of your output names.
 
-**Note:** After any changes are made, be sure to click the "Save" button
-to ensure your latest version is saved. Analysis runs will
-always be performed against the saved version, so be sure
-to click "Save" before running a new version of your analysis.
+.. note:: After any changes are made, be sure to click the "Save" button
+   to ensure your latest version is saved. Analysis runs will
+   always be performed against the saved version, so be sure
+   to click "Save" before running a new version of your analysis.
