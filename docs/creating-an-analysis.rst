@@ -3,7 +3,7 @@
 ============================
 
 For an overview of this process, see
-the `demonstration video <http://youtu.be/n2M5F0EjISg>`_
+the `demonstration video <http://youtu.be/n2M5F0EjISg>`_.
 
 To create an analysis, start with the following steps:
 
