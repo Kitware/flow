@@ -3,9 +3,11 @@ services: mongodb
 env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder:~/vtk-precise64/lib/python2.7/site-packages:~/vtk-precise64/lib R_LIBS_USER=~/R LD_LIBRARY_PATH=~/vtk-precise64/lib
 compiler:
     - gcc
+
 before_install:
     - sudo apt-get install npm
     - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
+
 install:
     - pwd
     - echo $PYTHONPATH
@@ -17,6 +19,7 @@ install:
     - git clone https://github.com/girder/girder.git
     - cd $TRAVIS_BUILD_DIR/girder
     - sudo pip install -r requirements.txt
+    - sudo python -c "import bcrypt"
     - npm install
 
     # VTK
@@ -39,7 +42,7 @@ install:
 
     # Romanesco
     - cd $TRAVIS_BUILD_DIR/girder/plugins
-    - git clone https://github.com/arborworkflows/romanesco.git
+    - git clone https://github.com/Kitware/romanesco.git
     - cd $TRAVIS_BUILD_DIR/girder/plugins/romanesco
     - sudo pip install -r requirements.txt
     - python -m romanesco &

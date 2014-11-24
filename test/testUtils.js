@@ -39,11 +39,10 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
             $('#g-password,#g-password2').val(password);
             $('#g-register-button').click();
         });
-
-        waitsFor(function () {
-            return $('#name')[0].textContent === 'Logged in as ' + firstName + ' ' + lastName;
-        }, 'user to be logged in');
         tangeloHubTest.waitForLoad();
+        waitsFor(function () {
+            return $('#name').text() === 'Logged in as ' + firstName + ' ' + lastName;
+        }, 'user to be logged in');
 
         runs(function () {
             expect(girder.currentUser).not.toBe(null);
