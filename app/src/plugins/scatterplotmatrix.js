@@ -17,9 +17,9 @@
         },
 
         _update: function () {
-            var matrix = d3.scatterplot.matrix();
-            var data = this.options.data.rows;
-            var y = this.options.y.field;
+            var matrix = d3.scatterplot.matrix(),
+                data = this.options.data.rows,
+                y = this.options.y.field;
             d3.select("#matrix")
                 .datum(data)
                 .call(matrix, y);

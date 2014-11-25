@@ -16,8 +16,8 @@
         },
 
         _update: function () {
-            var chart = d3.chart.edgebundling();
-            var data = this.options.data;
+            var chart = d3.chart.edgebundling(),
+                data = this.options.data;
             d3.select('#edgebundle')
                 .datum(data)
                 .call(chart);

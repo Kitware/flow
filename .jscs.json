@@ -2,6 +2,6 @@
     "preset": "crockford",
     "disallowDanglingUnderscores": null,
     "validateQuoteMarks": null,
-    "requireMultipleVarDecl": null,
+    "requireMultipleVarDecl": true,
     "requireCamelCaseOrUpperCaseIdentifiers": null
 }

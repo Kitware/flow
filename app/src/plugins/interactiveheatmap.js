@@ -16,9 +16,9 @@
         },
 
         _update: function () {
-            var heatmap = d3.chart.heatmap();
-            var data = this.options.data.rows;
-            var columnHeaders = this.options.data.fields;
+            var heatmap = d3.chart.heatmap(),
+                data = this.options.data.rows,
+                columnHeaders = this.options.data.fields;
             d3.select("#heatmap")
                 .datum(data)
                 .call(heatmap, columnHeaders);
