@@ -49,20 +49,6 @@ class WebClientTestCase(base.TestCase):
             self.coverageFile
         )
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
-        )
-
-        (stdoutdata, stderrdata) = process.communicate()
-
-        print()
-        print("====stdout:")
-        print(stdoutdata)
-        print()
-        print("====stderr:")
-        print(stderrdata)
-        sys.stdout.flush()
-
-        self.assertEqual(process.returncode, 0)
+        returncode = subprocess.call(cmd, stdout=sys.stdout.fileno(),
+                                     stderr=sys.stdout.fileno())
+        self.assertEqual(returncode, 0)

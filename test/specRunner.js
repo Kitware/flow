@@ -47,7 +47,22 @@ var terminate = function () {
     }
 };
 
+// Set decent viewport size for screenshots.
+page.viewportSize = {
+    width: 1024,
+    height: 768
+};
+
 page.onConsoleMessage = function (msg) {
+    if (msg.indexOf('__SCREENSHOT__') === 0) {
+        var imageFile = msg.substring('__SCREENSHOT__'.length) || 'phantom_screenshot.png';
+        page.render(imageFile);
+        console.log('Created screenshot: ' + imageFile);
+
+        console.log('<DartMeasurementFile name="PhantomScreenshot" type="image/png">' +
+            fs.workingDirectory + fs.separator + imageFile + '</DartMeasurementFile>');
+        return;
+    }
     if (accumCoverage && coverageOutput) {
         try {
             fs.write(coverageOutput, msg, 'a');
