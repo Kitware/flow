@@ -8,7 +8,7 @@ TangeloHub source.
 You need one of
 `tangelo <http://tangelo.readthedocs.org/en/latest/installation.html>`_,
 `Apache <http://httpd.apache.org/>`_, or
-`nginx <http://nginx.org/>'_.  Later instructions are for Apache.
+`nginx <http://nginx.org/>'_.  These instructions are for Apache.
 
 Check out the TangeloHub repository. As a team developer: ::
 
@@ -21,7 +21,12 @@ Or as a contributor: ::
 Next, install `Girder
 <http://girder.readthedocs.org/en/latest/installation.html>`_.  Follow the link
 for install instructions.  After following the Girder install, you will also
-have a MongoDB instance running on your machine.
+have a MongoDB instance running on your machine. The simplest Girder install
+consists of a `pip` install. Ensure you have an updated `pip` then install
+Girder: ::
+
+    sudo pip install -U pip
+    sudo pip install girder
 
 Install `R <http://www.r-project.org/>`_.  R is needed in order to install
 and use Romanesco.
@@ -35,7 +40,7 @@ the ``girder-install`` command: ::
 
 Install an appropriate Girder config file: ::
 
-    sudo cp tangelohub/iansible/girder.local.cfg path/to/site-packages/girder/conf/
+    sudo cp tangelohub/devops/ansible/girder.local.cfg path/to/site-packages/girder/conf/
 
 You can find your ``path/to/site-packages`` with: ::
 
@@ -56,7 +61,8 @@ Start a Romanesco worker with: ::
 TangeloHub requires npm and Grunt, which should already have been
 installed as part of the Girder installation: ::
 
-    curl http://npmjs.org/install.sh | sh
+    curl -sL https://deb.nodesource.com/setup | sudo bash -
+    sudo apt-get install nodejs
     sudo npm install -g grunt
 
 Enter the source folder and build out all the npm dependencies: ::
@@ -66,8 +72,8 @@ Enter the source folder and build out all the npm dependencies: ::
 
 If you modify the TangeloHub source, you can rebuild the app: ::
 
-    grunt init
-    grunt
+    ./node_modules/.bin/grunt init
+    ./node_modules/.bin/grunt
 
 If you are using Apache, use something like the following file in the
 ``sites-available`` folder (you can simply replace the `default` file there):
@@ -81,6 +87,11 @@ If you are using Apache, use something like the following file in the
         ProxyPass /girder http://localhost:9000
         ProxyPassReverse /girder http://localhost:9000
     </VirtualHost>
+
+You will need the proxy and proxy_html Apache modules: ::
+
+    a2enmod proxy
+    a2enmod proxy_http
 
 After restarting Apache (``sudo apache2ctl restart``), visit your Girder web
 interface at `http://localhost:9080/girder <http://localhost:9080/girder>`_ to
