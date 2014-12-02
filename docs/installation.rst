@@ -90,8 +90,8 @@ If you are using Apache, use something like the following file in the
 
 You will need the proxy and proxy_html Apache modules: ::
 
-    a2enmod proxy
-    a2enmod proxy_http
+    sudo a2enmod proxy
+    sudo a2enmod proxy_http
 
 After restarting Apache (``sudo apache2ctl restart``), visit your Girder web
 interface at `http://localhost:9080/girder <http://localhost:9080/girder>`_ to
