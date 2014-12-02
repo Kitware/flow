@@ -28,7 +28,6 @@ Administrator Documentation
 
     prerequisites
     installation
-    deployment
     configuration
 
 Developer Documentation
