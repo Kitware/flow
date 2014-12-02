@@ -146,3 +146,13 @@ required to fully enable the Romanesco plugin.
 Now you should be able to visit the running TangeloHub instance at
 `http://localhost:9080 <http://localhost:9080>`_.
 
+.. note::
+    If you hit any ``npm`` errors in the install process, execute the following and retry the steps: ::
+
+        sudo rm -rf ~/tmp
+        sudo rm -rf ~/.npm
+
+.. note::
+    If you hit any ``pip`` errors in the installation of Girder, execute the following and retry: ::
+
+        sudo pip install -U pip
