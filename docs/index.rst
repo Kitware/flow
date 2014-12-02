@@ -36,6 +36,7 @@ Developer Documentation
 .. toctree::
     :maxdepth: 2
 
+    contributing
     testing
     api-reference
 
