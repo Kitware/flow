@@ -76,9 +76,9 @@
                             this.taskId + '/output?token=' +
                             girder.cookie.find('girderToken'));
 
-                        this.eventSource.onmessage = function(e) {
+                        this.eventSource.onmessage = function (e) {
                             $('#analysis-output').append(e.data + "\n");
-                        }
+                        };
 
                     }, this));
             },
