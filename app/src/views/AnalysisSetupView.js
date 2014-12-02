@@ -12,6 +12,8 @@
                     .classed('btn-default', true)
                     .attr('disabled', true);
 
+                $('#analysis-output').empty();
+
                 _.each(this.inputsView.itemViews, _.bind(function (inputView) {
                     var input = inputView.model,
 
@@ -67,7 +69,30 @@
                         }
                         this.taskId = result.id;
                         setTimeout(_.bind(this.checkTaskResult, this), 1000);
+
+                        // Stream console output from this analysis.
+                        this.eventSource = new window.EventSource(
+                            girder.apiRoot + '/item/' + this.model.id + '/romanesco/' +
+                            this.taskId + '/output?token=' +
+                            girder.cookie.find('girderToken'));
+
+                        this.eventSource.onmessage = function(e) {
+                            $('#analysis-output').append(e.data + "\n");
+                        }
+
                     }, this));
+            },
+
+            'click #show-output': function () {
+                var hide = d3.select("#show-output").classed("active");
+                d3.select('#analysis-output').classed("hidden", hide);
+                d3.select("#show-output-icon").classed("glyphicon-eye-open", hide);
+                d3.select("#show-output-icon").classed("glyphicon-eye-close", !hide);
+                d3.select("#show-output-text").text(hide ? "Show output" : "Hide output");
+            },
+
+            'click #close-analysis-setup': function () {
+                $('#analysis-output').empty();
             }
         },
 
@@ -99,7 +124,9 @@
                 error: null
             }).done(_.bind(function (result) {
                 console.log(result.status);
+
                 if (result.status === 'SUCCESS') {
+                    this.eventSource.close();
                     girder.restRequest({
                         path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
                         error: null
@@ -151,6 +178,7 @@
                         // TODO report error
                     }, this));
                 } else if (result.status === 'FAILURE') {
+                    this.eventSource.close();
                     d3.select('.run')
                         .classed('btn-primary', true)
                         .classed('btn-default', false)

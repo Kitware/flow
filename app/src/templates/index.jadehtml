@@ -196,8 +196,14 @@ html(lang="en")
                         button.btn.btn-primary.run
                             span.glyphicon.glyphicon-play.run-icon
                             |  Run
-                        button.btn.btn-default(data-dismiss="modal")
+                        button.btn.btn-default#close-analysis-setup(data-dismiss="modal")
                             | Close
+                        button.btn.btn-default.pull-right#show-output(data-toggle="button")
+                            span.glyphicon.glyphicon-eye-open#show-output-icon
+                            | &nbsp;
+                            span#show-output-text
+                                | Show output
+                        pre.row#analysis-output(style="white-space: pre-wrap;").hidden
         .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
             .modal-dialog
                 .modal-content
