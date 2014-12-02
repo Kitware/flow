@@ -2,13 +2,58 @@
     Installation
 ====================
 
+Vagrant Install
+---------------
+
+A Vagrant install is an easy way to get everything running in a local virtual machine.
+This includes an install of MongoDB, Girder, Romanesco, Apache, and the TangeloHub application.
+To get started, install `Vagrant <http://www.vagrantup.com/>`_,
+`VirtualBox <https://www.virtualbox.org/>`_,
+and `Ansible <http://docs.ansible.com/intro_installation.html>`_.
+It's then a matter of cloning this repository and running ``vagrant up``: ::
+
+    git clone https://github.com/Kitware/tangelothub.git
+    cd tangelohub
+    vagrant up
+
+When that completes (it will take some time - get a coffee),
+visit `http://localhost:9080/ <http://localhost:9080/>`_ to visit the interface.
+
+To see the Girder interface, visit `http://localhost:9080/girder <http://localhost:9080/girder>`_.
+
+To create new analyses and save data, login to TangeloHub or Girder with username `girder` and password `girder`.
+
+To log in to your virtual machine, run: ::
+
+    vagrant ssh
+
+From that environment, you can restart Romanesco: ::
+
+    sudo stop romanesco
+    sudo start romanesco
+
+To view the Romanesco log for analysis debugging: ::
+
+    sudo cat /var/log/upstart/romanesco.log
+
+To restart Girder: ::
+
+    sudo stop girder
+    sudo start girder
+
+To enter a local MongoDB shell: ::
+
+    mongo
+
+The default Vagrant install will also install several R libraries needed for Arbor analyses,
+which takes a significant amount of time. To turn off this step, edit
+``devops/ansible/playbook.yml`` and set the ``arbor`` variable to ``false``.
+
+Apache Installation
+--------------------
+
 The TangeloHub application requires several components, as well as the main
 TangeloHub source.
-
-You need one of
-`tangelo <http://tangelo.readthedocs.org/en/latest/installation.html>`_,
-`Apache <http://httpd.apache.org/>`_, or
-`nginx <http://nginx.org/>'_.  These instructions are for Apache.
 
 Check out the TangeloHub repository. As a team developer: ::
 
@@ -72,8 +117,8 @@ Enter the source folder and build out all the npm dependencies: ::
 
 If you modify the TangeloHub source, you can rebuild the app: ::
 
-    ./node_modules/.bin/grunt init
-    ./node_modules/.bin/grunt
+    grunt init
+    grunt
 
 If you are using Apache, use something like the following file in the
 ``sites-available`` folder (you can simply replace the `default` file there):
@@ -100,3 +145,4 @@ required to fully enable the Romanesco plugin.
 
 Now you should be able to visit the running TangeloHub instance at
 `http://localhost:9080 <http://localhost:9080>`_.
+
