@@ -12,6 +12,8 @@
                     .classed('btn-default', true)
                     .attr('disabled', true);
 
+                $('#analysis-output').empty();
+
                 _.each(this.inputsView.itemViews, _.bind(function (inputView) {
                     var input = inputView.model,
 
@@ -61,13 +63,43 @@
                                 .classed('btn-default', false)
                                 .attr('disabled', null);
                             d3.select('.success-message').classed('hidden', true);
-                            d3.select('.error-message').classed('hidden', false).html('Error: <pre>' + result.message + '</pre>');
+                            d3.select('.error-message').classed('hidden', false).html('Error:\n' + result.message);
                             d3.select('.info-message').classed('hidden', true);
                             return;
                         }
                         this.taskId = result.id;
                         setTimeout(_.bind(this.checkTaskResult, this), 1000);
+
+                        // Stream console output from this analysis.
+                        this.eventSource = new window.EventSource(
+                            girder.apiRoot + '/item/' + this.model.id + '/romanesco/' +
+                            this.taskId + '/output?token=' +
+                            girder.cookie.find('girderToken'));
+
+                        this.eventSource.addEventListener('log', _.bind(function (e) {
+                            $('#analysis-output').append(e.data + "\n");
+                        }, this));
+                        this.eventSource.addEventListener('eof', _.bind(function (e) {
+                            console.log('Shutting down stream.');
+                            this.eventSource.close();
+                        }, this));
+                        this.eventSource.addEventListener('past-end', _.bind(function (e) {
+                            console.error('Should already be closed!');
+                            console.log(e);
+                        }, this));
                     }, this));
+            },
+
+            'click #show-output': function () {
+                var hide = d3.select("#show-output").classed("active");
+                d3.select('#analysis-output').classed("hidden", hide);
+                d3.select("#show-output-icon").classed("glyphicon-eye-open", hide);
+                d3.select("#show-output-icon").classed("glyphicon-eye-close", !hide);
+                d3.select("#show-output-text").text(hide ? "Show output" : "Hide output");
+            },
+
+            'click #close-analysis-setup': function () {
+                $('#analysis-output').empty();
             }
         },
 
@@ -99,6 +131,7 @@
                 error: null
             }).done(_.bind(function (result) {
                 console.log(result.status);
+
                 if (result.status === 'SUCCESS') {
                     girder.restRequest({
                         path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
@@ -158,7 +191,7 @@
                     console.log(result);
                     d3.select('.success-message').classed('hidden', true);
                     d3.select('.info-message').classed('hidden', true);
-                    d3.select('.error-message').classed('hidden', false).html('Operation Failed. <pre>' + result.message + '</pre>');
+                    d3.select('.error-message').classed('hidden', false).html('Operation Failed.\n' + result.message);
                 } else {
                     setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }

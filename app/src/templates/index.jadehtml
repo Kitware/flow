@@ -189,15 +189,21 @@ html(lang="en")
                             | &times;
                         h4.modal-title.analysis-setup-title
                     .modal-body
-                        p.row.hidden.bg-success.success-message
-                        p.row.hidden.bg-info.info-message
-                        p.row.hidden.bg-danger.error-message
+                        pre.bg-success.success-message.hidden
+                        pre.bg-info.info-message.hidden
+                        pre.bg-danger.error-message.hidden
                         .inputs
                         button.btn.btn-primary.run
                             span.glyphicon.glyphicon-play.run-icon
                             |  Run
-                        button.btn.btn-default(data-dismiss="modal")
+                        button.btn.btn-default#close-analysis-setup(data-dismiss="modal")
                             | Close
+                        button.btn.btn-default.pull-right#show-output(data-toggle="button")
+                            span.glyphicon.glyphicon-eye-open#show-output-icon
+                            | &nbsp;
+                            span#show-output-text
+                                | Show output
+                        pre#analysis-output.hidden
         .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
             .modal-dialog
                 .modal-content

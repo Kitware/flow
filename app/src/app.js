@@ -197,8 +197,10 @@
                 path: 'user/authentication',
                 error: null
             }).done(_.bind(function (resp) {
-                resp.user.token = resp.authToken.token;
-                girder.currentUser = new girder.models.UserModel(resp.user);
+                if (resp) {
+                    resp.user.token = resp.authToken.token;
+                    girder.currentUser = new girder.models.UserModel(resp.user);
+                }
                 this.render();
             }, this)).error(_.bind(function () {
                 this.render();

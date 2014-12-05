@@ -86,6 +86,10 @@
     command: girder-install -f web
     sudo: yes
 
+  - name: girder | install default girder plugins
+    command: girder-install -f plugin
+    sudo: yes
+
   - name: r | add R repository
     shell:
       echo 'deb {{ r_url }} precise/' | sudo tee /etc/apt/sources.list.d/cran.list
