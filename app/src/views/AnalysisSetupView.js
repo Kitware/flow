@@ -63,7 +63,7 @@
                                 .classed('btn-default', false)
                                 .attr('disabled', null);
                             d3.select('.success-message').classed('hidden', true);
-                            d3.select('.error-message').classed('hidden', false).html('Error: <pre>' + result.message + '</pre>');
+                            d3.select('.error-message').classed('hidden', false).html('Error:\n' + result.message);
                             d3.select('.info-message').classed('hidden', true);
                             return;
                         }
@@ -76,10 +76,17 @@
                             this.taskId + '/output?token=' +
                             girder.cookie.find('girderToken'));
 
-                        this.eventSource.onmessage = function (e) {
+                        this.eventSource.addEventListener('log', _.bind(function (e) {
                             $('#analysis-output').append(e.data + "\n");
-                        };
-
+                        }, this));
+                        this.eventSource.addEventListener('eof', _.bind(function (e) {
+                            console.log('Shutting down stream.');
+                            this.eventSource.close();
+                        }, this));
+                        this.eventSource.addEventListener('past-end', _.bind(function (e) {
+                            console.error('Should already be closed!');
+                            console.log(e);
+                        }, this));
                     }, this));
             },
 
@@ -126,7 +133,6 @@
                 console.log(result.status);
 
                 if (result.status === 'SUCCESS') {
-                    this.eventSource.close();
                     girder.restRequest({
                         path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
                         error: null
@@ -178,7 +184,6 @@
                         // TODO report error
                     }, this));
                 } else if (result.status === 'FAILURE') {
-                    this.eventSource.close();
                     d3.select('.run')
                         .classed('btn-primary', true)
                         .classed('btn-default', false)
@@ -186,7 +191,7 @@
                     console.log(result);
                     d3.select('.success-message').classed('hidden', true);
                     d3.select('.info-message').classed('hidden', true);
-                    d3.select('.error-message').classed('hidden', false).html('Operation Failed. <pre>' + result.message + '</pre>');
+                    d3.select('.error-message').classed('hidden', false).html('Operation Failed.\n' + result.message);
                 } else {
                     setTimeout(_.bind(this.checkTaskResult, this), 1000);
                 }
