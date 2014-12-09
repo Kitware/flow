@@ -471,8 +471,12 @@ workflow = function (selection) {
     // Modified from http://bl.ocks.org/mbostock/7555321
     function wrap(text, width) {
         text.each(function () {
-            var text = d3.select(this),
-                words = text.text().split(/\s+/).reverse(),
+            var text = d3.select(this);
+            // Skip this element if it has been previously wrapped.
+            if ($(text.node()).children("tspan").length > 1) {
+                return true;
+            }
+            var words = text.text().split(/\s+/).reverse(),
                 word,
                 line = [],
                 lineNumber = 0,
