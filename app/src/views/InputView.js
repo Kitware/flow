@@ -13,13 +13,15 @@
             number: {inputMode: "line"},
             json: {inputMode: "line"},
             geometry: {inputMode: "dataset"},
-            accessor: {inputMode: "line"}
+            accessor: {inputMode: "line"},
+            array: {inputMode: "array"}
         },
 
         initialize: function (settings) {
             var div;
 
             this.datasets = settings.datasets;
+            this.parentView = settings.parentView;
             this.idPrefix = settings.idPrefix;
             this.inputMode = this.model.get('inputMode');
             if (!this.inputMode) {
@@ -31,7 +33,33 @@
             div.append('label')
                 .attr('for', this.idPrefix + this.model.get('name'))
                 .text(this.model.get('name'));
-            if (this.inputMode === 'dataset') {
+            if (this.model.get('type') === 'array') {
+                this.view = [];
+                this.containers = [];
+                this.addButton = div.append('button')
+                    .attr('class', 'indent btn btn-default');
+                this.addButton.append('span').attr('class', 'glyphicon glyphicon-plus');
+                this.componentsList = d3.select(this.el).append('div').classed('indent', true);
+                this.addButton.on('click', _.bind(function (d) {
+                    var container = this.componentsList.append('div');
+
+                    container.append('button').attr('class', 'btn btn-default')
+                        .on('click', _.bind(function (d) {
+                            var viewIndex = this.containers.indexOf(container);
+                            this.view.splice(viewIndex, 1);
+                            this.containers.splice(viewIndex, 1)[0].remove();
+                        }, this))
+                        .append('span').attr('class', 'glyphicon glyphicon-trash');
+
+                    this.containers.push(container);
+                    this.view.push(new flow.InputsView({
+                        collection: new Backbone.Collection(this.model.get('components')),
+                        el: container[0],
+                        datasets: this.datasets,
+                        parentView: this
+                    }).render());
+                }, this));
+            } else if (this.inputMode === 'dataset') {
                 this.view = new flow.ItemsView({
                     el: $('<select class="form-control"/>').appendTo(div.node()),
                     collection: this.datasets,
@@ -40,7 +68,7 @@
                 });
             } else {
                 if (this.model.get('domain')) {
-                    if (tangelo.isArray(this.model.get('domain'))) {
+                    if (_.isArray(this.model.get('domain'))) {
                         this.domainArray = new Backbone.Collection(this.model.get('domain'));
                     } else {
                         this.domainArray = new Backbone.Collection([]);

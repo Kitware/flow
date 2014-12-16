@@ -13,7 +13,7 @@
             },
             that = this[0];
 
-        spec.y = tangelo.isArray(spec.y) ? spec.y : [spec.y];
+        spec.y = _.isArray(spec.y) ? spec.y : [spec.y];
         y = [];
         spec.y.forEach(function (row) {
             var accessor = tangelo.accessor({field: row}, undefined);
@@ -25,7 +25,7 @@
                 dt.push({
                     date: new Date(date(row)),
                     group: yy.field,
-                    y: tangelo.isNumber(yy(row)) ? yy(row) : NaN,
+                    y: _.isNumber(yy(row)) ? yy(row) : NaN,
                     orig: row
                 });
             });

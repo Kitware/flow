@@ -15,8 +15,8 @@
 
         data.forEach(function (row) {
             dt.push({
-                x: tangelo.isNumber(x(row)) ? x(row) : NaN,
-                y: tangelo.isNumber(y(row)) ? y(row) : NaN,
+                x: _.isNumber(x(row)) ? x(row) : NaN,
+                y: _.isNumber(y(row)) ? y(row) : NaN,
                 orig: row
             });
         });

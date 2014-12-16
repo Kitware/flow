@@ -6,37 +6,79 @@
     flow.InputsView = flow.ItemsView.extend({
         initialize: function (settings) {
             this.datasets = settings.datasets;
-            flow.ItemsView.prototype.initialize.apply(this, [_.extend(settings, {itemView: flow.InputView, itemOptions: {datasets: this.datasets}})]);
+            this.parentView = settings.parentView;
+            flow.ItemsView.prototype.initialize.apply(
+                this,
+                [
+                    _.extend(
+                        settings,
+                        {
+                            itemView: flow.InputView,
+                            itemOptions: {
+                                datasets: settings.datasets,
+                                parentView: this
+                            }
+                        }
+                    )
+                ]
+            );
         },
 
         render: function () {
-            // For fancy domains such as column names, we need changes in an input dataset
-            // dropdown to trigger pulling the data in a certain format (like column headers)
-            // as the domain of another input
-            this.collection.forEach(_.bind(function (input) {
-                var view, referredInput;
-                if (input.get('type') === 'string' || input.get('type') === 'accessor' || input.get('type') === 'number' || input.get('type') === 'json') {
-                    if (input.get('domain') && tangelo.isObject(input.get('domain'))) {
-                        referredInput = this.collection.findWhere({name: input.get('domain').input});
-                        view = this.itemViews[referredInput.cid];
-                        view.$el.change(_.bind(function () {
-                            var dataset = this.datasets.get(view.view.$el.val());
-                            flow.retrieveDatasetAsFormat(dataset, view.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
-                                dataset.get('data').sort();
-                                this.itemViews[input.cid].view.collection.set(dataset.get('data'));
-                            }, this));
-                        }, this));
-                    }
-                }
-            }, this));
+            var registerChangeEvents = _.bind(function (view) {
+                // For fancy domains such as column names, we need changes in an input dataset
+                // dropdown to trigger pulling the data in a certain format (like column headers)
+                // as the domain of another input
+                view.collection.forEach(_.bind(this.addChangeEvent, this));
 
-            // Trigger a change event on each dataset dropdown so dependent inputs
-            // can be initially populated
-            this.collection.forEach(_.bind(function (input) {
-                if (this.itemViews[input.cid].inputMode === "dataset") {
-                    this.itemViews[input.cid].$el.change();
+                // Trigger a change event on each dataset dropdown so dependent inputs
+                // can be initially populated
+                view.collection.forEach(_.bind(view.triggerChangeEvent, view));
+
+                // If there is a parent view, add change events up the chain
+                if (view.parentView && view.parentView.parentView) {
+                    registerChangeEvents(view.parentView.parentView);
                 }
-            }, this));
+            }, this);
+
+            registerChangeEvents(this);
+            return this;
+        },
+
+        addChangeEvent: function (input) {
+            var referredInputView,
+                findReferredInputView = _.bind(function (view) {
+                    var referredInput = view.collection.findWhere({name: input.get('domain').input});
+                    if (!referredInput && view.parentView && view.parentView.parentView) {
+                        return findReferredInputView(view.parentView.parentView);
+                    }
+                    return view.itemViews[referredInput.cid];
+                }, this);
+
+            if (input.get('type') === 'string' || input.get('type') === 'accessor' || input.get('type') === 'number' || input.get('type') === 'json') {
+                if (input.get('domain') && (_.isObject(input.get('domain')) && !_.isArray(input.get('domain')))) {
+                    referredInputView = findReferredInputView(this);
+                    if (!referredInputView) {
+                        console.error('Referred input not found!');
+                        return;
+                    }
+                    referredInputView.$el.change(_.bind(function () {
+                        var dataset = this.datasets.get(referredInputView.view.$el.val());
+                        flow.retrieveDatasetAsFormat(dataset, referredInputView.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
+                            var value = this.itemViews[input.cid].view.$el.val();
+                            dataset.get('data').sort();
+                            this.itemViews[input.cid].view.collection.set(dataset.get('data'));
+                            this.itemViews[input.cid].view.$el.val(value);
+                        }, this));
+                    }, this));
+                }
+            }
+        },
+
+        triggerChangeEvent: function (input) {
+            if (this.itemViews[input.cid].inputMode === "dataset") {
+                this.itemViews[input.cid].$el.change();
+            }
         },
 
         values: function () {

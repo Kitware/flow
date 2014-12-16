@@ -5,7 +5,7 @@
         return;
     }
 
-    tangelo.widget("tangelo.table", {
+    $.widget("tangelo.table", {
         options: {
             data: null,
             modified: null
@@ -53,6 +53,7 @@
                 this.table = $('<table class="table table-bordered table-striped"></table>');
             }
             this.element.append(this.table);
+            this._update();
         },
 
         _update: function () {

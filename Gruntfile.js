@@ -123,7 +123,8 @@ module.exports = function (grunt) {
                         'lib/js/autobahn.min.js',
                         'lib/js/vtkweb-all.min.js',
                         'lib/js/girder.app.min.js',
-                        'lib/js/tangelo.js'
+                        'lib/js/tangelo.js',
+                        'lib/js/controlPanel.js'
                     ],
                     'app/testing.min.js': [
                         'test/lib/jasmine-1.3.1/jasmine.js',

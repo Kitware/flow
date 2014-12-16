@@ -5,7 +5,7 @@
         return;
     }
 
-    tangelo.widget("tangelo.interactiveheatmap", {
+    $.widget("tangelo.interactiveheatmap", {
         options: {
             data: null
         },
@@ -13,6 +13,7 @@
         _create: function () {
             var div = $('<div id="heatmap"></div>');
             this.element.append(div);
+            this._update();
         },
 
         _update: function () {

@@ -5,7 +5,7 @@
         return;
     }
 
-    tangelo.widget("tangelo.scatterplotmatrix", {
+    $.widget("tangelo.scatterplotmatrix", {
         options: {
             data: null,
             y: null
@@ -14,6 +14,7 @@
         _create: function () {
             var div = $('<div id="matrix"></div>');
             this.element.append(div);
+            this._update();
         },
 
         _update: function () {

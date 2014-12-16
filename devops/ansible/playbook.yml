@@ -164,6 +164,12 @@
     notify:
       - restart apache
 
+  - name: apache | turn off sendfile
+    lineinfile: dest=/etc/apache2/httpd.conf line='EnableSendfile Off'
+    sudo: yes
+    notify:
+      - restart apache
+
   - name: apache | copy config
     copy: src=default dest=/etc/apache2/sites-available/default owner=root group=root mode=0644
     sudo: yes

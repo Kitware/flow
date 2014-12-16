@@ -9,11 +9,13 @@
     {
       "name": "x",
       "range": "width",
+      "zero": false,
       "domain": {"data": "table", "field": "data.x"}
     },
     {
       "name": "y",
       "range": "height",
+      "zero": false,
       "domain": {"data": "table", "field": "data.y"}
     }
   ],
