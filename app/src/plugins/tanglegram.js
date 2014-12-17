@@ -19,7 +19,7 @@
         return;
     }
 
-    tangelo.widget("tangelo.tanglegram", {
+    $.widget("tangelo.tanglegram", {
         options: {
             tree1: null,
             tree2: null,
@@ -29,6 +29,7 @@
         _create: function () {
             this.div = $('<div id="viewport"></div>');
             this.element.append(this.div);
+            this._update();
         },
 
         _update: function () {

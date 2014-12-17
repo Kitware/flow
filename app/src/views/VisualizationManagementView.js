@@ -15,7 +15,7 @@
                     });
                     this.show(options);
                 } else {
-                    this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(this.show, this));
+                    this.loadInputs(_.values(this.inputsView.itemViews), {}, this.show);
                 }
             }
         },
@@ -33,6 +33,14 @@
             this.visualizationsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
             this.visualizationsView.render();
             this.changeVisualization();
+            _.bindAll(
+                this,
+                'changeVisualization',
+                'loadInputsArray',
+                'loadInputs',
+                'show',
+                'saveModifiedData'
+            );
         },
 
         render: function () {
@@ -52,6 +60,19 @@
             this.render();
         },
 
+        loadInputsArray: function (inputsViews, optionsArray, done) {
+            if (inputsViews.length === 0) {
+                done(optionsArray);
+                return;
+            }
+            var inputsView = inputsViews[0];
+            inputsViews = inputsViews.slice(1);
+            this.loadInputs(_.values(inputsView.itemViews), {}, _.bind(function (options) {
+                optionsArray.push(options);
+                this.loadInputsArray(inputsViews, optionsArray, done);
+            }, this));
+        },
+
         loadInputs: function (inputViews, options, done) {
             var input, inputView, dataset, value;
             if (inputViews.length === 0) {
@@ -62,11 +83,20 @@
             // Just handle the first input, recurse to handle the rest
             inputView = inputViews[0];
             inputViews = inputViews.slice(1);
-
-            // Sometimes the view is a Backbone view, sometimes it is a plain control
-            value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val();
-
             input = inputView.model;
+
+            // Sometimes the view is a Backbone view, sometimes it is a plain control, sometimes is is an array
+            if (_.isArray(inputView.view)) {
+                this.loadInputsArray(inputView.view, [], _.bind(function (optionsArray) {
+                    options[input.get('name')] = optionsArray;
+                    this.loadInputs(inputViews, options, done);
+                }, this));
+                return;
+            } else if (inputView.view.$el) {
+                value = inputView.view.$el.val();
+            } else {
+                value = inputView.view.val();
+            }
 
             if (inputView.inputMode === 'dataset') {
                 dataset = this.datasets.get(value);
@@ -90,7 +120,8 @@
             } else if (input.get('type') === 'json') {
                 options[input.get('name')] = JSON.parse(value);
             } else if (input.get('type') === 'accessor') {
-                options[input.get('name')] = {field: value};
+                options[input.get('name')] = function (d) { return d[value]; };
+                options[input.get('name')].field = value;
             }
             this.loadInputs(inputViews, options, done);
         },

@@ -16,7 +16,7 @@
             this.collection.forEach(_.bind(function (input) {
                 var view, referredInput;
                 if (input.get('type') === 'string' || input.get('type') === 'accessor' || input.get('type') === 'number' || input.get('type') === 'json') {
-                    if (input.get('domain') && tangelo.isObject(input.get('domain'))) {
+                    if (input.get('domain') && (_.isObject(input.get('domain')) && !_.isArray(input.get('domain')))) {
                         referredInput = this.collection.findWhere({name: input.get('domain').input});
                         view = this.itemViews[referredInput.cid];
                         view.$el.change(_.bind(function () {

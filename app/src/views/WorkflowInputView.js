@@ -1,4 +1,4 @@
-(function (flow, $, Backbone, d3, tangelo) {
+(function (flow, $, Backbone, d3) {
     "use strict";
 
     // The view for a setting a single input to an analysis or
@@ -39,7 +39,7 @@
                 });
             } else {
                 if (this.model.get('domain')) {
-                    if (tangelo.isArray(this.model.get('domain'))) {
+                    if (_.isArray(this.model.get('domain'))) {
                         this.domainArray = new Backbone.Collection(this.model.get('domain'));
                     } else {
                         this.domainArray = new Backbone.Collection([]);
@@ -74,4 +74,4 @@
         }
     });
 
-}(window.flow, window.$, window.Backbone, window.d3, window.tangelo));
+}(window.flow, window.$, window.Backbone, window.d3));

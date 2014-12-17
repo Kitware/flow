@@ -19,7 +19,7 @@
         return;
     }
 
-    tangelo.widget("tangelo.treeHeatmap", {
+    $.widget("tangelo.treeHeatmap", {
         options: {
             table: null,
             tree: null
@@ -28,6 +28,7 @@
         _create: function () {
             this.div = $('<div id="viewport"></div>');
             this.element.append(this.div);
+            this._update();
         },
 
         _update: function () {

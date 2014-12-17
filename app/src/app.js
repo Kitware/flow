@@ -148,6 +148,61 @@
                         domain: {input: "data", format: "column.names"}
                     }
                 ]
+            },
+            {
+                name: "spaceMap",
+                outputs: [],
+                visualization: true,
+                inputs: [
+                    {
+                        name: "data",
+                        type: "table",
+                        format: "objectlist"
+                    },
+                    {
+                        name: "charge",
+                        type: "number",
+                        format: "number",
+                        default: {format: "number", data: -30}
+                    },
+                    {
+                        name: "gravity",
+                        type: "number",
+                        format: "number",
+                        default: {format: "number", data: 0.1}
+                    },
+                    {
+                        name: "constraints",
+                        type: "array",
+                        components: [
+                            {
+                                name: "accessor",
+                                type: "accessor",
+                                domain: {input: "data", format: "column.names"}
+                            },
+                            {
+                                name: "type",
+                                type: "string",
+                                domain: [
+                                    'link-bin',
+                                    'link',
+                                    'link-closest',
+                                    'x',
+                                    'y',
+                                    'ordinalx',
+                                    'ordinaly',
+                                    'xy',
+                                    'map',
+                                    'binx',
+                                    'biny',
+                                    'linex',
+                                    'liney',
+                                    'radius'
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ],
 

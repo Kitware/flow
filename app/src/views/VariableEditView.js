@@ -81,7 +81,7 @@
             this.variableProperties.columnNamesInput['default'] = {data: ''};
             var domain = this.model.get('domain');
             if (domain) {
-                if (tangelo.isArray(domain)) {
+                if (_.isArray(domain)) {
                     this.variableProperties.values['default'] = {data: domain.join(',')};
                 } else {
                     this.variableProperties.columnNamesInput['default'] = {data: domain.input};
