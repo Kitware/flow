@@ -126,17 +126,17 @@ workflow = function (selection) {
                 var rect = this.getBoundingClientRect();
                 tooltip.transition()
                     .duration(200)
-                    .style("opacity", .9);
+                    .style("opacity", 0.9);
                 tooltip.html(d.name + " (" + d.type + ")")
                     .style("left", (rect.left) + "px")
                     .style("top", (rect.top - 28) + "px");
-                })
+            })
             .on("mouseout", function (d) {
                 d3.select(this).style("fill", "whitesmoke");
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", 0);
-                })
+            })
             .on("mouseup", function (d, i) {
                 var existing;
                 if (outputStep !== undefined &&
@@ -198,17 +198,17 @@ workflow = function (selection) {
                 var rect = this.getBoundingClientRect();
                 tooltip.transition()
                     .duration(200)
-                    .style("opacity", .9);
+                    .style("opacity", 0.9);
                 tooltip.html(d.name + " (" + d.type + ")")
                     .style("left", (rect.left) + "px")
                     .style("top", (rect.top - 28) + "px");
-                })
+            })
             .on("mouseout", function (d) {
                 d3.select(this).style("fill", "whitesmoke");
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", 0);
-                })
+            })
             .on("mousedown", function (o, i) {
                 outputStep = step;
                 outputIndex = i;
