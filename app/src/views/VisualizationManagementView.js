@@ -65,7 +65,7 @@
                 done(optionsArray);
                 return;
             }
-            var inputsView = inputsViews[0],
+            var inputsView = inputsViews[0];
             inputsViews = inputsViews.slice(1);
             this.loadInputs(_.values(inputsView.itemViews), {}, _.bind(function (options) {
                 optionsArray.push(options);
@@ -120,7 +120,7 @@
             } else if (input.get('type') === 'json') {
                 options[input.get('name')] = JSON.parse(value);
             } else if (input.get('type') === 'accessor') {
-                options[input.get('name')] = tangelo.accessor({field: value});
+                options[input.get('name')] = function (d) { return d[value]; };
                 options[input.get('name')].field = value;
             }
             this.loadInputs(inputViews, options, done);
