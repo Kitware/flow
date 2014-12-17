@@ -53,15 +53,15 @@
 
         return $(that).nodelink({
             data: {nodes: filteredNodes, links: filteredLinks},
-            nodeId: {field: "id"},
-            nodeSize: {field: "degree"},
-            nodeLabel: {field: "id"},
-            nodeColor: {field: "type"},
-            nodeCharge: {value: -300},
-            linkSource: {field: "source"},
-            linkTarget: {field: "target"},
-            linkOpacity: {field: "count"},
-            linkDistance: {value: 75}
+            nodeId: function (d) { return d.id; },
+            nodeSize: function (d) { return d.degree; },
+            nodeLabel: function (d) { return d.id; },
+            nodeColor: function (d) { return d.type; },
+            nodeCharge: -300,
+            linkSource: function (d) { return d.source; },
+            linkTarget: function (d) { return d.target; },
+            linkOpacity: function (d) { return d.count; },
+            linkDistance: 75
         });
     };
 
