@@ -20,7 +20,6 @@ workflow = function (selection) {
         strokeColor = "#333",
         tooltip = selection.append("div").style("opacity", 0).style("position", "absolute");
 
-
     // Update the SVG path for a connection
     function connectionPath(d) {
         var dist,
