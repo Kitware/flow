@@ -17,7 +17,9 @@ workflow = function (selection) {
         dragConnection,
         dragPath,
         portOffset = 20,
-        strokeColor = "#333";
+        strokeColor = "#333",
+        tooltip = selection.append("div").style("opacity", 0).style("position", "absolute");
+
 
     // Update the SVG path for a connection
     function connectionPath(d) {
@@ -119,8 +121,22 @@ workflow = function (selection) {
                 });
                 that.update();
             })
-            .on("mouseover", function (d) { d3.select(this).style("fill", "#428BCA"); })
-            .on("mouseout", function (d) { d3.select(this).style("fill", "whitesmoke"); })
+            .on("mouseover", function (d) {
+                d3.select(this).style("fill", "#428BCA");
+                var rect = this.getBoundingClientRect();
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(d.name + " (" + d.type + ")")
+                    .style("left", (rect.left) + "px")
+                    .style("top", (rect.top - 28) + "px");
+                })
+            .on("mouseout", function (d) {
+                d3.select(this).style("fill", "whitesmoke");
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+                })
             .on("mouseup", function (d, i) {
                 var existing;
                 if (outputStep !== undefined &&
@@ -177,8 +193,22 @@ workflow = function (selection) {
                 });
                 that.update();
             })
-            .on("mouseover", function (d) { d3.select(this).style("fill", "#428BCA"); })
-            .on("mouseout", function (d) { d3.select(this).style("fill", "whitesmoke"); })
+            .on("mouseover", function (d) {
+                d3.select(this).style("fill", "#428BCA");
+                var rect = this.getBoundingClientRect();
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(d.name + " (" + d.type + ")")
+                    .style("left", (rect.left) + "px")
+                    .style("top", (rect.top - 28) + "px");
+                })
+            .on("mouseout", function (d) {
+                d3.select(this).style("fill", "whitesmoke");
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+                })
             .on("mousedown", function (o, i) {
                 outputStep = step;
                 outputIndex = i;
