@@ -162,11 +162,13 @@
             this.analysis = null;
             this.datasets = settings.datasets;
             this.visualizations = settings.visualizations;
+            this.presets = settings.presets;
             this.analysisSetupView = new flow.AnalysisSetupView({
                 el: $('#analysis-setup-dialog'),
                 model: this.analysis,
                 datasets: this.datasets,
-                visualizations: this.visualizations
+                visualizations: this.visualizations,
+                presets: this.presets
             });
 
             this.editor = ace.edit("code-editor");

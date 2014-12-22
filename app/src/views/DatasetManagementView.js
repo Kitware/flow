@@ -42,9 +42,9 @@
                 var dataset = this.datasets.get(this.$('.datasets').val()),
                     viewName = this.defaultViews[dataset.get('type')],
                     vis = window.app.visualizationsView.visualizations.findWhere({name: viewName});
-                $('#visualization').val(vis.cid).change();
+                $('#visualization-management .visualizations').val(vis.cid).change();
                 $('#visualization-management .inputs select').first().val(dataset.cid);
-                $('#show').click();
+                $('#visualization-management .show-visualization').click();
             },
 
             'click .dataset-save': function () {
@@ -180,7 +180,7 @@
                 _.extend(dataset, flow.extensionToType[extension]);
                 dataset = new Backbone.Model(dataset);
 
-                this.datasets.off('add', null, 'set-collection').add(dataset);
+                this.datasets.add(dataset);
             }, this);
 
             reader.readAsText(file);
