@@ -252,6 +252,7 @@
                     d3.select("#workflow-editor").classed("hidden", false);
                     d3.selectAll(".analysis-edit-controls").classed("hidden", true);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", false);
+                    this.workflowEditor.editable(flow.saveLocation);
                     this.workflowEditor.data(this.analysis.get('meta').analysis);
                 } else {
                     d3.select("#code-editor").classed("hidden", false);
