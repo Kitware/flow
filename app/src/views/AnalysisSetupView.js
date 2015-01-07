@@ -95,7 +95,7 @@
                 d3.select('#analysis-output').classed("hidden", hide);
                 d3.select("#show-output-icon").classed("glyphicon-eye-open", hide);
                 d3.select("#show-output-icon").classed("glyphicon-eye-close", !hide);
-                d3.select("#show-output-text").text(hide ? "Show output" : "Hide output");
+                d3.select("#show-output-text").text(hide ? "Show output log" : "Hide output log");
             },
 
             'click #close-analysis-setup': function () {

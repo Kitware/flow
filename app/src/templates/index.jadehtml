@@ -221,7 +221,7 @@ html(lang="en")
                             span.glyphicon.glyphicon-eye-open#show-output-icon
                             | &nbsp;
                             span#show-output-text
-                                | Show output
+                                | Show output log
                         pre#analysis-output.hidden
         .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
             .modal-dialog
