@@ -247,8 +247,10 @@ workflow = function (selection) {
         vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
             .exit().remove();
 
-        g.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .call(drag);
+        g.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        if (write) {
+            g.call(drag);
+        }
 
         g.append("rect")
             .attr("width", 150)
