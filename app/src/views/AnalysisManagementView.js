@@ -134,7 +134,7 @@
 
             'click #add-workvis': function () {
                 var vis = this.visualizations.get($("#workvis").val());
-                this.workflowEditor.add(vis.toJSON());
+                this.workflowEditor.add(vis.get("meta").visualization);
             },
 
             'click #analysis-download': function () {
