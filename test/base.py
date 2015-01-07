@@ -64,8 +64,8 @@ def startServer():
     print(" ".join(tangeloArgs))
     process = subprocess.Popen(
         tangeloArgs,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT
+        stdout=sys.stdout.fileno(),
+        stderr=sys.stdout.fileno()
     )
 
     # Give it time to spin up
