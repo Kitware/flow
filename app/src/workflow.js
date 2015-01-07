@@ -441,11 +441,15 @@ workflow = function (selection) {
 
     // Set whether or not this workflow is editable.
     that.editable = function (b) {
-        if (b) {
-            write = true;
-        } else {
-            write = false;
-        }
+        write = b;
+
+        // Reset the view.
+        var myWorkflow = workflow,
+            myStepMap = stepMap;
+        that.clear();
+        workflow = myWorkflow;
+        stepMap = myStepMap;
+        that.update();
     };
 
     // Convert workflow to pure JSON (no references) for serialization
