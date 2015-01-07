@@ -156,6 +156,72 @@
             });
         },
 
+        accessor: function (spec) {
+            var func,
+                field,
+                fieldMap = {};
+
+            if (spec.field !== undefined) {
+                func = function (d) {
+                    var path = spec.field.split('.'),
+                        obj = d;
+                    path.slice(0, -1).forEach(function (field) {
+                        if (obj[field] !== undefined) {
+                            obj = obj[field];
+                        }
+                    });
+                    return obj[path[path.length - 1]];
+                };
+            } else if (spec.value !== undefined) {
+                func = function (d) { return spec.value; };
+            } else if (spec.object !== undefined) {
+                for (field in spec.object) {
+                    if (spec.object.hasOwnProperty(field) && field !== '_accessor') {
+                        fieldMap[field] = flow.accessor(spec.object[field]);
+                    }
+                }
+                func = function (d) {
+                    var value = {};
+                    for (field in fieldMap) {
+                        if (fieldMap.hasOwnProperty(field)) {
+                            value[field] = fieldMap[field](d);
+                        }
+                    }
+                    return value;
+                };
+            }
+
+            func.spec = spec;
+            spec._accessor = true;
+            return func;
+        },
+
+        accessorify: function (spec) {
+            var out,
+                field;
+
+            if (_.isArray(spec)) {
+                out = [];
+                spec.forEach(function (d) {
+                    out.push(flow.accessorify(d));
+                });
+            } else if (_.isObject(spec)) {
+                if (spec._accessor) {
+                    out = flow.accessor(spec);
+                } else {
+                    out = {};
+                    for (field in spec) {
+                        if (spec.hasOwnProperty(field)) {
+                            out[field] = flow.accessorify(spec[field]);
+                        }
+                    }
+                }
+            } else {
+                out = spec;
+            }
+            return out;
+        },
+
         girderUpload: function (data, name, folderId, itemToOverwrite, success, error) {
             success = success || function () {};
             error = error || function () {};

@@ -190,6 +190,58 @@
                         ]
                     }
                 ]
+            },
+            {
+                name: "geojsMap",
+                inputs: [
+                    {
+                        name: "data",
+                        type: "table",
+                        format: "objectlist"
+                    },
+                    {
+                        name: "layers",
+                        type: "array",
+                        components: [
+                            {
+                                name: "renderer",
+                                type: "string",
+                                domain: ["d3", "vgl"]
+                            },
+                            {
+                                name: "features",
+                                type: "array",
+                                components: [
+                                    {
+                                        name: "type",
+                                        type: "string",
+                                        domain: ["point"]
+                                    },
+                                    {
+                                        name: "position",
+                                        type: "coordinate",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "size",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "fillColor",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "strokeColor",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ],
 
