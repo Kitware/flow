@@ -125,6 +125,36 @@
             }, this));
         },
 
+        lineInput: function (params) {
+            params = _.extend({
+                title: 'Enter a name',
+                initialValue: 'Untitled',
+                yesText: 'Save',
+                yesClass: 'btn-primary',
+                noText: 'Cancel'
+            }, params);
+
+            $('#th-dialog-container').html(jade.templates.lineInput({
+                params: params
+            })).modal();
+
+            $('#th-dialog-container').on('shown.bs.modal', function () {
+                $('#th-dialog-container .th-line-input').focus().select();
+                $('#th-dialog-container').off('shown');
+            });
+
+            $("#th-dialog-container .th-line-input").keyup(function (event) {
+                if (event.keyCode === 13) {
+                    $("#th-dialog-container .th-confirm-button").click();
+                }
+            });
+
+            $('#th-dialog-container .th-confirm-button').click(function () {
+                $('#th-dialog-container').modal('hide');
+                params.confirmCallback($('#th-dialog-container .th-line-input').val());
+            });
+        },
+
         girderUpload: function (data, name, folder, itemToOverwrite) {
             var startByte;
 

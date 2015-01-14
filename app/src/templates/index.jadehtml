@@ -168,14 +168,33 @@ html(lang="en")
                                 .form-group
                                     label(for="visualization")
                                         | Select visualization
-                                    select.form-control#visualization
+                                    select.form-control.visualizations
                             .col-sm-6
                                 .inputs
                         .form-inline
-                            button.btn.btn-primary#show
-                                span.glyphicon.glyphicon-stats#show-icon
-                                span#show-text
+                            button.btn.btn-primary.show-visualization
+                                span.glyphicon.glyphicon-stats.show-icon
+                                span.show-text
                                     |  Update
+                            button.btn.btn-primary.add-to-presets
+                                span.glyphicon.glyphicon-plus
+                                span
+                                    |  Add to presets
+                        .row
+                            .col-sm-6
+                                .form-group
+                                    label(for="presets")
+                                        | Select preset visualization
+                                    select.form-control.presets
+                        .form-inline
+                            button.btn.btn-primary.show-preset
+                                span.glyphicon.glyphicon-stats
+                                span
+                                    |  Show
+                            button.btn.btn-primary.save.hidden
+                                span.glyphicon.glyphicon-save
+                                span
+                                    |  Save to checked collection
                         .row
                             .col-sm-12
                                 pre.hidden #prov
@@ -202,7 +221,7 @@ html(lang="en")
                             span.glyphicon.glyphicon-eye-open#show-output-icon
                             | &nbsp;
                             span#show-output-text
-                                | Show output
+                                | Show output log
                         pre#analysis-output.hidden
         .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
             .modal-dialog
@@ -248,6 +267,7 @@ html(lang="en")
                         button.btn.btn-danger.really-delete-analysis
                             | Delete
         .modal.fade#g-dialog-container
+        .modal.fade#th-dialog-container
         .hidden#template-container
             #variable-template
                 span.edit.glyphicon.glyphicon-pencil(title="Edit variable")

@@ -1,0 +1,16 @@
+.modal-dialog
+    .modal-content
+        .modal-header
+            button.close(type="button", data-dismiss="modal")
+                span(aria-hidden="true")
+                    | &times;
+                span.sr-only
+                    | Close
+            h4.modal-title
+                | #{params.title}
+        .modal-body
+            .form-inline
+                input.form-control.th-line-input(value="#{params.initialValue}", type="text")
+        .modal-footer
+            a.btn.btn-small.btn-default(data-dismiss="modal") #{params.noText}
+            a.th-confirm-button.btn.btn-small(class="#{params.yesClass}") #{params.yesText}

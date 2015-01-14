@@ -95,7 +95,7 @@
                 d3.select('#analysis-output').classed("hidden", hide);
                 d3.select("#show-output-icon").classed("glyphicon-eye-open", hide);
                 d3.select("#show-output-icon").classed("glyphicon-eye-close", !hide);
-                d3.select("#show-output-text").text(hide ? "Show output" : "Hide output");
+                d3.select("#show-output-text").text(hide ? "Show output log" : "Hide output log");
             },
 
             'click #close-analysis-setup': function () {
@@ -106,6 +106,7 @@
         initialize: function (settings) {
             this.datasets = settings.datasets;
             this.visualizations = settings.visualizations;
+            this.presets = settings.presets;
             this.inputsView = new flow.InputsView({
                 collection: new Backbone.Collection(),
                 idPrefix: 'input-',
@@ -152,7 +153,7 @@
                                 index += 1;
                             }
                             output.set({bindings: this.taskBindings});
-                            this.datasets.off('add', null, 'set-collection').add(output);
+                            this.datasets.add(output);
                             outputMessage += '<li>' + output.get('name') + ' [' + output.get('type') + ']</li>';
                         }, this));
 
@@ -160,14 +161,21 @@
 
                         $.each(result._visualizations, _.bind(function (i, visualization) {
                             var index = 1,
-                                output = new Backbone.Model(visualization);
+                                key,
+                                output = new Backbone.Model({meta: {visualization: visualization}});
                             output.set({name: this.model.get('name') + ' ' + visualization.type});
-                            while (this.visualizations.findWhere({name: output.get('name')})) {
+                            for (key in visualization.inputs) {
+                                if (visualization.inputs.hasOwnProperty(key)) {
+                                    visualization.inputs[key] = visualization.inputs[key].data;
+                                }
+                            }
+                            while (this.presets.findWhere({name: output.get('name')})) {
                                 output.set({name: this.model.get('name') + ' ' + visualization.type + ' (' + index + ')'});
                                 index += 1;
                             }
-                            output.set({bindings: this.taskBindings});
-                            this.visualizations.off('add', null, 'set-collection').add(output);
+                            visualization.bindings = this.taskBindings;
+                            visualization.preset = true;
+                            this.presets.add(output);
                             outputMessage += '<li>' + output.get('name') + ' [visualization]</li>';
                         }, this));
 

@@ -6,23 +6,72 @@
     flow.VisualizationManagementView = Backbone.View.extend({
 
         events: {
-            'change #visualization': 'changeVisualization',
-            'click #show': function () {
-                var options = {};
-                if (this.visualization.get('mode') === 'preset') {
-                    $.each(this.visualization.get('inputs'), function (name, value) {
-                        options[name] = value.data;
+            'change .visualizations': 'changeVisualization',
+            'click .show-visualization': function () {
+                this.loadInputs(_.values(this.inputsView.itemViews), {}, this.show);
+            },
+            'click .add-to-presets': function () {
+                var vis = this.visualizations.get($('.visualizations').val());
+                this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (inputs) {
+                    var index = 1,
+                        preset = vis.toJSON().meta.visualization;
+                    preset.type = vis.get('name');
+                    while (this.presets.findWhere({name: preset.name})) {
+                        preset.name = vis.get('name') + ' (' + index + ')';
+                        index += 1;
+                    }
+                    preset.preset = true;
+                    preset.inputs = inputs;
+                    flow.lineInput({
+                        title: 'Enter a name for the preset',
+                        initialValue: preset.name,
+                        confirmCallback: _.bind(function (name) {
+                            this.presets.add({
+                                name: name,
+                                meta: {
+                                    visualization: preset
+                                }
+                            });
+                        }, this)
                     });
-                    this.show(options);
-                } else {
-                    this.loadInputs(_.values(this.inputsView.itemViews), {}, this.show);
-                }
+                }, this));
+            },
+            'click .save': function () {
+                var preset = this.presets.get($('.presets').val()),
+                    vis = preset.get('meta').visualization;
+                girder.restRequest({
+                    path: 'item/?name=' + encodeURIComponent(preset.get('name')) + '&folderId=' + flow.saveLocation.get('visualizationFolder'),
+                    type: 'POST',
+                    error: null
+                }).done(_.bind(function (result) {
+                    var analysisUri = 'item/' + result._id;
+                    girder.restRequest({
+                        path: analysisUri + '/metadata',
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(preset.get('meta')),
+                        error: null
+                    }).done(_.bind(function (result) {
+                        preset.id = result._id;
+                        preset.set({collection: flow.saveLocation});
+                    }, this)).error(_.bind(function (error) {
+                        // TODO report error
+                    }, this));
+                }, this)).error(_.bind(function (error) {
+                    console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
+                }, this));
+            },
+            'click .show-preset': function () {
+                this.visualization = this.presets.get($('.presets').val());
+                console.log(this.visualization.get('meta'));
+                this.show(this.visualization.get('meta').visualization.inputs);
             }
         },
 
         initialize: function (settings) {
             this.datasets = settings.datasets;
             this.visualizations = settings.visualizations;
+            this.presets = settings.presets;
 
             this.inputsView = new flow.InputsView({
                 collection: new Backbone.Collection(),
@@ -30,8 +79,10 @@
                 datasets: this.datasets
             });
 
-            this.visualizationsView = new flow.ItemsView({el: this.$('#visualization'), itemView: flow.ItemOptionView, collection: this.visualizations});
+            this.visualizationsView = new flow.ItemsView({el: this.$('.visualizations'), itemView: flow.ItemOptionView, collection: this.visualizations});
             this.visualizationsView.render();
+            this.presetsView = new flow.ItemsView({el: this.$('.presets'), itemView: flow.ItemOptionView, collection: this.presets});
+            this.presetsView.render();
             this.changeVisualization();
             _.bindAll(
                 this,
@@ -41,22 +92,22 @@
                 'show',
                 'saveModifiedData'
             );
+
+            flow.events.on('flow:change-save-location', _.bind(function () {
+                this.$('.save').toggleClass('hidden', flow.saveLocation === null);
+            }, this));
         },
 
         render: function () {
             if (this.visualization) {
-                if (this.visualization.get('mode') === 'preset') {
-                    this.inputsView.collection.set([]);
-                } else {
-                    this.inputsView.collection.set(this.visualization.get('inputs'));
-                }
+                this.inputsView.collection.set(this.visualization.get('meta').visualization.inputs);
                 this.inputsView.render();
             }
             return this;
         },
 
         changeVisualization: function () {
-            this.visualization = this.visualizations.get($("#visualization").val());
+            this.visualization = this.visualizations.get($(".visualizations").val());
             this.render();
         },
 
@@ -135,10 +186,11 @@
             options.modified = _.bind(this.saveModifiedData, this);
 
             setTimeout(_.bind(function () {
-                if (this.visualization.get('mode') === 'preset') {
-                    inner[this.visualization.get('type')](options);
+                var vis = this.visualization.get('meta').visualization;
+                if (vis.preset) {
+                    inner[vis.type](options);
                 } else {
-                    inner[this.visualization.get('name')](options);
+                    inner[vis.name](options);
                 }
             }, this), 1000);
 
