@@ -22,6 +22,7 @@
                 var edit = d3.select("#edit").classed("active");
                 this.editor.setReadOnly(edit);
                 this.editor.renderer.$cursorLayer.element.style.opacity = edit ? 0 : 1;
+                this.workflowEditor.editable(!edit);
                 d3.selectAll(".edit-controls").classed("hidden", edit);
             },
 
@@ -179,7 +180,9 @@
             this.editor.setReadOnly(true);
             this.editor.setFontSize(14);
             this.editor.renderer.$cursorLayer.element.style.opacity = 0;
+
             this.workflowEditor = workflow(d3.select("#workflow-editor"));
+            this.workflowEditor.editable(false);
 
             this.analyses = settings.analyses;
             this.analysesView = new flow.ItemsView({el: this.$('#analysis'), itemView: flow.ItemOptionView, collection: this.analyses});

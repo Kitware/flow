@@ -18,6 +18,7 @@ workflow = function (selection) {
         dragPath,
         portOffset = 20,
         strokeColor = "#333",
+        write = false,
         tooltip = selection.append("div").style("opacity", 0).style("position", "absolute");
 
     // Update the SVG path for a connection
@@ -55,6 +56,7 @@ workflow = function (selection) {
 
     function updateStep(step) {
         /*jshint validthis:true */
+        var pathInput, pathOutput;
 
         function portShape(type, x, y) {
             if (type === "table") {
@@ -94,13 +96,54 @@ workflow = function (selection) {
             .style("stroke", strokeColor)
             .style("stroke-width", 2);
 
-        d3.select(this).selectAll("path.input").data(step.inputs).enter().append("path")
+        pathInput = d3.select(this).selectAll("path.input").data(step.inputs).enter().append("path")
             .classed("input", true)
             .attr("d", function (d, i) { return portShape(d.type, -portOffset, step.inputScale(i)); })
             .style("fill", "whitesmoke")
             .style("stroke", strokeColor)
             .style("stroke-width", 2)
-            .on("click", function (d, i) {
+            .on("mouseover", function (d) {
+                d3.select(this).style("fill", "#428BCA");
+                var rect = this.getBoundingClientRect();
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9);
+                tooltip.html(d.name + " (" + d.type + ")")
+                    .style("left", (rect.left) + "px")
+                    .style("top", (rect.top - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                d3.select(this).style("fill", "whitesmoke");
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+            });
+
+        pathOutput = d3.select(this).selectAll("path.output").data(step.outputs).enter().append("path")
+            .classed("output", true)
+            .attr("d", function (d, i) { return portShape(d.type, 150 + portOffset, step.outputScale(i)); })
+            .style("fill", "#eee")
+            .style("stroke", strokeColor)
+            .style("stroke-width", 2)
+            .on("mouseover", function (d) {
+                d3.select(this).style("fill", "#428BCA");
+                var rect = this.getBoundingClientRect();
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9);
+                tooltip.html(d.name + " (" + d.type + ")")
+                    .style("left", (rect.left) + "px")
+                    .style("top", (rect.top - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                d3.select(this).style("fill", "whitesmoke");
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
+            });
+
+        if (write) {
+            pathInput.on("click", function (d, i) {
                 // Create an input node
                 var input = {
                         name: d.name,
@@ -119,24 +162,9 @@ workflow = function (selection) {
                     inputPos: step.inputScale(i)
                 });
                 that.update();
-            })
-            .on("mouseover", function (d) {
-                d3.select(this).style("fill", "#428BCA");
-                var rect = this.getBoundingClientRect();
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0.9);
-                tooltip.html(d.name + " (" + d.type + ")")
-                    .style("left", (rect.left) + "px")
-                    .style("top", (rect.top - 28) + "px");
-            })
-            .on("mouseout", function (d) {
-                d3.select(this).style("fill", "whitesmoke");
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0);
-            })
-            .on("mouseup", function (d, i) {
+            });
+
+            pathInput.on("mouseup", function (d, i) {
                 var existing;
                 if (outputStep !== undefined &&
                         outputStep.outputs[outputIndex].type === step.inputs[i].type) {
@@ -166,13 +194,7 @@ workflow = function (selection) {
                 }
             });
 
-        d3.select(this).selectAll("path.output").data(step.outputs).enter().append("path")
-            .classed("output", true)
-            .attr("d", function (d, i) { return portShape(d.type, 150 + portOffset, step.outputScale(i)); })
-            .style("fill", "#eee")
-            .style("stroke", strokeColor)
-            .style("stroke-width", 2)
-            .on("click", function (d, i) {
+            pathOutput.on("click", function (d, i) {
                 // Create an output node
                 var output = {
                         name: d.name,
@@ -191,24 +213,9 @@ workflow = function (selection) {
                     inputPos: outStep.inputScale(0)
                 });
                 that.update();
-            })
-            .on("mouseover", function (d) {
-                d3.select(this).style("fill", "#428BCA");
-                var rect = this.getBoundingClientRect();
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0.9);
-                tooltip.html(d.name + " (" + d.type + ")")
-                    .style("left", (rect.left) + "px")
-                    .style("top", (rect.top - 28) + "px");
-            })
-            .on("mouseout", function (d) {
-                d3.select(this).style("fill", "whitesmoke");
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0);
-            })
-            .on("mousedown", function (o, i) {
+            });
+
+            pathOutput.on("mousedown", function (o, i) {
                 outputStep = step;
                 outputIndex = i;
                 dragConnection = {
@@ -218,16 +225,18 @@ workflow = function (selection) {
                     inputPos: 0
                 };
                 d3.event.stopPropagation();
-            })
-            .call(dragPort);
+            });
 
-        // delete this step from the workflow
-        d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
-            var r = confirm("Remove the step '" + step.id + "' from this workflow?");
-            if (r === true) {
-                deleteStep(step);
-            }
-        });
+            pathOutput.call(dragPort);
+
+            // delete this step from the workflow
+            d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
+                var r = confirm("Remove the step '" + step.id + "' from this workflow?");
+                if (r === true) {
+                    deleteStep(step);
+                }
+            });
+        }
     }
 
     function updateSteps() {
@@ -238,8 +247,10 @@ workflow = function (selection) {
         vis.selectAll("g.step").data(workflow.steps, function (d) { return d.id; })
             .exit().remove();
 
-        g.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .call(drag);
+        g.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        if (write) {
+            g.call(drag);
+        }
 
         g.append("rect")
             .attr("width", 150)
@@ -273,15 +284,17 @@ workflow = function (selection) {
             .style("-webkit-user-select", "none")
             .style("pointer-events", "none");
 
-        // icon to delete this workflow step
-        g.append("text")
-            .attr("width", 10)
-            .attr("height", 10)
-            .attr("x", 70)
-            .attr("y", 98)
-            .attr("class", "delete-step")
-            .style("fill", "crimson")
-            .text("X");
+        if (write) {
+            // icon to delete this workflow step
+            g.append("text")
+                .attr("width", 10)
+                .attr("height", 10)
+                .attr("x", 70)
+                .attr("y", 98)
+                .attr("class", "delete-step")
+                .style("fill", "crimson")
+                .text("X");
+        }
 
         g.each(updateStep);
 
@@ -423,6 +436,19 @@ workflow = function (selection) {
             });
         });
 
+        that.update();
+    };
+
+    // Set whether or not this workflow is editable.
+    that.editable = function (b) {
+        write = b;
+
+        // Reset the view.
+        var myWorkflow = workflow,
+            myStepMap = stepMap;
+        that.clear();
+        workflow = myWorkflow;
+        stepMap = myStepMap;
         that.update();
     };
 
