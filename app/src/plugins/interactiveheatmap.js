@@ -20,6 +20,7 @@
             var heatmap = d3.chart.heatmap(),
                 data = this.options.data.rows,
                 columnHeaders = this.options.data.fields;
+
             d3.select("#heatmap")
                 .datum(data)
                 .call(heatmap, columnHeaders);
