@@ -293,6 +293,7 @@ workflow = function (selection) {
                 .attr("y", 15)
                 .attr("visibility", "hidden")
                 .attr("class", "delete-step")
+                .style("cursor", "pointer")
                 .style("fill", "crimson")
                 .text("X");
 
