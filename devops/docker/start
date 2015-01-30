@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo -e "Listen 8888\n\
+<VirtualHost *:8888>\n\
+    DocumentRoot /tangelohub/app \n\
+    ProxyPass /girder $GIRDER_URL\n\
+    ProxyPassReverse /girder $GIRDER_URL\n\
+</VirtualHost>\n\
+" > /etc/apache2/sites-available/default
+
+export APACHE_RUN_USER=www-data
+export APACHE_RUN_GROUP=www-data
+export APACHE_LOG_DIR=/var/log/apache2
+
+/usr/sbin/apache2 -DFOREGROUND
