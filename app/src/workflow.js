@@ -289,11 +289,20 @@ workflow = function (selection) {
             g.append("text")
                 .attr("width", 10)
                 .attr("height", 10)
-                .attr("x", 70)
-                .attr("y", 98)
+                .attr("x", 135)
+                .attr("y", 15)
+                .attr("visibility", "hidden")
                 .attr("class", "delete-step")
+                .style("cursor", "pointer")
                 .style("fill", "crimson")
                 .text("X");
+
+            g.on("mouseenter", function (d) {
+                $(this).find(".delete-step").attr("visibility", "visible");
+            });
+            g.on("mouseleave", function (d) {
+                $(this).find(".delete-step").attr("visibility", "hidden");
+            });
         }
 
         g.each(updateStep);

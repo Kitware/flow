@@ -258,7 +258,6 @@
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
             this.datasets.on('add', function (item) {
-                console.log(item);
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
