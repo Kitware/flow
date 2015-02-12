@@ -63,6 +63,8 @@ workflow = function (selection) {
             path.on("click", function (d) {
                 var r = confirm("Remove this connection from this workflow?");
                 if (r === true) {
+                    var idx = workflow.connections.indexOf(d);
+                    workflow.connections.splice(idx, 1);
                     d3.select(this).remove();
                 }
             });
