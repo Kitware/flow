@@ -37,6 +37,7 @@ workflow = function (selection) {
     }
 
     function updateConnections() {
+        var path;
         function connectionKey(d) {
             return d.inputStep.id +
                 "$" +
@@ -46,11 +47,29 @@ workflow = function (selection) {
                 "$" +
                 d.outputIndex;
         }
-        conn.selectAll("path").data(workflow.connections, connectionKey).enter().append("path")
+        path = conn.selectAll("path").data(workflow.connections, connectionKey).enter().append("path")
             .style("stroke", strokeColor)
             .style("stroke-width", 10)
             .style("fill", "none")
             .attr("d", connectionPath);
+
+        if (write) {
+            path.on("mouseover", function (d) {
+                d3.select(this).style("stroke", "crimson");
+            });
+            path.on("mouseout", function (d) {
+                d3.select(this).style("stroke", strokeColor);
+            });
+            path.on("click", function (d) {
+                var r = confirm("Remove this connection from this workflow?");
+                if (r === true) {
+                    var idx = workflow.connections.indexOf(d);
+                    workflow.connections.splice(idx, 1);
+                    d3.select(this).remove();
+                }
+            });
+        }
+
         conn.selectAll("path").data(workflow.connections, connectionKey).exit().remove();
     }
 
