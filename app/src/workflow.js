@@ -1,7 +1,7 @@
 /*globals d3, $, _ */
 
 var workflow;
-workflow = function (selection) {
+workflow = function (selection, girder) {
     "use strict";
 
     var that,
@@ -170,7 +170,7 @@ workflow = function (selection) {
                         inputs: [],
                         outputs: [_.clone(d)]
                     },
-                    inStep = that.add(input);
+                    inStep = that.add(input, null, null);
 
                 workflow.connections.push({
                     outputStep: inStep,
@@ -221,7 +221,7 @@ workflow = function (selection) {
                         inputs: [_.clone(d)],
                         outputs: []
                     },
-                    outStep = that.add(output);
+                    outStep = that.add(output, null, null);
 
                 workflow.connections.push({
                     outputStep: step,
@@ -253,6 +253,14 @@ workflow = function (selection) {
                 var r = confirm("Remove the step '" + step.id + "' from this workflow?");
                 if (r === true) {
                     deleteStep(step);
+                }
+            });
+
+            // refresh this step from the workflow
+            d3.select(this).selectAll(".refresh-step").on("click", function (d, i) {
+                var r = confirm("Attempt to refresh the workflow step  '" + step.id + "'?");
+                if (r === true) {
+                    refreshStep(step);
                 }
             });
         }
@@ -316,11 +324,25 @@ workflow = function (selection) {
                 .style("fill", "crimson")
                 .text("X");
 
+            // icon to refresh this workflow step
+            g.append("text")
+                .attr("width", 10)
+                .attr("height", 10)
+                .attr("x", 5)
+                .attr("y", 18)
+                .attr("visibility", "hidden")
+                .attr("class", "refresh-step")
+                .attr("font-family", 'Glyphicons Halflings')
+                .style("cursor", "pointer")
+                .text('\ue031');
+
             g.on("mouseenter", function (d) {
                 $(this).find(".delete-step").attr("visibility", "visible");
+                $(this).find(".refresh-step").attr("visibility", "visible");
             });
             g.on("mouseleave", function (d) {
                 $(this).find(".delete-step").attr("visibility", "hidden");
+                $(this).find(".refresh-step").attr("visibility", "hidden");
             });
         }
 
@@ -356,6 +378,38 @@ workflow = function (selection) {
         }
     }
 
+    function refreshStep(step) {
+        girder.restRequest({
+            path: '/item/' + step.girderId,
+            type: 'GET',
+            error: null
+        }).done(_.bind(function (result) {
+            var d1, d2, index = workflow.steps.indexOf(step);
+            d1 = Date.parse(step.modified);
+            d2 = Date.parse(result.updated);
+
+            if (d2 <= d1) {
+                alert(step.id + " is already up-to-date");
+                return;
+            }
+
+            if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
+                alert(step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                return;
+            }
+
+            if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
+                alert(step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                return;
+            }
+
+            step.analysis = result.meta.analysis;
+            step.modified = result.updated;
+            alert(step.id + " successfully updated!");
+        }, this));
+    }
+
+
     that = {};
 
     that.clear = function () {
@@ -364,13 +418,15 @@ workflow = function (selection) {
         that.update();
     };
 
-    that.add = function (a) {
+    that.add = function (a, id, timestamp) {
         var count,
             step = {
                 x: (a.x === undefined ? 200 : a.x),
                 y: (a.y === undefined ? 200 : a.y),
                 id: a.id || a.name,
+                girderId: id,
                 name: a.name,
+                modified: timestamp,
                 isInput: a.isInput,
                 isOutput: a.isOutput,
                 inputs: a.inputs,
@@ -414,7 +470,7 @@ workflow = function (selection) {
                 isInput: true,
                 inputs: [],
                 outputs: [_.clone(input)]
-            });
+            }, null, null);
         });
 
         d.outputs.forEach(function (output) {
@@ -426,15 +482,17 @@ workflow = function (selection) {
                 isOutput: true,
                 inputs: [_.clone(output)],
                 outputs: []
-            });
+            }, null, null);
         });
 
         d.steps.forEach(function (step) {
-            var s = _.clone(step.analysis);
+            var girderId, modified, s = _.clone(step.analysis);
+            girderId = step.girderId;
+            modified = step.modified;
             s.x = step.x;
             s.y = step.y;
             s.name = step.id;
-            that.add(s);
+            that.add(s, girderId, modified);
         });
 
         d.connections.forEach(function (conn) {
@@ -513,6 +571,8 @@ workflow = function (selection) {
                     id: step.id,
                     name: step.name,
                     visualization: step.visualization,
+                    girderId: step.girderId,
+                    modified: step.modified,
                     analysis: step.analysis
                 });
             }
