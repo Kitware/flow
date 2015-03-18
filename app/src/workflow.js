@@ -398,24 +398,30 @@ workflow = function (selection, girder) {
             d2 = Date.parse(result.updated);
 
             if (d2 <= d1) {
-                alert(step.id + " is already up-to-date");
+                bootstrapAlert("info", step.id + " is already up-to-date.");
                 return;
             }
 
             if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
-                alert(step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.");
                 return;
             }
 
             if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
-                alert(step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.");
                 return;
             }
 
             step.analysis = result.meta.analysis;
             step.modified = result.updated;
-            alert(step.id + " successfully updated!");
+            bootstrapAlert("success", step.id + " successfully updated!");
         });
+    }
+
+    // Display a bootstrap-style alert message to the user.
+    // Type should be success, info, warning, or danger.
+    function bootstrapAlert(type, message) {
+        $('#alert_placeholder').html('<div class="alert alert-' + type + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
     }
 
     that = {};
