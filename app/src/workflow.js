@@ -383,7 +383,7 @@ workflow = function (selection, girder) {
             path: '/item/' + step.girderId,
             type: 'GET',
             error: null
-        }).done(_.bind(function (result) {
+        }).done(function (result) {
             var d1, d2, index = workflow.steps.indexOf(step);
             d1 = Date.parse(step.modified);
             d2 = Date.parse(result.updated);
@@ -406,9 +406,8 @@ workflow = function (selection, girder) {
             step.analysis = result.meta.analysis;
             step.modified = result.updated;
             alert(step.id + " successfully updated!");
-        }, this));
+        });
     }
-
 
     that = {};
 
