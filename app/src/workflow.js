@@ -61,12 +61,15 @@ workflow = function (selection, girder) {
                 d3.select(this).style("stroke", strokeColor);
             });
             path.on("click", function (d) {
-                var r = confirm("Remove this connection from this workflow?");
-                if (r === true) {
-                    var idx = workflow.connections.indexOf(d);
-                    workflow.connections.splice(idx, 1);
-                    d3.select(this).remove();
-                }
+                girder.confirm({
+                    text: 'Remove this connection from the workflow?',
+                    yesText: 'Delete',
+                    confirmCallback: _.bind(function () {
+                        var idx = workflow.connections.indexOf(d);
+                        workflow.connections.splice(idx, 1);
+                        d3.select(this).remove();
+                    }, this)
+                });
             });
         }
 
@@ -250,18 +253,24 @@ workflow = function (selection, girder) {
 
             // delete this step from the workflow
             d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
-                var r = confirm("Remove the step '" + step.id + "' from this workflow?");
-                if (r === true) {
-                    deleteStep(step);
-                }
+                girder.confirm({
+                    text: 'Remove the step "' + step.id + '" from this workflow?',
+                    yesText: 'Delete',
+                    confirmCallback: function () {
+                        deleteStep(step);
+                    }
+                });
             });
 
             // refresh this step from the workflow
             d3.select(this).selectAll(".refresh-step").on("click", function (d, i) {
-                var r = confirm("Attempt to refresh the workflow step  '" + step.id + "'?");
-                if (r === true) {
-                    refreshStep(step);
-                }
+                girder.confirm({
+                    text: 'Refresh the workflow step "' + step.id + '" ?',
+                    yesText: 'Refresh',
+                    confirmCallback: function () {
+                        refreshStep(step);
+                    }
+                });
             });
         }
     }
