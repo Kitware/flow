@@ -340,10 +340,25 @@ workflow = function (selection, girder) {
                 .attr("x", 5)
                 .attr("y", 18)
                 .attr("visibility", "hidden")
-                .attr("class", "refresh-step")
                 .attr("font-family", 'Glyphicons Halflings')
-                .style("cursor", "pointer")
-                .text('\ue031');
+                .attr("class", function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return "refresh-step";
+                    }
+                    return "";
+                })
+                .style("cursor", function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return "pointer";
+                    }
+                    return "";
+                })
+                .text(function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return '\ue031';
+                    }
+                    return "";
+                });
 
             g.on("mouseenter", function (d) {
                 $(this).find(".delete-step").attr("visibility", "visible");
