@@ -388,6 +388,11 @@ workflow = function (selection, girder) {
     }
 
     function refreshStep(step) {
+        if (!step.girderId) {
+            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not have a database ID set.  It was probably created before this feature was added.  Sorry about that.", 20);
+            return;
+        }
+
         girder.restRequest({
             path: '/item/' + step.girderId,
             type: 'GET',
@@ -415,6 +420,9 @@ workflow = function (selection, girder) {
             step.analysis = result.meta.analysis;
             step.modified = result.updated;
             bootstrapAlert("success", step.id + " successfully updated!");
+        }).error(function (error) {
+            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not appear in the database.  Perhaps somebody deleted it.", 15);
+            return;
         });
     }
 
