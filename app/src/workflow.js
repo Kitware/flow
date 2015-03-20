@@ -403,12 +403,12 @@ workflow = function (selection, girder) {
             }
 
             if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
-                bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
             if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
-                bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.");
+                bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
@@ -420,8 +420,15 @@ workflow = function (selection, girder) {
 
     // Display a bootstrap-style alert message to the user.
     // Type should be success, info, warning, or danger.
-    function bootstrapAlert(type, message) {
-        $('#alert_placeholder').html('<div class="alert alert-' + type + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
+    // Timeout is how long the alert should be display.  Defaults to 5 seconds.
+    function bootstrapAlert(type, message, timeout) {
+        timeout = typeof timeout !== 'undefined' ? timeout : 5;
+        timeout *= 1000; // convert to milliseconds
+
+        $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
+        window.setTimeout(function () {
+            $('#alert').alert('close');
+        }, timeout);
     }
 
     that = {};
