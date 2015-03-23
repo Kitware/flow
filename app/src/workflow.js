@@ -1,7 +1,7 @@
 /*globals d3, $, _ */
 
 var workflow;
-workflow = function (selection) {
+workflow = function (selection, girder) {
     "use strict";
 
     var that,
@@ -61,12 +61,15 @@ workflow = function (selection) {
                 d3.select(this).style("stroke", strokeColor);
             });
             path.on("click", function (d) {
-                var r = confirm("Remove this connection from this workflow?");
-                if (r === true) {
-                    var idx = workflow.connections.indexOf(d);
-                    workflow.connections.splice(idx, 1);
-                    d3.select(this).remove();
-                }
+                girder.confirm({
+                    text: 'Remove this connection from the workflow?',
+                    yesText: 'Delete',
+                    confirmCallback: _.bind(function () {
+                        var idx = workflow.connections.indexOf(d);
+                        workflow.connections.splice(idx, 1);
+                        d3.select(this).remove();
+                    }, this)
+                });
             });
         }
 
@@ -170,7 +173,7 @@ workflow = function (selection) {
                         inputs: [],
                         outputs: [_.clone(d)]
                     },
-                    inStep = that.add(input);
+                    inStep = that.add(input, null, null);
 
                 workflow.connections.push({
                     outputStep: inStep,
@@ -221,7 +224,7 @@ workflow = function (selection) {
                         inputs: [_.clone(d)],
                         outputs: []
                     },
-                    outStep = that.add(output);
+                    outStep = that.add(output, null, null);
 
                 workflow.connections.push({
                     outputStep: step,
@@ -250,10 +253,24 @@ workflow = function (selection) {
 
             // delete this step from the workflow
             d3.select(this).selectAll(".delete-step").on("click", function (d, i) {
-                var r = confirm("Remove the step '" + step.id + "' from this workflow?");
-                if (r === true) {
-                    deleteStep(step);
-                }
+                girder.confirm({
+                    text: 'Remove the step "' + step.id + '" from this workflow?',
+                    yesText: 'Delete',
+                    confirmCallback: function () {
+                        deleteStep(step);
+                    }
+                });
+            });
+
+            // refresh this step from the workflow
+            d3.select(this).selectAll(".refresh-step").on("click", function (d, i) {
+                girder.confirm({
+                    text: 'Refresh the workflow step "' + step.id + '" ?',
+                    yesText: 'Refresh',
+                    confirmCallback: function () {
+                        refreshStep(step);
+                    }
+                });
             });
         }
     }
@@ -316,11 +333,40 @@ workflow = function (selection) {
                 .style("fill", "crimson")
                 .text("X");
 
+            // icon to refresh this workflow step
+            g.append("text")
+                .attr("width", 10)
+                .attr("height", 10)
+                .attr("x", 5)
+                .attr("y", 18)
+                .attr("visibility", "hidden")
+                .attr("font-family", 'Glyphicons Halflings')
+                .attr("class", function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return "refresh-step";
+                    }
+                    return "";
+                })
+                .style("cursor", function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return "pointer";
+                    }
+                    return "";
+                })
+                .text(function (d) {
+                    if (!d.visualization && !d.isOutput && !d.isInput) {
+                        return '\ue031';
+                    }
+                    return "";
+                });
+
             g.on("mouseenter", function (d) {
                 $(this).find(".delete-step").attr("visibility", "visible");
+                $(this).find(".refresh-step").attr("visibility", "visible");
             });
             g.on("mouseleave", function (d) {
                 $(this).find(".delete-step").attr("visibility", "hidden");
+                $(this).find(".refresh-step").attr("visibility", "hidden");
             });
         }
 
@@ -356,6 +402,58 @@ workflow = function (selection) {
         }
     }
 
+    function refreshStep(step) {
+        if (!step.girderId) {
+            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not have a database ID set.  It was probably created before this feature was added.  Sorry about that.", 20);
+            return;
+        }
+
+        girder.restRequest({
+            path: '/item/' + step.girderId,
+            type: 'GET',
+            error: null
+        }).done(function (result) {
+            var d1, d2, index = workflow.steps.indexOf(step);
+            d1 = Date.parse(step.modified);
+            d2 = Date.parse(result.updated);
+
+            if (d2 <= d1) {
+                bootstrapAlert("info", step.id + " is already up-to-date.");
+                return;
+            }
+
+            if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
+                bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                return;
+            }
+
+            if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
+                bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                return;
+            }
+
+            step.analysis = result.meta.analysis;
+            step.modified = result.updated;
+            bootstrapAlert("success", step.id + " successfully updated!");
+        }).error(function (error) {
+            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not appear in the database.  Perhaps somebody deleted it.", 15);
+            return;
+        });
+    }
+
+    // Display a bootstrap-style alert message to the user.
+    // Type should be success, info, warning, or danger.
+    // Timeout is how long the alert should be display.  Defaults to 5 seconds.
+    function bootstrapAlert(type, message, timeout) {
+        timeout = typeof timeout !== 'undefined' ? timeout : 5;
+        timeout *= 1000; // convert to milliseconds
+
+        $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
+        window.setTimeout(function () {
+            $('#alert').alert('close');
+        }, timeout);
+    }
+
     that = {};
 
     that.clear = function () {
@@ -364,13 +462,15 @@ workflow = function (selection) {
         that.update();
     };
 
-    that.add = function (a) {
+    that.add = function (a, id, timestamp) {
         var count,
             step = {
                 x: (a.x === undefined ? 200 : a.x),
                 y: (a.y === undefined ? 200 : a.y),
                 id: a.id || a.name,
+                girderId: id,
                 name: a.name,
+                modified: timestamp,
                 isInput: a.isInput,
                 isOutput: a.isOutput,
                 inputs: a.inputs,
@@ -414,7 +514,7 @@ workflow = function (selection) {
                 isInput: true,
                 inputs: [],
                 outputs: [_.clone(input)]
-            });
+            }, null, null);
         });
 
         d.outputs.forEach(function (output) {
@@ -426,15 +526,17 @@ workflow = function (selection) {
                 isOutput: true,
                 inputs: [_.clone(output)],
                 outputs: []
-            });
+            }, null, null);
         });
 
         d.steps.forEach(function (step) {
-            var s = _.clone(step.analysis);
+            var girderId, modified, s = _.clone(step.analysis);
+            girderId = step.girderId;
+            modified = step.modified;
             s.x = step.x;
             s.y = step.y;
             s.name = step.id;
-            that.add(s);
+            that.add(s, girderId, modified);
         });
 
         d.connections.forEach(function (conn) {
@@ -513,6 +615,8 @@ workflow = function (selection) {
                     id: step.id,
                     name: step.name,
                     visualization: step.visualization,
+                    girderId: step.girderId,
+                    modified: step.modified,
                     analysis: step.analysis
                 });
             }

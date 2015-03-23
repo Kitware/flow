@@ -130,7 +130,7 @@
 
             'click #add-workstep': function () {
                 var analysis = this.analyses.get($("#workstep").val());
-                this.workflowEditor.add(analysis.get("meta").analysis);
+                this.workflowEditor.add(analysis.get("meta").analysis, analysis.id, analysis.get("updated"));
             },
 
             'click #add-workvis': function () {
@@ -181,7 +181,7 @@
             this.editor.setFontSize(14);
             this.editor.renderer.$cursorLayer.element.style.opacity = 0;
 
-            this.workflowEditor = workflow(d3.select("#workflow-editor"));
+            this.workflowEditor = workflow(d3.select("#workflow-editor"), girder);
             this.workflowEditor.editable(false);
 
             this.analyses = settings.analyses;
