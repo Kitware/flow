@@ -181,7 +181,7 @@
             this.editor.setFontSize(14);
             this.editor.renderer.$cursorLayer.element.style.opacity = 0;
 
-            this.workflowEditor = workflow(d3.select("#workflow-editor"), girder);
+            this.workflowEditor = workflow(d3.select("#workflow-editor"), flow, girder);
             this.workflowEditor.editable(false);
 
             this.analyses = settings.analyses;
