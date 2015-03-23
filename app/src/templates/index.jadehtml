@@ -266,7 +266,7 @@ html(lang="en")
                             | Cancel
                         button.btn.btn-danger.really-delete-analysis
                             | Delete
-        #alert_placeholder
+        #alert_placeholder.hidden
         .modal.fade#g-dialog-container
         .modal.fade#th-dialog-container
         .hidden#template-container

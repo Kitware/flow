@@ -253,6 +253,11 @@
             timeout *= 1000; // convert to milliseconds
 
             $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
+            $('#alert_placeholder').removeClass("hidden");
+            $('#alert').on('closed.bs.alert', function () {
+                $('#alert_placeholder').addClass("hidden");
+            });
+            $('#alert_placeholder').show();
             window.setTimeout(function () {
                 $('#alert').alert('close');
             }, timeout);
