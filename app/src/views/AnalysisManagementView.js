@@ -186,6 +186,8 @@
             // it gets fired less frequently.
             this.editor.on('input', _.bind(function () {
                 if (this.editor.savedVersion !== this.editor.getValue()) {
+                    $("#save").addClass("btn-primary");
+                    $("#save").removeClass("disabled");
                     if (window.onbeforeunload === null) {
                         window.onbeforeunload = function (e) {
                             return "You have unsaved changes in the editor.";
@@ -193,6 +195,8 @@
                     }
                 } else {
                     window.onbeforeunload = null;
+                    $("#save").removeClass("btn-primary");
+                    $("#save").addClass("disabled");
                 }
             }, this));
 
