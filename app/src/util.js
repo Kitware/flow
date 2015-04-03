@@ -14,6 +14,7 @@
             png: {type: 'image', format: 'png'},
             rds: {type: 'r', format: 'serialized'},
             'objectlist-json': {type: 'table', format: 'objectlist.json'},
+            jsonlines: {type: 'table', format: 'jsonlines'},
             'rows-json': {type: 'table', format: 'rows.json'},
             'number-json': {type: 'number', format: 'json'}
         },
