@@ -252,7 +252,8 @@
             timeout = typeof timeout !== 'undefined' ? timeout : 5;
             timeout *= 1000; // convert to milliseconds
 
-            $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
+            $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span id="alert_message"></span></div>');
+            $('#alert_message').text(message);
             $('#alert_placeholder').removeClass("hidden");
             $('#alert').on('closed.bs.alert', function () {
                 $('#alert_placeholder').addClass("hidden");
