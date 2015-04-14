@@ -121,6 +121,7 @@
             }).done(_.bind(function (result) {
                 done(null, result);
             }), this).error(_.bind(function (error) {
+                console.log("Error encountered: " + error.responseText);
                 done(error);
             }, this));
         },
@@ -243,7 +244,27 @@
                     // TODO report error
                 }, this));
             }
+        },
+
+        // Display a bootstrap-style alert message to the user.
+        // Type should be success, info, warning, or danger.
+        // Timeout is how long the alert should be display.  Defaults to 5 seconds.
+        bootstrapAlert: function (type, message, timeout) {
+            timeout = typeof timeout !== 'undefined' ? timeout : 5;
+            timeout *= 1000; // convert to milliseconds
+
+            $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span id="alert_message"></span></div>');
+            $('#alert_message').text(message);
+            $('#alert_placeholder').removeClass("hidden");
+            $('#alert').on('closed.bs.alert', function () {
+                $('#alert_placeholder').addClass("hidden");
+            });
+            $('#alert_placeholder').show();
+            window.setTimeout(function () {
+                $('#alert').alert('close');
+            }, timeout);
         }
+
     };
 
 }(window.$, window._, window.atob, window.Backbone, window.d3, window.girder, window.Uint8Array));
