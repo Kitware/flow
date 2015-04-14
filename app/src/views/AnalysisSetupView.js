@@ -19,16 +19,19 @@
 
                         // Sometimes the view is a Backbone view, sometimes it is a plain control
                         value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                        dataset,
-                        uri;
+                        dataset;
 
                     if (input.get('type') === 'geometry' || input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                         dataset = this.datasets.get(value);
-                        uri = window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download';
-                        if (girder.currentUser) {
-                            uri += '?token=' + girder.currentUser.get('token');
-                        }
-                        inputs[input.get('name')] = _.extend(dataset.toJSON(), {uri: uri});
+
+                        inputs[input.get('name')] = _.extend(dataset.toJSON(), {
+                            mode: 'http',
+                            url: window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download',
+                            method: 'GET',
+                            headers: girder.currentUser ? {
+                                'Girder-Token': girder.currentUser.get('token')
+                            } : {}
+                        });
                     } else if (input.get('type') === 'string') {
                         inputs[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
                     } else if (input.get('type') === 'number') {
