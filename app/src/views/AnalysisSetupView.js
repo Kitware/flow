@@ -67,7 +67,7 @@
                             d3.select('.info-message').classed('hidden', true);
                             return;
                         }
-                        this.taskId = result.id;
+                        this.taskId = result._id;
                         setTimeout(_.bind(this.checkTaskResult, this), 1000);
 
                         // Stream console output from this analysis.
