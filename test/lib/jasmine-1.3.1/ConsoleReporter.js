@@ -97,6 +97,7 @@
             if (!item.passed()) {
                 this.log('\n Error: ' + item.message, 'red');
                 this._printStackTrace(item.trace.stackArray);
+                console.log('__SCREENSHOT__' + spec.description.replace(/ /g, "_") + ".png");
             }
         }, this);
     };

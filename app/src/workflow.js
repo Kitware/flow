@@ -1,7 +1,7 @@
 /*globals d3, $, _ */
 
 var workflow;
-workflow = function (selection, girder) {
+workflow = function (selection, flow, girder) {
     "use strict";
 
     var that,
@@ -404,7 +404,7 @@ workflow = function (selection, girder) {
 
     function refreshStep(step) {
         if (!step.girderId) {
-            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not have a database ID set.  It was probably created before this feature was added.  Sorry about that.", 20);
+            flow.bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not have a database ID set.  It was probably created before this feature was added.  Sorry about that.", 20);
             return;
         }
 
@@ -418,40 +418,27 @@ workflow = function (selection, girder) {
             d2 = Date.parse(result.updated);
 
             if (d2 <= d1) {
-                bootstrapAlert("info", step.id + " is already up-to-date.");
+                flow.bootstrapAlert("info", step.id + " is already up-to-date.");
                 return;
             }
 
             if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
-                bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                flow.bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
             if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
-                bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                flow.bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
             step.analysis = result.meta.analysis;
             step.modified = result.updated;
-            bootstrapAlert("success", step.id + " successfully updated!");
+            flow.bootstrapAlert("success", step.id + " successfully updated!");
         }).error(function (error) {
-            bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not appear in the database.  Perhaps somebody deleted it.", 15);
+            flow.bootstrapAlert("danger", "Unable to refresh " + step.id + " because it does not appear in the database.  Perhaps somebody deleted it.", 15);
             return;
         });
-    }
-
-    // Display a bootstrap-style alert message to the user.
-    // Type should be success, info, warning, or danger.
-    // Timeout is how long the alert should be display.  Defaults to 5 seconds.
-    function bootstrapAlert(type, message, timeout) {
-        timeout = typeof timeout !== 'undefined' ? timeout : 5;
-        timeout *= 1000; // convert to milliseconds
-
-        $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>');
-        window.setTimeout(function () {
-            $('#alert').alert('close');
-        }, timeout);
     }
 
     that = {};

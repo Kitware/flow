@@ -68,11 +68,12 @@
                             this.analysis.set('name', info.name);
                             $("#save").removeClass("disabled");
                             this.editor.savedVersion = this.analysis.get('meta').analysis.script;
+                            flow.bootstrapAlert("success", info.name + " saved!");
                         }, this)).error(_.bind(function (error) {
-                            // TODO report error
+                            flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.responseJSON.message, 30);
                         }, this));
                     }, this)).error(_.bind(function (error) {
-                        // TODO report error
+                        flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.statusText, 30);
                     }, this));
                 }
             },
@@ -200,7 +201,7 @@
                 }
             }, this));
 
-            this.workflowEditor = workflow(d3.select("#workflow-editor"), girder);
+            this.workflowEditor = workflow(d3.select("#workflow-editor"), flow, girder);
             this.workflowEditor.editable(false);
 
             this.analyses = settings.analyses;
