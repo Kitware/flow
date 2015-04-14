@@ -36,7 +36,7 @@
             'click #save': function () {
                 var info, curWorkflow;
                 if (this.analysis) {
-                    $("#save").addClass("disabled");
+                    this.analysisSaved = false;
                     info = this.analysis.get('meta').analysis;
                     info.name = this.$(".analysis-edit-name").val();
                     if (info.mode === "workflow") {
@@ -66,7 +66,7 @@
                             $("#analysis").change();
                             // Trigger updating this analysis views
                             this.analysis.set('name', info.name);
-                            $("#save").removeClass("disabled");
+                            this.analysisSaved = true;
                             this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                             flow.bootstrapAlert("success", info.name + " saved!");
                         }, this)).error(_.bind(function (error) {
@@ -183,12 +183,15 @@
             this.editor.setFontSize(14);
             this.editor.renderer.$cursorLayer.element.style.opacity = 0;
 
+            // Currently only used by our testing framework.
+            this.analysisSaved = true;
+
             // 'input' instead of 'change' because it's behind a timeout so
             // it gets fired less frequently.
             this.editor.on('input', _.bind(function () {
                 if (this.editor.savedVersion !== this.editor.getValue()) {
-                    $("#save").addClass("btn-primary");
-                    $("#save").removeClass("disabled");
+                    $("#save").addClass("btn-primary").removeClass("disabled");
+                    this.analysisSaved = false;
                     if (window.onbeforeunload === null) {
                         window.onbeforeunload = function (e) {
                             return "You have unsaved changes in the editor.";
@@ -196,8 +199,8 @@
                     }
                 } else {
                     window.onbeforeunload = null;
-                    $("#save").removeClass("btn-primary");
-                    $("#save").addClass("disabled");
+                    $("#save").addClass("disabled").removeClass("btn-primary");
+                    this.analysisSaved = true;
                 }
             }, this));
 
