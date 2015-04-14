@@ -121,6 +121,7 @@
             }).done(_.bind(function (result) {
                 done(null, result);
             }), this).error(_.bind(function (error) {
+                console.log("Error encountered: " + error.responseText);
                 done(error);
             }, this));
         },
