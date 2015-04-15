@@ -36,7 +36,7 @@
             'click #save': function () {
                 var info, curWorkflow;
                 if (this.analysis) {
-                    $("#save").addClass("disabled");
+                    this.analysisSaved = false;
                     info = this.analysis.get('meta').analysis;
                     info.name = this.$(".analysis-edit-name").val();
                     if (info.mode === "workflow") {
@@ -66,7 +66,8 @@
                             $("#analysis").change();
                             // Trigger updating this analysis views
                             this.analysis.set('name', info.name);
-                            $("#save").removeClass("disabled");
+                            this.analysisSaved = true;
+                            this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                             flow.bootstrapAlert("success", info.name + " saved!");
                         }, this)).error(_.bind(function (error) {
                             flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.responseJSON.message, 30);
@@ -182,6 +183,27 @@
             this.editor.setFontSize(14);
             this.editor.renderer.$cursorLayer.element.style.opacity = 0;
 
+            // Currently only used by our testing framework.
+            this.analysisSaved = true;
+
+            // 'input' instead of 'change' because it's behind a timeout so
+            // it gets fired less frequently.
+            this.editor.on('input', _.bind(function () {
+                if (this.editor.savedVersion !== this.editor.getValue()) {
+                    $("#save").addClass("btn-primary").removeClass("disabled");
+                    this.analysisSaved = false;
+                    if (window.onbeforeunload === null) {
+                        window.onbeforeunload = function (e) {
+                            return "You have unsaved changes in the editor.";
+                        };
+                    }
+                } else {
+                    window.onbeforeunload = null;
+                    $("#save").addClass("disabled").removeClass("btn-primary");
+                    this.analysisSaved = true;
+                }
+            }, this));
+
             this.workflowEditor = workflow(d3.select("#workflow-editor"), flow, girder);
             this.workflowEditor.editable(false);
 
@@ -264,6 +286,8 @@
                     d3.select("#workflow-editor").classed("hidden", true);
                     d3.selectAll(".analysis-edit-controls").classed("hidden", false);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", true);
+                    // So we can detect whether or not the text was changed.
+                    this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                     this.editor.setValue(this.analysis.get('meta').analysis.script);
                     this.editor.clearSelection();
                     this.$('#mode').val(this.analysis.get('meta').analysis.mode);
@@ -276,6 +300,7 @@
                 this.analysis.on('change:collection', checkCanEdit, this);
                 _.bind(checkCanEdit, this)();
             } else {
+                this.editor.savedVersion = '';
                 this.editor.setValue('');
                 this.inputVariables.set([]);
                 this.outputVariables.set([]);
@@ -325,5 +350,4 @@
         }
 
     });
-
 }(window.flow, window.$, window._, window.ace, window.Backbone, window.Blob, window.d3, window.FileReader, window.girder, window.tangelo, window.URL, window.workflow));

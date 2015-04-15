@@ -153,7 +153,7 @@ describe('Able to create analysis', function () {
         });
 
         waitsFor(function () {
-            return !$('#save').hasClass('disabled');
+            return app.analysesView.analysisSaved;
         }, 'save to complete');
 
         runs(function () {
