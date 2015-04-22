@@ -422,17 +422,17 @@ workflow = function (selection, flow, girder) {
                 return;
             }
 
-            if (JSON.stringify(step.analysis.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
+            if (JSON.stringify(step.task.inputs) !== JSON.stringify(result.meta.analysis.inputs)) {
                 flow.bootstrapAlert("warning", step.id + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
-            if (JSON.stringify(step.analysis.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
+            if (JSON.stringify(step.task.outputs) !== JSON.stringify(result.meta.analysis.outputs)) {
                 flow.bootstrapAlert("warning", step.id + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
                 return;
             }
 
-            step.analysis = result.meta.analysis;
+            step.task = result.meta.analysis;
             step.modified = result.updated;
             flow.bootstrapAlert("success", step.id + " successfully updated!");
         }).error(function (error) {
@@ -462,7 +462,7 @@ workflow = function (selection, flow, girder) {
                 isOutput: a.isOutput,
                 inputs: a.inputs,
                 outputs: a.outputs,
-                analysis: a,
+                task: a,
                 visualization: a.visualization
             };
         step.inputScale = d3.scale.linear().domain([0, a.inputs.length - 1]).range([10, 90]);
@@ -517,7 +517,7 @@ workflow = function (selection, flow, girder) {
         });
 
         d.steps.forEach(function (step) {
-            var girderId, modified, s = _.clone(step.analysis);
+            var girderId, modified, s = _.clone(step.task);
             girderId = step.girderId;
             modified = step.modified;
             s.x = step.x;
@@ -581,15 +581,15 @@ workflow = function (selection, flow, girder) {
 
         workflow.steps.forEach(function (step) {
             var input, output;
-            if (step.analysis.isInput) {
-                input = _.clone(step.analysis.outputs[0]);
+            if (step.task.isInput) {
+                input = _.clone(step.task.outputs[0]);
                 input.x = step.x;
                 input.y = step.y;
                 input.id = step.id;
                 input.name = step.name;
                 serialized.inputs.push(input);
-            } else if (step.analysis.isOutput) {
-                output = _.clone(step.analysis.inputs[0]);
+            } else if (step.task.isOutput) {
+                output = _.clone(step.task.inputs[0]);
                 output.x = step.x;
                 output.y = step.y;
                 output.id = step.id;
@@ -604,18 +604,18 @@ workflow = function (selection, flow, girder) {
                     visualization: step.visualization,
                     girderId: step.girderId,
                     modified: step.modified,
-                    analysis: step.analysis
+                    task: step.task
                 });
             }
         });
         workflow.connections.forEach(function (c) {
-            if (c.outputStep.analysis.isInput) {
+            if (c.outputStep.task.isInput) {
                 serialized.connections.push({
                     name: c.outputStep.id,
                     input_step: c.inputStep.id,
                     input: c.inputStep.inputs[c.inputIndex].name
                 });
-            } else if (c.inputStep.analysis.isOutput) {
+            } else if (c.inputStep.task.isOutput) {
                 serialized.connections.push({
                     name: c.inputStep.id,
                     output_step: c.outputStep.id,
