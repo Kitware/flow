@@ -233,6 +233,9 @@
       DISPLAY: :7
     when: arbor
 
+  - name: arbor | install logo
+    get_url: url=https://arbor.kitware.com/arbor.jpg dest=/vagrant/app/arbor.jpg
+
   #---------------------------------------------------------------------------
   # VTK configuration
   #---------------------------------------------------------------------------
