@@ -17,6 +17,25 @@ describe('App is running', function () {
     });
 });
 
+describe('Logo is present', function () {
+    it("Make an AJAX request to load arbor.jpg", function () {
+        var callback = jasmine.createSpy();
+        getLogo(callback);
+        waitsFor(function() {
+            return callback.callCount > 0;
+        });
+        runs(function() {
+            expect(callback).toHaveBeenCalled();
+        });
+
+        function getLogo(callback) {
+            $.get("/arbor.jpg", function() {
+                callback();
+            })
+        }
+    });
+});
+
 describe('Able to create account', function () {
     it('account created',
         tangeloHubTest.createUser(
