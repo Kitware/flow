@@ -125,6 +125,9 @@
     notify:
       - restart romanesco
 
+  - name: ArborWebApps | checkout ArborWebApps
+    git: repo=https://github.com/arborworkflows/ArborWebApps.git dest=/vagrant/ArborWebApps update=no
+
   - name: tangelo-hub | npm install
     npm: path=/vagrant
 
@@ -157,6 +160,15 @@
     command: python girder-setup.py chdir=/vagrant/devops/ansible
     notify:
       - restart girder
+
+  - name: girder | install easy mode analyses
+    command: python easymode-setup.py /vagrant/ArborWebApps chdir=/vagrant/devops/ansible
+
+  - name: tangelo-hub | create ancestral-state symbolic link
+    command: ln -s /vagrant/ArborWebApps/ancestral-state chdir=/vagrant/app
+
+  - name: tangelo-hub | create phylogenetic-signal symbolic link
+    command: ln -s /vagrant/ArborWebApps/phylogenetic-signal chdir=/vagrant/app
 
   - name: apache | enable http proxy
     command: a2enmod proxy_http
