@@ -105,6 +105,10 @@ html(lang="en")
                                         button.btn.btn-primary#workflow-new
                                             span.glyphicon.glyphicon-plus
                                             |  New workflow
+                        .row.description-container.hide
+                            .col-sm-12
+                              #analysis-description
+                        .row.spacer
                         .form-inline#analysis-form
                             button.btn.btn-primary#setup
                                 span.glyphicon.glyphicon-play#run-icon
@@ -148,6 +152,11 @@ html(lang="en")
                                 button.btn.btn-primary#add-workvis
                                     span.glyphicon.glyphicon-plus
                                     | Add to workflow
+                        .row.edit-controls
+                            .col-sm-12
+                                .form-group
+                                  label(for="analysis-edit-description") Description
+                                  textarea.form-control#analysis-edit-description
                         .row.spacer.edit-controls
                             .col-sm-6.analysis-edit-controls
                                 label
