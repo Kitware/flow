@@ -234,7 +234,12 @@
     when: arbor
 
   - name: arbor | install logo
-    get_url: url=https://arbor.kitware.com/arbor.jpg dest=/vagrant/app/arbor.jpg
+    copy: src=img/arbor.png  dest=/vagrant/app/logo.png
+    when: arbor
+
+  - name: tangelohub | install logo
+    copy: src=img/tangelo.png  dest=/vagrant/app/logo.png
+    when: not arbor
 
   #---------------------------------------------------------------------------
   # VTK configuration
