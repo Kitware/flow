@@ -18,7 +18,7 @@ describe('App is running', function () {
 });
 
 describe('Logo is present', function () {
-    it("Make an AJAX request to load arbor.jpg", function () {
+    it("Make an AJAX request to load logo.png", function () {
         var callback = jasmine.createSpy();
         getLogo(callback);
         waitsFor(function() {
@@ -29,7 +29,7 @@ describe('Logo is present', function () {
         });
 
         function getLogo(callback) {
-            $.get("/arbor.jpg", function() {
+            $.get("/logo.png", function() {
                 callback();
             })
         }
