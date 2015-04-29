@@ -111,7 +111,7 @@
       - r-base-dev
 
   - name: romanesco | checkout romanesco
-    git: repo=https://github.com/Kitware/romanesco.git dest=/vagrant/romanesco update=no
+    git: repo=https://github.com/Kitware/romanesco.git dest=/vagrant/romanesco update=yes
 
   - name: romanesco | install girder plugin
     command: girder-install -f plugin -s /vagrant/romanesco
@@ -126,7 +126,7 @@
       - restart romanesco
 
   - name: ArborWebApps | checkout ArborWebApps
-    git: repo=https://github.com/arborworkflows/ArborWebApps.git dest=/vagrant/ArborWebApps update=no
+    git: repo=https://github.com/arborworkflows/ArborWebApps.git dest=/vagrant/ArborWebApps update=yes
 
   - name: tangelo-hub | npm install
     npm: path=/vagrant
