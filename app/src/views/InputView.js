@@ -22,17 +22,17 @@
 
             this.datasets = settings.datasets;
             this.parentView = settings.parentView;
-            this.idPrefix = settings.idPrefix;
+            this.idPrefix = settings.idPrefix || '';
             this.inputMode = this.model.get('inputMode');
             if (!this.inputMode) {
                 this.inputMode = this.typeMetadata[this.model.get('type')].inputMode;
             }
 
             div = d3.select(this.el).append('div')
-                .classed('form-group', true);
+                .classed('form-group input-form-group', true);
             div.append('label')
                 .attr('for', this.idPrefix + this.model.get('name'))
-                .text(this.model.get('name'));
+                .text(this.model.get('name')).append('span').classed('input-type-label', true);
             if (this.model.get('type') === 'array') {
                 this.view = [];
                 this.containers = [];
@@ -96,10 +96,20 @@
                     }
                 }
             }
+            div.append('div').attr('class', 'input-description help-block');
         },
 
         render: function () {
             return this;
+        },
+
+        showInputInfo: function () {
+            var description = this.model.get('description');
+            if (description) {
+                this.$('.input-description').text(description);
+            }
+            this.$('.input-type-label').text('[' + this.model.get('type') + ':' +
+                  this.model.get('format') + ']');
         }
     });
 

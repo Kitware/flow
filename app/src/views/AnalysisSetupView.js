@@ -120,7 +120,9 @@
 
         render: function () {
             this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
-            this.inputsView.render();
+            this.inputsView.render({
+                showInputInfo: true
+            });
             this.$('.analysis-setup-title').text(this.model.get('meta').analysis.name);
             this.$('.success-message').addClass('hidden');
             this.$('.info-message').addClass('hidden');
