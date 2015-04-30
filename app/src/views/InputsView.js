@@ -93,11 +93,7 @@
 
                 if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                     dataset = this.datasets.get(value);
-                    uri = window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download';
-                    if (girder.currentUser) {
-                        dataset.uri += '?token=' + girder.currentUser.get('token');
-                    }
-                    result[input.get('name')] = _.extend(dataset.toJSON(), {uri: uri});
+                    result[input.get('name')] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.id));
                 } else if (input.get('type') === 'string') {
                     result[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
                 } else if (input.get('type') === 'number') {

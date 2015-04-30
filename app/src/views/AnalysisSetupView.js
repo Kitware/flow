@@ -24,14 +24,7 @@
                     if (input.get('type') === 'geometry' || input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                         dataset = this.datasets.get(value);
 
-                        inputs[input.get('name')] = _.extend(dataset.toJSON(), {
-                            mode: 'http',
-                            url: window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download',
-                            method: 'GET',
-                            headers: girder.currentUser ? {
-                                'Girder-Token': girder.currentUser.get('token')
-                            } : {}
-                        });
+                        inputs[input.get('name')] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.id));
                     } else if (input.get('type') === 'string') {
                         inputs[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
                     } else if (input.get('type') === 'number') {
