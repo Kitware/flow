@@ -124,6 +124,7 @@
                 showInputInfo: true
             });
             this.$('.analysis-setup-title').text(this.model.get('meta').analysis.name);
+            this.$('.analysis-setup-description').text(this.model.get('meta').analysis.description);
             this.$('.success-message').addClass('hidden');
             this.$('.info-message').addClass('hidden');
             this.$('.error-message').addClass('hidden');
