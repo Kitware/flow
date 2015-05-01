@@ -119,7 +119,10 @@
         },
 
         render: function () {
-            this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
+            if (this.inputsView.analysisName !== this.model.get('meta').analysis.name) {
+                this.inputsView.analysisName = this.model.get('meta').analysis.name;
+                this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
+            }
             this.inputsView.render();
             this.$('.analysis-setup-title').text(this.model.get('meta').analysis.name);
             this.$('.success-message').addClass('hidden');
