@@ -119,9 +119,19 @@
         },
 
         render: function () {
-            this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
-            this.inputsView.render();
-            this.$('.analysis-setup-title').text(this.model.get('meta').analysis.name);
+            var analysis = this.model.get('meta').analysis;
+            console.log(analysis);
+
+            this.inputsView.collection.set(analysis.inputs);
+            this.inputsView.render({
+                showInputInfo: true
+            });
+
+            this.$('.analysis-setup-title').text(analysis.name);
+            this.$('.analysis-setup-description').text(analysis.description);
+            this.$('.analysis-setup-outputs-container').html(jade.templates.outputsDescription({
+                analysis: analysis
+            }));
             this.$('.success-message').addClass('hidden');
             this.$('.info-message').addClass('hidden');
             this.$('.error-message').addClass('hidden');

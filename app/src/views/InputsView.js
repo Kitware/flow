@@ -24,7 +24,8 @@
             );
         },
 
-        render: function () {
+        render: function (opts) {
+            opts = opts || {};
             var registerChangeEvents = _.bind(function (view) {
                 // For fancy domains such as column names, we need changes in an input dataset
                 // dropdown to trigger pulling the data in a certain format (like column headers)
@@ -42,6 +43,12 @@
             }, this);
 
             registerChangeEvents(this);
+
+            if (opts.showInputInfo) {
+                _.each(this.itemViews, function (itemView) {
+                    itemView.showInputInfo();
+                })
+            }
             return this;
         },
 
