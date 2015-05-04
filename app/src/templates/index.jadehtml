@@ -218,6 +218,7 @@ html(lang="en")
                         h4.modal-title.analysis-setup-title
                     .modal-body
                         .analysis-setup-description
+                        .analysis-setup-outputs-container
 
                         pre.bg-success.success-message.hidden
                         pre.bg-info.info-message.hidden

@@ -108,8 +108,7 @@
             if (description) {
                 this.$('.input-description').text(description);
             }
-            this.$('.input-type-label').text('[' + this.model.get('type') + ':' +
-                  this.model.get('format') + ']');
+            this.$('.input-type-label').text('[' + this.model.get('type') + ']');
         }
     });
 
