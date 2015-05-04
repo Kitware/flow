@@ -243,7 +243,6 @@
             this.collection = new girder.collections.CollectionCollection();
             this.collection.append = false;
             this.collection.pageLimit = 100;
-            this.collection.fetch();
 
             this.view = new flow.CollectionsView({
                 el: this.$('#collections'),
@@ -253,6 +252,7 @@
             });
             this.view.on('flow:change-active', this.collectionVisibilityChange, this);
             this.view.render();
+            this.collection.fetch();
 
             this.datasets = new flow.DatasetCollection();
             this.datasets.append = true;
