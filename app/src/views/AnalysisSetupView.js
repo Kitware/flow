@@ -120,7 +120,6 @@
 
         render: function () {
             var analysis = this.model.get('meta').analysis;
-            console.log(analysis);
 
             this.inputsView.collection.set(analysis.inputs);
             this.inputsView.render({
