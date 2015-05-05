@@ -56,7 +56,9 @@
                         extension = this.extensions[dataset.get('type') + ":" + format],
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension;
-                    flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false);
+                    var file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
+                        dataset.set({id: file.get('itemId')});
+                    });
                     dataset.set({collection: flow.saveLocation});
                 }, this));
             },
@@ -94,12 +96,14 @@
                     }).done(_.bind(function () {
                         this.datasets.remove(dataset);
                         this.$('.datasets').change();
+                        this.$('.dataset-name').val('');
                     }, this)).error(_.bind(function (error) {
                         window.alert('You do not have permission to delete this item.');
                     }, this));
                 } else {
                     this.datasets.remove(dataset);
                     this.$('.datasets').change();
+                    this.$('.dataset-name').val('');
                 }
             },
 
