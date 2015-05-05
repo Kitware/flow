@@ -39,6 +39,7 @@
                     $("#save").addClass("disabled");
                     info = this.analysis.get('meta').analysis;
                     info.name = this.$(".analysis-edit-name").val();
+                    info.description = this.$('#analysis-edit-description').val();
                     if (info.mode === "workflow") {
                         curWorkflow = this.workflowEditor.serialize();
                         info.inputs = curWorkflow.inputs;
@@ -270,6 +271,11 @@
 
             this.analysis = analysis;
             if (this.analysis) {
+                this.$('.description-container').removeClass('hide');
+                var desc = analysis.get('meta').analysis.description || '';
+                this.$('#analysis-description').text(desc);
+                this.$('#analysis-edit-description').val(desc);
+
                 if (this.analysis.get('meta').analysis.mode === "workflow") {
                     d3.select("#code-editor").classed("hidden", true);
                     d3.select("#workflow-editor").classed("hidden", false);
@@ -281,6 +287,7 @@
                     d3.select("#workflow-editor").classed("hidden", true);
                     d3.selectAll(".analysis-edit-controls").classed("hidden", false);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", true);
+
                     // So we can detect whether or not the text was changed.
                     this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                     this.editor.setValue(this.analysis.get('meta').analysis.script);
@@ -299,6 +306,7 @@
                 this.editor.setValue('');
                 this.inputVariables.set([]);
                 this.outputVariables.set([]);
+                this.$('.description-container').addClass('hide');
             }
         },
 
