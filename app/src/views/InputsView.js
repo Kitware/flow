@@ -7,7 +7,6 @@
         initialize: function (settings) {
             this.datasets = settings.datasets;
             this.parentView = settings.parentView;
-            this.analysisName = "";
             flow.ItemsView.prototype.initialize.apply(
                 this,
                 [
