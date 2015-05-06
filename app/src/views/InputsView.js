@@ -88,8 +88,7 @@
 
                     // Sometimes the view is a Backbone view, sometimes it is a plain control
                     value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                    dataset,
-                    uri;
+                    dataset;
 
                 if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                     dataset = this.datasets.get(value);
