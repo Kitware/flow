@@ -119,17 +119,12 @@
         },
 
         render: function () {
-            var inputsArray;
-            if (this.inputsView.inputs) {
-                // For comparison purposes convert inputs from an object to an array
-                inputsArray = $.map(this.inputsView.inputs, function (value, index) {
-                    return [value];
-                });
-            }
             // Deep comparison
-            if (!_.isEqual(inputsArray, this.model.get('meta').analysis.inputs)) {
+            if (!_.isEqual(this.inputsView.inputs, this.model.get('meta').analysis.inputs)) {
                 // Deep copy
-                this.inputsView.inputs = jQuery.extend({}, this.model.get('meta').analysis.inputs);
+                this.inputsView.inputs = $.map(this.model.get('meta').analysis.inputs, function (value) {
+                    return $.extend(true, {}, value);
+                });
                 this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
             }
             this.inputsView.render();
