@@ -13,6 +13,7 @@
             this.filter = options.filter;
             this.listenTo(this.collection, 'add', this.add);
             this.listenTo(this.collection, 'remove', this.remove);
+            this.listenTo(this.collection, 'reset', this.reset);
             this.itemViews = {};
             if (!options.itemView) {
                 console.error("Error: itemView required");
@@ -46,6 +47,14 @@
                 this.itemViews[item.cid].$el.remove();
                 delete this.itemViews[item.cid];
             }
+        },
+
+        reset: function () {
+            this.$el.empty();
+
+            _.each(this.collection.models, function (item) {
+                this.add(item);
+            }, this);
         }
     });
 }(window.flow, window._, window.Backbone));

@@ -24,7 +24,8 @@
             );
         },
 
-        render: function () {
+        render: function (opts) {
+            opts = opts || {};
             var registerChangeEvents = _.bind(function (view) {
                 // For fancy domains such as column names, we need changes in an input dataset
                 // dropdown to trigger pulling the data in a certain format (like column headers)
@@ -42,6 +43,12 @@
             }, this);
 
             registerChangeEvents(this);
+
+            if (opts.showInputInfo) {
+                _.each(this.itemViews, function (itemView) {
+                    itemView.showInputInfo();
+                })
+            }
             return this;
         },
 
@@ -88,16 +95,11 @@
 
                     // Sometimes the view is a Backbone view, sometimes it is a plain control
                     value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                    dataset,
-                    uri;
+                    dataset;
 
                 if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                     dataset = this.datasets.get(value);
-                    uri = window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download';
-                    if (girder.currentUser) {
-                        dataset.uri += '?token=' + girder.currentUser.get('token');
-                    }
-                    result[input.get('name')] = _.extend(dataset.toJSON(), {uri: uri});
+                    result[input.get('name')] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.id));
                 } else if (input.get('type') === 'string') {
                     result[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
                 } else if (input.get('type') === 'number') {

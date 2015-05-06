@@ -156,94 +156,34 @@
             });
         },
 
-        girderUpload: function (data, name, folder, itemToOverwrite) {
-            var startByte;
+        girderUpload: function (data, name, folderId, itemToOverwrite, success, error) {
+            success = success || function () {};
+            error = error || function () {};
 
-            /**
-             * Reads and uploads a chunk of the file starting at startByte. Pass
-             * the uploadId generated in _uploadNextFile.
-             */
-            function uploadChunk(uploadId) {
-                var endByte = Math.min(startByte + 1024 * 1024 * 64, data.size),
-                    // chunkLength = endByte - startByte,
-                    blob = data.slice(startByte, endByte),
-                    fd = new FormData();
-
-                fd.append('offset', startByte);
-                fd.append('uploadId', uploadId);
-                fd.append('chunk', blob);
-
-                girder.restRequest({
-                    path: 'file/chunk',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: fd,
-                    contentType: false,
-                    processData: false,
-                    error: null
-                }).done(function () {
-                    // overallProgress += endByte - startByte;
-                    if (endByte !== data.size) {
-                        startByte = endByte;
-                        uploadChunk(uploadId);
-                    }
-                }).error(function () {
-                    // TODO report error
+            var file, bindEvents = function (file) {
+                file.on('g:upload.complete', function () {
+                    success(arguments);
+                }).on('g:upload.error', function () {
+                    error(arguments);
                 });
-            }
+                return file;
+            };
 
-            // Authenticate and generate the upload token for this file
             if (itemToOverwrite) {
                 // We have the dataset's itemid, but we need its fileid.
                 girder.restRequest({
-                    path: 'v1/item/' + itemToOverwrite + '/files',
-                    error: null
-                }).done(_.bind(function (response) {
-                    // Use fileid to begin the upload of the new contents.
-                    var fileid = response[0]._id;
-                    girder.restRequest({
-                        path: 'file/' + fileid + '/contents',
-                        type: 'PUT',
-                        data: JSON.stringify({
-                            size: data.size,
-                            id: fileid
-                        }),
-                        contentType: 'application/json',
-                        error: null
-                    }).done(_.bind(function (upload) {
-                        if (data.size > 0) {
-                            // Begin uploading chunks of this file
-                            startByte = 0;
-                            uploadChunk(upload._id);
-                        }
-                    }, this)).error(_.bind(function () {
-                        // TODO report error
-                    }, this));
-                }, this)).error(_.bind(function () {
-                    // TODO report error
-                }, this));
+                    path: '/item/' + itemToOverwrite + '/files'
+                }).done(function (resp) {
+                    file = bindEvents(new girder.models.FileModel({_id: resp[0]._id}));
+                    file.updateContents(data);
+                });
             } else {
-                girder.restRequest({
-                    path: 'file',
-                    type: 'POST',
-                    data: {
-                        parentType: 'folder',
-                        parentId: folder,
-                        name: name,
-                        size: data.size,
-                        mimeType: "text/plain"
-                    },
-                    error: null
-                }).done(_.bind(function (upload) {
-                    if (data.size > 0) {
-                        // Begin uploading chunks of this file
-                        startByte = 0;
-                        uploadChunk(upload._id);
-                    }
-                }, this)).error(_.bind(function () {
-                    // TODO report error
-                }, this));
+                var folder = new girder.models.FolderModel({_id: folderId});
+                file = bindEvents(new girder.models.FileModel());
+                file.uploadToFolder(folder, data, name);
             }
+
+            return file;
         },
 
         // Display a bootstrap-style alert message to the user.
@@ -263,8 +203,18 @@
             window.setTimeout(function () {
                 $('#alert').alert('close');
             }, timeout);
-        }
+        },
 
+        girderItemInput: function (itemId) {
+            return {
+                mode: 'http',
+                url: window.location.origin + girder.apiRoot + '/item/' + itemId + '/download',
+                method: 'GET',
+                headers: girder.currentUser ? {
+                    'Girder-Token': girder.currentUser.get('token')
+                } : {}
+            };
+        }
     };
 
 }(window.$, window._, window.atob, window.Backbone, window.d3, window.girder, window.Uint8Array));

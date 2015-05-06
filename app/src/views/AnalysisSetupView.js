@@ -5,7 +5,7 @@
 
         events: {
             'click .run': function () {
-                var inputs = {}, outputs = {};
+                var inputs, outputs = {};
 
                 d3.select('.run')
                     .classed('btn-primary', false)
@@ -14,30 +14,8 @@
 
                 $('#analysis-output').empty();
 
-                _.each(this.inputsView.itemViews, _.bind(function (inputView) {
-                    var input = inputView.model,
+                inputs = this.inputsView.values();
 
-                        // Sometimes the view is a Backbone view, sometimes it is a plain control
-                        value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                        dataset;
-
-                    if (input.get('type') === 'geometry' || input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
-                        dataset = this.datasets.get(value);
-
-                        inputs[input.get('name')] = _.extend(dataset.toJSON(), {
-                            mode: 'http',
-                            url: window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download',
-                            method: 'GET',
-                            headers: girder.currentUser ? {
-                                'Girder-Token': girder.currentUser.get('token')
-                            } : {}
-                        });
-                    } else if (input.get('type') === 'string') {
-                        inputs[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
-                    } else if (input.get('type') === 'number') {
-                        inputs[input.get('name')] = {type: input.get('type'), format: 'number', data: parseFloat(value)};
-                    }
-                }, this));
                 this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
                     outputs[output.name] = {type: output.type, format: flow.webFormat[output.type]};
                 }, this));
@@ -119,6 +97,8 @@
         },
 
         render: function () {
+            var analysis = this.model.get('meta').analysis;
+
             // Deep comparison
             if (!_.isEqual(this.inputsView.inputs, this.model.get('meta').analysis.inputs)) {
                 // Deep copy
@@ -127,8 +107,15 @@
                 });
                 this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
             }
-            this.inputsView.render();
-            this.$('.analysis-setup-title').text(this.model.get('meta').analysis.name);
+            this.inputsView.render({
+                showInputInfo: true
+            });
+
+            this.$('.analysis-setup-title').text(analysis.name);
+            this.$('.analysis-setup-description').text(analysis.description);
+            this.$('.analysis-setup-outputs-container').html(jade.templates.outputsDescription({
+                analysis: analysis
+            }));
             this.$('.success-message').addClass('hidden');
             this.$('.info-message').addClass('hidden');
             this.$('.error-message').addClass('hidden');

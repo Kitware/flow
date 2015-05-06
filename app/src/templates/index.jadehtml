@@ -1,7 +1,7 @@
 doctype html
 html(lang="en")
     head
-        title="Tangelo Hub"
+        title #{brand}
         link(rel="stylesheet", href="//fonts.googleapis.com/css?family=Droid+Sans:400,700")
         each css in stylesheets
             link(rel="stylesheet", href="#{css}")
@@ -9,7 +9,7 @@ html(lang="en")
         .container(style="width:100%;height:100%")
             #intro
                 .row.text-center
-                    img(src="arbor.jpg", alt="Arbor Logo", class="img-rounded")
+                    img(src="brands/#{brand}.png", alt="Logo", class="img-rounded")
                 .row
                     p.lead.text-center
                         | Use the panel below to visualize, analyze, or manage your data.
@@ -105,6 +105,10 @@ html(lang="en")
                                         button.btn.btn-primary#workflow-new
                                             span.glyphicon.glyphicon-plus
                                             |  New workflow
+                        .row.description-container.hide
+                            .col-sm-12
+                              #analysis-description
+                        .row.spacer
                         .form-inline#analysis-form
                             button.btn.btn-primary#setup
                                 span.glyphicon.glyphicon-play#run-icon
@@ -148,6 +152,11 @@ html(lang="en")
                                 button.btn.btn-primary#add-workvis
                                     span.glyphicon.glyphicon-plus
                                     | Add to workflow
+                        .row.edit-controls
+                            .col-sm-12
+                                .form-group
+                                  label(for="analysis-edit-description") Description
+                                  textarea.form-control#analysis-edit-description
                         .row.spacer.edit-controls
                             .col-sm-6.analysis-edit-controls
                                 label
@@ -208,6 +217,9 @@ html(lang="en")
                             | &times;
                         h4.modal-title.analysis-setup-title
                     .modal-body
+                        .analysis-setup-description
+                        .analysis-setup-outputs-container
+
                         pre.bg-success.success-message.hidden
                         pre.bg-info.info-message.hidden
                         pre.bg-danger.error-message.hidden
