@@ -55,8 +55,8 @@
                     var blob = new Blob([converted.get('data')]),
                         extension = this.extensions[dataset.get('type') + ":" + format],
                         parts = name.split('.'),
-                        nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension;
-                    var file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
+                        nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
+                    file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
                         dataset.set({id: file.get('itemId')});
                     });
                     dataset.set({collection: flow.saveLocation});

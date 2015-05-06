@@ -47,7 +47,7 @@
             if (opts.showInputInfo) {
                 _.each(this.itemViews, function (itemView) {
                     itemView.showInputInfo();
-                })
+                });
             }
             return this;
         },
