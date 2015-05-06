@@ -178,9 +178,8 @@
                         name: file.name,
                         data: e.target.result
                     },
-                    extension = file.name.split('.');
+                    extension = file.name.split('.').slice(-1);
 
-                extension = extension[extension.length - 1];
                 _.extend(dataset, flow.extensionToType[extension]);
                 dataset = new Backbone.Model(dataset);
 

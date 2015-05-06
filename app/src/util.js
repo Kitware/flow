@@ -171,12 +171,13 @@
 
             if (itemToOverwrite) {
                 // We have the dataset's itemid, but we need its fileid.
-                girder.restRequest({
-                    path: '/item/' + itemToOverwrite + '/files'
-                }).done(function (resp) {
-                    file = bindEvents(new girder.models.FileModel({_id: resp[0]._id}));
+                var files = new girder.collections.FileCollection();
+                files.altUrl = 'item/' + itemToOverwrite + '/files';
+
+                files.on('g:changed', function () {
+                    file = bindEvents(files.models[0]);
                     file.updateContents(data);
-                });
+                }).fetch();
             } else {
                 var folder = new girder.models.FolderModel({_id: folderId});
                 file = bindEvents(new girder.models.FileModel());

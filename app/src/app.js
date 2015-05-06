@@ -186,13 +186,7 @@
             },
 
             'click #logout': function () {
-                girder.restRequest({
-                    path: 'user/authentication',
-                    type: 'DELETE'
-                }).done(_.bind(function () {
-                    girder.currentUser = null;
-                    girder.events.trigger('g:login');
-                }, this));
+                girder.logout();
             },
 
             'click #register': function () {
@@ -222,13 +216,9 @@
         },
 
         initialize: function () {
-            girder.restRequest({
-                path: 'user/authentication',
-                error: null
-            }).done(_.bind(function (resp) {
-                if (resp) {
-                    resp.user.token = resp.authToken.token;
-                    girder.currentUser = new girder.models.UserModel(resp.user);
+            girder.fetchCurrentUser().success(_.bind(function (user) {
+                if (user) {
+                    girder.currentUser = new girder.models.UserModel(user);
                 }
                 this.render();
             }, this)).error(_.bind(function () {
@@ -258,6 +248,9 @@
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
             this.datasets.on('add', function (item) {
+                var extension = item.get('name').split('.').slice(-1);
+                item.set(flow.extensionToType[extension]);
+                item.id = item._id;
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
@@ -350,18 +343,16 @@
 
         collectionVisibilityChange: function (collection) {
             if (collection.get('active')) {
-
-                girder.restRequest({
-                    path: 'folder?parentType=collection&parentId=' + collection.id,
-                    error: null
-                }).done(_.bind(function (folders) {
+                var folders = new girder.collections.FolderCollection();
+                folders.once('g:changed', function () {
                     folders.forEach(function (f) {
-                        if (f.name === "Analyses") {
-                            collection.set({analysisFolder: f._id});
-                        } else if (f.name === "Data") {
-                            collection.set({dataFolder: f._id});
-                        } else if (f.name === "Visualizations") {
-                            collection.set({visualizationFolder: f._id});
+                        var id = f.get('_id');
+                        if (f.get('name') === "Analyses") {
+                            collection.set({analysisFolder: id});
+                        } else if (f.get('name') === "Data") {
+                            collection.set({dataFolder: id});
+                        } else if (f.get('name') === "Visualizations") {
+                            collection.set({visualizationFolder: id});
                         }
                     });
 
@@ -388,9 +379,11 @@
                             folderId: collection.get('visualizationFolder')
                         });
                     }
-                }, this)).error(_.bind(function () {
-                    // TODO error message
-                }, this));
+                }, this).fetch({
+                    parentType: 'collection',
+                    parentId: collection.id
+                });
+
             } else {
                 this.analyses.remove(this.analyses.where({collection: collection}));
                 this.datasets.remove(this.datasets.where({collection: collection}));

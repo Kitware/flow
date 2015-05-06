@@ -51,31 +51,23 @@
                         info.inputs = this.inputVariables.toJSON();
                         info.outputs = this.outputVariables.toJSON();
                     }
-                    girder.restRequest({
-                        path: '/item/' + this.analysis.id + '?name=' + encodeURIComponent(info.name),
-                        type: 'PUT',
-                        error: null
-                    }).done(_.bind(function (result) {
-                        girder.restRequest({
-                            path: '/item/' + this.analysis.id + '/metadata',
-                            type: 'PUT',
-                            contentType: 'application/json',
-                            data: JSON.stringify(this.analysis.get('meta')),
-                            error: null
-                        }).done(_.bind(function () {
-                            // Trigger recreating the analysis UI
+
+                    this.analysis._sendMetadata(this.analysis.get('meta'), _.bind(function () {
+                        this.analysis.set({name: info.name}).once('g:saved', function () {
                             $("#analysis").change();
-                            // Trigger updating this analysis views
-                            this.analysis.set('name', info.name);
                             $("#save").removeClass("disabled");
                             this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                             flow.bootstrapAlert("success", info.name + " saved!");
-                        }, this)).error(_.bind(function (error) {
-                            flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.responseJSON.message, 30);
-                        }, this));
-                    }, this)).error(_.bind(function (error) {
-                        flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.statusText, 30);
-                    }, this));
+                        }, this).once('g:error', function (error) {
+                            flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.statusText, 30);
+                        }).save();
+                        // Trigger recreating the analysis UI
+
+                    }, this), function (error) {
+                        flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error, 30);
+                    });
+
+
                 }
             },
 
