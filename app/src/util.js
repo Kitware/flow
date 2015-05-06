@@ -203,8 +203,18 @@
             window.setTimeout(function () {
                 $('#alert').alert('close');
             }, timeout);
-        }
+        },
 
+        girderItemInput: function (itemId) {
+            return {
+                mode: 'http',
+                url: window.location.origin + girder.apiRoot + '/item/' + itemId + '/download',
+                method: 'GET',
+                headers: girder.currentUser ? {
+                    'Girder-Token': girder.currentUser.get('token')
+                } : {}
+            };
+        }
     };
 
 }(window.$, window._, window.atob, window.Backbone, window.d3, window.girder, window.Uint8Array));
