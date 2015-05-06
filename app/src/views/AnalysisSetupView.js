@@ -99,7 +99,14 @@
         render: function () {
             var analysis = this.model.get('meta').analysis;
 
-            this.inputsView.collection.set(analysis.inputs);
+            // Deep comparison
+            if (!_.isEqual(this.inputsView.inputs, this.model.get('meta').analysis.inputs)) {
+                // Deep copy
+                this.inputsView.inputs = $.map(this.model.get('meta').analysis.inputs, function (value) {
+                    return $.extend(true, {}, value);
+                });
+                this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
+            }
             this.inputsView.render({
                 showInputInfo: true
             });
