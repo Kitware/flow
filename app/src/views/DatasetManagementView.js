@@ -191,8 +191,9 @@
         },
 
         updateDataset: function () {
-            var options, valid;
+            var options, valid, format;
             this.dataset = this.datasets.get(this.$('.datasets').val());
+            format = this.dataset.get("format");
 
             // If we don't know the format, don't let them download it
             valid = this.dataset.get('type') !== undefined && this.dataset.get('format') !== undefined;
@@ -204,7 +205,8 @@
                     .data(this.saveFormats[this.dataset.get('type')], function (d) { return d; });
                 options.enter().append('option')
                     .text(function (d) { return d; })
-                    .attr('value', function (d) { return d; });
+                    .attr('value', function (d) { return d; })
+                    .attr('selected', function (d) { if (d === format) { return "selected"; } });
                 options.exit().remove();
             }
         },
