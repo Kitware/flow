@@ -19,7 +19,8 @@ module.exports = function (grunt) {
         jade = require('jade'),
         path = require('path'),
         defaultTasks = ['stylus', 'build-js'],
-        environment;
+        environment,
+        brand;
 
     require('colors');
 
@@ -173,6 +174,7 @@ module.exports = function (grunt) {
 
     // Pass a "--env=<value>" argument to grunt. Default value is "dev".
     environment = grunt.option('env') || 'dev';
+    brand = grunt.option('brand') || 'TangeloHub';
 
     if (['dev', 'prod'].indexOf(environment) === -1) {
         grunt.fatal('The "env" argument must be either "dev" or "prod".');
@@ -192,6 +194,7 @@ module.exports = function (grunt) {
                 pretty: true
             }),
             html = fn({
+                brand: brand,
                 stylesheets: [
                     'lib/bootstrap/css/bootstrap.min.css',
                     'lib/css/d3.dependencyedgebundling.css',

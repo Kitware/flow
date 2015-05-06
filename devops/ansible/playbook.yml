@@ -132,7 +132,12 @@
     command: grunt init chdir=/vagrant
 
   - name: tangelo-hub | grunt
-    command: grunt chdir=/vagrant
+    command: grunt --brand=TangeloHub chdir=/vagrant
+    when: not arbor
+
+  - name: tangelo-hub | grunt
+    command: grunt --brand=Arbor chdir=/vagrant
+    when: arbor
 
   - name: girder | copy upstart script to /etc/init/
     copy: src=girder.conf dest=/etc/init/girder.conf owner=root group=staff mode=0644
@@ -232,14 +237,6 @@
     environment:
       DISPLAY: :7
     when: arbor
-
-  - name: arbor | install logo
-    copy: src=img/arbor.png  dest=/vagrant/app/logo.png
-    when: arbor
-
-  - name: tangelohub | install logo
-    copy: src=img/tangelo.png  dest=/vagrant/app/logo.png
-    when: not arbor
 
   #---------------------------------------------------------------------------
   # VTK configuration
