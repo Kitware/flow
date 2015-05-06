@@ -26,7 +26,7 @@
 
                         inputs[input.get('name')] = _.extend(dataset.toJSON(), {
                             mode: 'http',
-                            url: window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download',
+                            url: window.location.origin + girder.apiRoot + '/item/' + dataset.get('_id') + '/download',
                             method: 'GET',
                             headers: girder.currentUser ? {
                                 'Girder-Token': girder.currentUser.get('token')
@@ -47,7 +47,7 @@
                 d3.select('.error-message').classed('hidden', true);
                 d3.select('.info-message').classed('hidden', false).text('Running analysis ...');
 
-                flow.performAnalysis(this.model.id, inputs, outputs,
+                flow.performAnalysis(this.model.get('_id'), inputs, outputs,
                     _.bind(function (error, result) {
                         if (error) {
                             console.log(error);
@@ -75,7 +75,7 @@
 
                         // Stream console output from this analysis.
                         this.eventSource = new window.EventSource(
-                            girder.apiRoot + '/item/' + this.model.id + '/romanesco/' +
+                            girder.apiRoot + '/item/' + this.model.get('_id') + '/romanesco/' +
                             this.taskId + '/output?token=' +
                             girder.cookie.find('girderToken'));
 
@@ -140,14 +140,14 @@
 
         checkTaskResult: function () {
             girder.restRequest({
-                path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/status',
+                path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/status',
                 error: null
             }).done(_.bind(function (result) {
                 console.log(result.status);
 
                 if (result.status === 'SUCCESS') {
                     girder.restRequest({
-                        path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
+                        path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/result',
                         error: null
                     }).done(_.bind(function (data) {
                         var result = data.result,

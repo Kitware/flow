@@ -89,17 +89,13 @@
                     return;
                 }
                 if (dataset.get('collection')) {
-                    girder.restRequest({
-                        path: '/item/' + dataset.id,
-                        type: 'DELETE',
-                        error: null
-                    }).done(_.bind(function () {
+                    dataset.once('g:deleted', function () {
+                        this.$('.dataset-name').val('');
                         this.datasets.remove(dataset);
                         this.$('.datasets').change();
-                        this.$('.dataset-name').val('');
-                    }, this)).error(_.bind(function (error) {
+                    }, this).once('g:error', function () {
                         window.alert('You do not have permission to delete this item.');
-                    }, this));
+                    }).destroy();
                 } else {
                     this.datasets.remove(dataset);
                     this.$('.datasets').change();
@@ -192,6 +188,10 @@
         updateDataset: function () {
             var options, valid;
             this.dataset = this.datasets.get(this.$('.datasets').val());
+
+            if (!this.dataset) {
+                return;
+            }
 
             // If we don't know the format, don't let them download it
             valid = this.dataset.get('type') !== undefined && this.dataset.get('format') !== undefined;
