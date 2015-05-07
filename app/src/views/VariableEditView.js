@@ -74,8 +74,6 @@
         },
 
         render: function () {
-            console.log(this.model);
-
             // Load model properties into variable properties
             this.variableProperties.name['default'] = {data: this.model.get('name')};
             this.variableProperties.id['default'] = {data: this.model.get('id')};
@@ -95,8 +93,6 @@
                 }
             }
 
-            console.log(this.inputsView.collection);
-            console.log(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
             this.inputsView.collection.set([]);
             this.inputsView.collection.set(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
 
