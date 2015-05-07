@@ -267,7 +267,8 @@ module.exports = function (grunt) {
             scripts: [
                 'testing.min.js',
                 'libs.min.js',
-                'lib/ace-builds/src-noconflict/ace.js'
+                '/girder/static/built/app.min.js',
+                'lib/ace-builds/src-noconflict/ace.js',
             ],
             blanketScripts: inputs
         }));
