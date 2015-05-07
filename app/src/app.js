@@ -9,53 +9,53 @@
             {
                 name: "table",
                 inputs: [
-                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
+                    {name: "data", id: "data", type: "table", format: "rows", inputMode: "dataset"}
                 ]
             },
             {
                 name: "timeline",
                 inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "objectlist"},
+                    {name: "x", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "scatterplot",
                 inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "objectlist"},
+                    {name: "x", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", id: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "dendrogram",
                 inputs: [
-                    {name: "data", type: "tree", format: "nested"},
-                    {name: "distance", type: "accessor", format: "text", default: {format: "text", data: "edge_data.weight"}},
-                    {name: "label", type: "accessor", format: "text", default: {format: "text", data: "node_data.node name"}},
-                    {name: "lineStyle", type: "string", format: "text", domain: ["axisAligned", "curved"]},
-                    {name: "orientation", type: "string", format: "text", domain: ["horizontal", "vertical"]}
+                    {name: "data", id: "data", type: "tree", format: "nested"},
+                    {name: "distance", id: "distance", type: "accessor", format: "text", default: {format: "text", data: "edge_data.weight"}},
+                    {name: "label", id: "label", type: "accessor", format: "text", default: {format: "text", data: "node_data.node name"}},
+                    {name: "lineStyle", id: "lineStyle", type: "string", format: "text", domain: ["axisAligned", "curved"]},
+                    {name: "orientation", id: "orientation", type: "string", format: "text", domain: ["horizontal", "vertical"]}
                 ]
             },
             {
                 name: "tablelink",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"},
-                    {name: "source", type: "string", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "target", type: "string", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "rows"},
+                    {name: "source", id: "source", type: "string", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "target", id: "target", type: "string", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "image",
                 inputs: [
-                    {name: "data", type: "image", format: "png.base64"}
+                    {name: "data", id: "data", type: "image", format: "png.base64"}
                 ]
             },
             {
                 name: "string",
                 inputs: [
-                    {name: "data", type: "string", format: "text", inputMode: "dataset"}
+                    {name: "data", id: "data", type: "string", format: "text", inputMode: "dataset"}
                 ]
             },
             {
@@ -63,12 +63,14 @@
                 inputs: [
                     {
                         name: "tree",
+                        id: "tree",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "table",
+                        id: "table",
                         type: "table",
                         format: "vtktable.serialized",
                         dataIsURI: true
@@ -80,18 +82,21 @@
                 inputs: [
                     {
                         name: "tree1",
+                        id: "tree1",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "tree2",
+                        id: "tree2",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "table",
+                        id: "table",
                         type: "table",
                         format: "csv",
                         dataIsURI: true
@@ -101,13 +106,13 @@
             {
                 name: "edgebundling",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"}
+                    {name: "data", id: "data", type: "table", format: "rows"}
                 ]
             },
             {
                 name: "interactiveheatmap",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"}
+                    {name: "data", id: "data", type: "table", format: "rows"}
                 ]
             },
             {
@@ -115,11 +120,13 @@
                 inputs: [
                     {
                         name: "data",
+                        id: "data",
                         type: "table",
                         format: "rows"
                     },
                     {
                         name: "y",
+                        id: "y",
                         type: "accessor",
                         domain: {input: "data", format: "column.names"}
                     }
@@ -130,32 +137,38 @@
                 inputs: [
                     {
                         name: "data",
+                        id: "data",
                         type: "table",
                         format: "objectlist"
                     },
                     {
                         name: "charge",
+                        id: "charge",
                         type: "number",
                         format: "number",
                         default: {format: "number", data: -30}
                     },
                     {
                         name: "gravity",
+                        id: "gravity",
                         type: "number",
                         format: "number",
                         default: {format: "number", data: 0.1}
                     },
                     {
                         name: "constraints",
+                        id: "constraints",
                         type: "array",
                         components: [
                             {
                                 name: "accessor",
+                                id: "accessor",
                                 type: "accessor",
                                 domain: {input: "data", format: "column.names"}
                             },
                             {
                                 name: "type",
+                                id: "type",
                                 type: "string",
                                 domain: [
                                     'link-bin',

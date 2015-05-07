@@ -147,7 +147,7 @@ describe('Able to create analysis', function () {
             $('.add-output-variable').click();
             var controls = $('#output-variable-edit-dialog .form-control');
             controls.eq(0).val('output');
-            controls.eq(1).val('number:number');
+            controls.eq(2).val('number:number');
             $('#output-variable-edit-dialog .update').click();
             $('#save').click();
         });
