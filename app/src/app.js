@@ -326,7 +326,8 @@
         loginDialog: function () {
             if (!this.loginView) {
                 this.loginView = new girder.views.LoginView({
-                    el: this.$('#g-dialog-container')
+                    el: this.$('#g-dialog-container'),
+                    parentView: null
                 });
             }
             this.loginView.render();
@@ -335,7 +336,8 @@
         registerDialog: function () {
             if (!this.registerView) {
                 this.registerView = new girder.views.RegisterView({
-                    el: this.$('#g-dialog-container')
+                    el: this.$('#g-dialog-container'),
+                    parentView: null
                 });
             }
             this.registerView.render();

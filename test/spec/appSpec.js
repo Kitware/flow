@@ -4,7 +4,7 @@
 var app;
 $(function () {
     girder.apiRoot = '/girder/api/v1';
-    girder.handleRouting = false;
+    girder.router.enabled(false);
     app = new flow.App();
     app.render();
 });
