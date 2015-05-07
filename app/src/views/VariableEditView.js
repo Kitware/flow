@@ -41,6 +41,9 @@
                     type: values.type.data.split(':')[0],
                     format: values.type.data.split(':')[1]
                 };
+                if (values.id.data.length > 0) {
+                    model.id = values.id.data;
+                }
                 if (values.description.data !== '') {
                     model.description = values.description.data;
                 }
@@ -92,7 +95,9 @@
                 }
             }
 
+            console.log(this.inputsView.collection);
             console.log(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
+            this.inputsView.collection.set([]);
             this.inputsView.collection.set(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
 
             // Show the model dialog
