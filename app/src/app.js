@@ -9,53 +9,53 @@
             {
                 name: "table",
                 inputs: [
-                    {name: "data", type: "table", format: "rows", inputMode: "dataset"}
+                    {name: "data", id: "data", type: "table", format: "rows", inputMode: "dataset"}
                 ]
             },
             {
                 name: "timeline",
                 inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "objectlist"},
+                    {name: "x", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "scatterplot",
                 inputs: [
-                    {name: "data", type: "table", format: "objectlist"},
-                    {name: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "objectlist"},
+                    {name: "x", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", id: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "dendrogram",
                 inputs: [
-                    {name: "data", type: "tree", format: "nested"},
-                    {name: "distance", type: "accessor", format: "text", default: {format: "text", data: "edge_data.weight"}},
-                    {name: "label", type: "accessor", format: "text", default: {format: "text", data: "node_data.node name"}},
-                    {name: "lineStyle", type: "string", format: "text", domain: ["axisAligned", "curved"]},
-                    {name: "orientation", type: "string", format: "text", domain: ["horizontal", "vertical"]}
+                    {name: "data", id: "data", type: "tree", format: "nested"},
+                    {name: "distance", id: "distance", type: "accessor", format: "text", default: {format: "text", data: "edge_data.weight"}},
+                    {name: "label", id: "label", type: "accessor", format: "text", default: {format: "text", data: "node_data.node name"}},
+                    {name: "lineStyle", id: "lineStyle", type: "string", format: "text", domain: ["axisAligned", "curved"]},
+                    {name: "orientation", id: "orientation", type: "string", format: "text", domain: ["horizontal", "vertical"]}
                 ]
             },
             {
                 name: "tablelink",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"},
-                    {name: "source", type: "string", format: "text", domain: {input: "data", format: "column.names"}},
-                    {name: "target", type: "string", format: "text", domain: {input: "data", format: "column.names"}}
+                    {name: "data", id: "data", type: "table", format: "rows"},
+                    {name: "source", id: "source", type: "string", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "target", id: "target", type: "string", format: "text", domain: {input: "data", format: "column.names"}}
                 ]
             },
             {
                 name: "image",
                 inputs: [
-                    {name: "data", type: "image", format: "png.base64"}
+                    {name: "data", id: "data", type: "image", format: "png.base64"}
                 ]
             },
             {
                 name: "string",
                 inputs: [
-                    {name: "data", type: "string", format: "text", inputMode: "dataset"}
+                    {name: "data", id: "data", type: "string", format: "text", inputMode: "dataset"}
                 ]
             },
             {
@@ -63,12 +63,14 @@
                 inputs: [
                     {
                         name: "tree",
+                        id: "tree",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "table",
+                        id: "table",
                         type: "table",
                         format: "vtktable.serialized",
                         dataIsURI: true
@@ -80,18 +82,21 @@
                 inputs: [
                     {
                         name: "tree1",
+                        id: "tree1",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "tree2",
+                        id: "tree2",
                         type: "tree",
                         format: "vtktree.serialized",
                         dataIsURI: true
                     },
                     {
                         name: "table",
+                        id: "table",
                         type: "table",
                         format: "csv",
                         dataIsURI: true
@@ -101,13 +106,13 @@
             {
                 name: "edgebundling",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"}
+                    {name: "data", id: "data", type: "table", format: "rows"}
                 ]
             },
             {
                 name: "interactiveheatmap",
                 inputs: [
-                    {name: "data", type: "table", format: "rows"}
+                    {name: "data", id: "data", type: "table", format: "rows"}
                 ]
             },
             {
@@ -115,11 +120,13 @@
                 inputs: [
                     {
                         name: "data",
+                        id: "data",
                         type: "table",
                         format: "rows"
                     },
                     {
                         name: "y",
+                        id: "y",
                         type: "accessor",
                         domain: {input: "data", format: "column.names"}
                     }
@@ -130,32 +137,38 @@
                 inputs: [
                     {
                         name: "data",
+                        id: "data",
                         type: "table",
                         format: "objectlist"
                     },
                     {
                         name: "charge",
+                        id: "charge",
                         type: "number",
                         format: "number",
                         default: {format: "number", data: -30}
                     },
                     {
                         name: "gravity",
+                        id: "gravity",
                         type: "number",
                         format: "number",
                         default: {format: "number", data: 0.1}
                     },
                     {
                         name: "constraints",
+                        id: "constraints",
                         type: "array",
                         components: [
                             {
                                 name: "accessor",
+                                id: "accessor",
                                 type: "accessor",
                                 domain: {input: "data", format: "column.names"}
                             },
                             {
                                 name: "type",
+                                id: "type",
                                 type: "string",
                                 domain: [
                                     'link-bin',
@@ -186,13 +199,7 @@
             },
 
             'click #logout': function () {
-                girder.restRequest({
-                    path: 'user/authentication',
-                    type: 'DELETE'
-                }).done(_.bind(function () {
-                    girder.currentUser = null;
-                    girder.events.trigger('g:login');
-                }, this));
+                girder.logout();
             },
 
             'click #register': function () {
@@ -222,13 +229,9 @@
         },
 
         initialize: function () {
-            girder.restRequest({
-                path: 'user/authentication',
-                error: null
-            }).done(_.bind(function (resp) {
-                if (resp) {
-                    resp.user.token = resp.authToken.token;
-                    girder.currentUser = new girder.models.UserModel(resp.user);
+            girder.fetchCurrentUser().success(_.bind(function (user) {
+                if (user) {
+                    girder.currentUser = new girder.models.UserModel(user);
                 }
                 this.render();
             }, this)).error(_.bind(function () {
@@ -258,6 +261,9 @@
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
             this.datasets.on('add', function (item) {
+                var extension = item.get('name').split('.').slice(-1);
+                item.set(flow.extensionToType[extension]);
+                item.id = item._id;
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
@@ -350,18 +356,16 @@
 
         collectionVisibilityChange: function (collection) {
             if (collection.get('active')) {
-
-                girder.restRequest({
-                    path: 'folder?parentType=collection&parentId=' + collection.id,
-                    error: null
-                }).done(_.bind(function (folders) {
+                var folders = new girder.collections.FolderCollection();
+                folders.once('g:changed', function () {
                     folders.forEach(function (f) {
-                        if (f.name === "Analyses") {
-                            collection.set({analysisFolder: f._id});
-                        } else if (f.name === "Data") {
-                            collection.set({dataFolder: f._id});
-                        } else if (f.name === "Visualizations") {
-                            collection.set({visualizationFolder: f._id});
+                        var id = f.get('_id');
+                        if (f.get('name') === "Analyses") {
+                            collection.set({analysisFolder: id});
+                        } else if (f.get('name') === "Data") {
+                            collection.set({dataFolder: id});
+                        } else if (f.get('name') === "Visualizations") {
+                            collection.set({visualizationFolder: id});
                         }
                     });
 
@@ -388,9 +392,11 @@
                             folderId: collection.get('visualizationFolder')
                         });
                     }
-                }, this)).error(_.bind(function () {
-                    // TODO error message
-                }, this));
+                }, this).fetch({
+                    parentType: 'collection',
+                    parentId: collection.id
+                });
+
             } else {
                 this.analyses.remove(this.analyses.where({collection: collection}));
                 this.datasets.remove(this.datasets.where({collection: collection}));

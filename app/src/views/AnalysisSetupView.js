@@ -17,7 +17,8 @@
                 inputs = this.inputsView.values();
 
                 this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
-                    outputs[output.name] = {type: output.type, format: flow.webFormat[output.type]};
+                    var id = output.id || output.name;
+                    outputs[id] = {type: output.type, format: flow.webFormat[output.type]};
                 }, this));
                 this.taskBindings = {inputs: inputs, outputs: outputs};
 
@@ -25,7 +26,7 @@
                 d3.select('.error-message').classed('hidden', true);
                 d3.select('.info-message').classed('hidden', false).text('Running analysis ...');
 
-                flow.performAnalysis(this.model.id, inputs, outputs,
+                flow.performAnalysis(this.model.get('_id'), inputs, outputs,
                     _.bind(function (error, result) {
                         if (error) {
                             console.log(error);
@@ -53,12 +54,12 @@
 
                         // Stream console output from this analysis.
                         this.eventSource = new window.EventSource(
-                            girder.apiRoot + '/item/' + this.model.id + '/romanesco/' +
+                            girder.apiRoot + '/item/' + this.model.get('_id') + '/romanesco/' +
                             this.taskId + '/output?token=' +
                             girder.cookie.find('girderToken'));
 
                         this.eventSource.addEventListener('log', _.bind(function (e) {
-                            $('#analysis-output').append(e.data + "\n");
+                            $('#analysis-output').text($('#analysis-output').text() + e.data);
                         }, this));
                         this.eventSource.addEventListener('eof', _.bind(function (e) {
                             console.log('Shutting down stream.');
@@ -125,14 +126,14 @@
 
         checkTaskResult: function () {
             girder.restRequest({
-                path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/status',
+                path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/status',
                 error: null
             }).done(_.bind(function (result) {
                 console.log(result.status);
 
                 if (result.status === 'SUCCESS') {
                     girder.restRequest({
-                        path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
+                        path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/result',
                         error: null
                     }).done(_.bind(function (data) {
                         var result = data.result,
@@ -151,7 +152,7 @@
                             }
                             output.set({bindings: this.taskBindings});
                             this.datasets.add(output);
-                            outputMessage += '<li>' + output.get('name') + ' [' + output.get('type') + ']</li>';
+                            outputMessage += '<li>' + output.escape('name') + ' [' + output.escape('type') + ']</li>';
                         }, this));
 
                         result._visualizations = result._visualizations || [];
@@ -173,7 +174,7 @@
                             visualization.bindings = this.taskBindings;
                             visualization.preset = true;
                             this.presets.add(output);
-                            outputMessage += '<li>' + output.get('name') + ' [visualization]</li>';
+                            outputMessage += '<li>' + output.escape('name') + ' [visualization]</li>';
                         }, this));
 
                         outputMessage += '</ul>';

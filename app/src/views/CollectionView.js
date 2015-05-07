@@ -34,10 +34,7 @@
                     text: 'All data and analyses in this collection will be deleted forever. Continue?',
                     yesText: 'Delete',
                     confirmCallback: _.bind(function () {
-                        girder.restRequest({
-                            path: 'collection/' + this.model.get('id'),
-                            type: 'delete'
-                        }).done(_.bind(function (collection) {
+                        this.model.once('g:deleted', function () {
                             this.model.set({active: false});
                             this.model.set({saveLocation: false});
                             if (flow.saveLocation === this.model) {
@@ -45,9 +42,7 @@
                                 flow.events.trigger('flow:change-save-location');
                             }
                             this.collection.fetch({}, true);
-                        }, this)).error(_.bind(function (xhr, status, message) {
-                            console.error(message);
-                        }, this));
+                        }, this).destroy();
                     }, this)
                 });
             }

@@ -123,7 +123,6 @@ module.exports = function (grunt) {
                         'lib/js/vega-1.3.3.min.js',
                         'lib/js/autobahn.min.js',
                         'lib/js/vtkweb-all.min.js',
-                        'lib/js/girder.app.min.js',
                         'lib/js/tangelo.js',
                         'lib/js/controlPanel.js'
                     ],
@@ -268,7 +267,8 @@ module.exports = function (grunt) {
             scripts: [
                 'testing.min.js',
                 'libs.min.js',
-                'lib/ace-builds/src-noconflict/ace.js'
+                '/girder/static/built/app.min.js',
+                'lib/ace-builds/src-noconflict/ace.js',
             ],
             blanketScripts: inputs
         }));

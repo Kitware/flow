@@ -51,31 +51,19 @@
                         info.inputs = this.inputVariables.toJSON();
                         info.outputs = this.outputVariables.toJSON();
                     }
-                    girder.restRequest({
-                        path: '/item/' + this.analysis.id + '?name=' + encodeURIComponent(info.name),
-                        type: 'PUT',
-                        error: null
-                    }).done(_.bind(function (result) {
-                        girder.restRequest({
-                            path: '/item/' + this.analysis.id + '/metadata',
-                            type: 'PUT',
-                            contentType: 'application/json',
-                            data: JSON.stringify(this.analysis.get('meta')),
-                            error: null
-                        }).done(_.bind(function () {
-                            // Trigger recreating the analysis UI
+
+                    this.analysis._sendMetadata(this.analysis.get('meta'), _.bind(function () {
+                        this.analysis.set({name: info.name}).once('g:saved', function () {
                             $("#analysis").change();
-                            // Trigger updating this analysis views
-                            this.analysis.set('name', info.name);
                             $("#save").removeClass("disabled");
                             this.editor.savedVersion = this.analysis.get('meta').analysis.script;
                             flow.bootstrapAlert("success", info.name + " saved!");
-                        }, this)).error(_.bind(function (error) {
-                            flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.responseJSON.message, 30);
-                        }, this));
-                    }, this)).error(_.bind(function (error) {
-                        flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.statusText, 30);
-                    }, this));
+                        }, this).once('g:error', function (error) {
+                            flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error.statusText, 30);
+                        }).save();
+                    }, this), function (error) {
+                        flow.bootstrapAlert("danger", "Failed to save " + info.name + ": " + error, 30);
+                    });
                 }
             },
 
@@ -241,18 +229,12 @@
 
             $('.really-delete-analysis').click(_.bind(function () {
                 if (this.analysis) {
-                    girder.restRequest({
-                        path: 'item/' + this.analysis.id,
-                        type: 'DELETE',
-                        error: null
-                    }).done(_.bind(function () {
+                    this.analysis.once('g:deleted', function () {
                         this.analyses.remove(this.analysis);
                         // Trigger recreating the analysis UI
                         $("#analysis").change();
                         $('#confirm-delete').modal('hide');
-                    }, this)).error(_.bind(function (error) {
-                        // TODO report error
-                    }, this));
+                    }, this).destroy();
                 }
             }, this));
         },
@@ -321,31 +303,23 @@
         },
 
         createAnalysis: function (analysis) {
-            girder.restRequest({
-                path: 'item/?name=' + encodeURIComponent(analysis.name) + '&folderId=' + flow.saveLocation.get('analysisFolder'),
-                type: 'POST',
-                error: null
-            }).done(_.bind(function (result) {
-                var analysisUri = 'item/' + result._id;
-                girder.restRequest({
-                    path: analysisUri + '/metadata',
-                    type: 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify({analysis: analysis}),
-                    error: null
-                }).done(_.bind(function (result) {
-                    var model = new Backbone.Model(result);
-                    model.id = model.get('_id');
-                    this.analyses.add(model);
-                    $("#analysis").val(model.cid);
-                    $("#analysis").change();
+            var item = new girder.models.ItemModel({
+                name: analysis.name,
+                folderId: flow.saveLocation.get('analysisFolder')
+            });
+
+            item.once('g:saved', function () {
+                item.addMetadata('analysis', analysis, _.bind(function () {
+                    item.id = item.get('_id');
+                    this.analyses.add(item);
+                    $("#analysis").val(item.cid).change();
                     $("#analysis-name").val("");
-                }, this)).error(_.bind(function (error) {
+                }, this), function (error) {
                     // TODO report error
-                }, this));
-            }, this)).error(_.bind(function (error) {
-                console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
-            }, this));
+                });
+            }, this).once('g:error', function (error) {
+                console.log(error);
+            }).save();
         },
 
         saveLocationChange: function () {
