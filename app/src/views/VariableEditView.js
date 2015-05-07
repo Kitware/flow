@@ -4,8 +4,9 @@
     flow.VariableEditView = Backbone.View.extend({
 
         variableProperties: {
-            name: {name: "Name", type: "string", format: "text"},
-            type: {name: "Type", type: "string", format: "text", domain: [
+            name: {name: "Name", id: "name", type: "string", format: "text"},
+            id: {name: "Id", id: "id", type: "string", format: "text"},
+            type: {name: "Type", id: "type", type: "string", format: "text", domain: [
                 'table:rows',
                 'table:objectlist',
                 'table:r.dataframe',
@@ -22,35 +23,35 @@
                 'r:object',
                 'geometry:vtkpolydata'
             ]},
-            description: {name: "Description", type: "string", format: "text"},
-            default: {name: "Default", type: "string", format: "text"},
-            values: {name: "Comma-separated list of values", type: "string", format: "text"},
-            columnNamesInput: {name: "Input for column names", type: "string", format: "text"}
+            description: {name: "Description", id: "description", type: "string", format: "text"},
+            default: {name: "Default", id: "default", type: "string", format: "text"},
+            values: {name: "Comma-separated list of values", id: "values", type: "string", format: "text"},
+            columnNamesInput: {name: "Input for column names", id: "columnNamesInput", type: "string", format: "text"}
         },
 
-        inputProperties: ['name', 'type', 'description', 'default', 'values', 'columnNamesInput'],
+        inputProperties: ['name', 'id', 'type', 'description', 'default', 'values', 'columnNamesInput'],
 
-        outputProperties: ['name', 'type', 'description'],
+        outputProperties: ['name', 'id', 'type', 'description'],
 
         events: {
             'click .update': function () {
                 var model, list, columnNamesInput, values = this.inputsView.values();
                 model = {
-                    name: values.Name.data,
-                    type: values.Type.data.split(':')[0],
-                    format: values.Type.data.split(':')[1]
+                    name: values.name.data,
+                    type: values.type.data.split(':')[0],
+                    format: values.type.data.split(':')[1]
                 };
-                if (values.Description.data !== '') {
-                    model.description = values.Description.data;
+                if (values.description.data !== '') {
+                    model.description = values.description.data;
                 }
-                if (values.Default && values.Default.data !== '') {
-                    model['default'] = values.Default.data;
+                if (values.default && values.default.data !== '') {
+                    model['default'] = values.default.data;
                 }
-                list = values['Comma-separated list of values'];
+                list = values.values;
                 if (list && list.data !== '') {
                     model.domain = _.map(list.data.split(','), function (d) { return d.trim(); });
                 }
-                columnNamesInput = values['Input for column names'];
+                columnNamesInput = values.columnNamesInput;
                 if (columnNamesInput && columnNamesInput.data !== '') {
                     model.domain = {format: 'column.names', input: columnNamesInput.data};
                 }
@@ -70,8 +71,11 @@
         },
 
         render: function () {
+            console.log(this.model);
+
             // Load model properties into variable properties
             this.variableProperties.name['default'] = {data: this.model.get('name')};
+            this.variableProperties.id['default'] = {data: this.model.get('id')};
             this.variableProperties.type['default'] = {data: this.model.get('type') + ':' + this.model.get('format')};
             this.variableProperties.description['default'] = {data: this.model.get('description')};
             this.variableProperties['default']['default'] = {data: this.model.get('default')};
@@ -88,6 +92,7 @@
                 }
             }
 
+            console.log(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
             this.inputsView.collection.set(_.values(_.pick(this.variableProperties, this.input ? this.inputProperties : this.outputProperties)));
 
             // Show the model dialog
