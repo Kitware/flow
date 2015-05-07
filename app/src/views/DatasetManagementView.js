@@ -181,10 +181,15 @@
                     extension = file.name.split('.');
 
                 extension = extension[extension.length - 1];
+                if (!(extension in flow.extensionToType)) {
+                    flow.bootstrapAlert("danger", extension + " files are unsupported.", 15);
+                    return;
+                }
                 _.extend(dataset, flow.extensionToType[extension]);
                 dataset = new Backbone.Model(dataset);
 
                 this.datasets.add(dataset);
+                flow.bootstrapAlert("success", file.name + " loaded successfully!", 5);
             }, this);
 
             reader.readAsText(file);
