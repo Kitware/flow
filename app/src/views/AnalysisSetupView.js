@@ -58,7 +58,7 @@
                             girder.cookie.find('girderToken'));
 
                         this.eventSource.addEventListener('log', _.bind(function (e) {
-                            $('#analysis-output').append(e.data + "\n");
+                            $('#analysis-output').text($('#analysis-output').text() + e.data);
                         }, this));
                         this.eventSource.addEventListener('eof', _.bind(function (e) {
                             console.log('Shutting down stream.');
@@ -151,7 +151,7 @@
                             }
                             output.set({bindings: this.taskBindings});
                             this.datasets.add(output);
-                            outputMessage += '<li>' + output.get('name') + ' [' + output.get('type') + ']</li>';
+                            outputMessage += '<li>' + output.escape('name') + ' [' + output.escape('type') + ']</li>';
                         }, this));
 
                         result._visualizations = result._visualizations || [];
@@ -173,7 +173,7 @@
                             visualization.bindings = this.taskBindings;
                             visualization.preset = true;
                             this.presets.add(output);
-                            outputMessage += '<li>' + output.get('name') + ' [visualization]</li>';
+                            outputMessage += '<li>' + output.escape('name') + ' [visualization]</li>';
                         }, this));
 
                         outputMessage += '</ul>';
