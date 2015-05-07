@@ -97,8 +97,9 @@
                         this.datasets.remove(dataset);
                         this.$('.datasets').change();
                         this.$('.dataset-name').val('');
+                        flow.bootstrapAlert("success", dataset.get('name') + " successfully deleted!", 5);
                     }, this)).error(_.bind(function (error) {
-                        window.alert('You do not have permission to delete this item.');
+                        flow.bootstrapAlert("danger", "You do not have permission to delete this item.", 5);
                     }, this));
                 } else {
                     this.datasets.remove(dataset);
