@@ -200,6 +200,16 @@
                         format: "objectlist"
                     },
                     {
+                        name: "tileUrl",
+                        type: "string",
+                        domain: [
+                            'http://otile1.mqcdn.com/tiles/1.0.0/map/<zoom>/<x>/<y>.png',
+                            'http://otile1.mqcdn.com/tiles/1.0.0/sat/<zoom>/<x>/<y>.png',
+                            'http://tile.openstreetmap.org/<zoom>/<x>/<y>.png',
+                            'http://tile.stamen.com/toner-lite/<zoom>/<x>/<y>.png'
+                        ]
+                    },
+                    {
                         name: "layers",
                         type: "array",
                         components: [

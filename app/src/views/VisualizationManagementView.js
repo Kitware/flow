@@ -104,10 +104,17 @@
             }, this));
         },
 
+        render: function () {
+            if (this.visualization) {
+                this.inputsView.collection.set(this.visualization.get('meta').visualization.inputs);
+                this.inputsView.render();
+            }
+            return this;
+        },
+
         changeVisualization: function () {
-            var vis = this.visualizations.get($(".visualizations").val());
-            this.inputsView.collection.set(vis.get('meta').visualization.inputs);
-            this.inputsView.render();
+            this.visualization = this.visualizations.get($(".visualizations").val());
+            this.render();
         },
 
         loadInputsArray: function (inputsViews, optionsArray, done) {
@@ -199,10 +206,12 @@
             } else if (input.get('type') === 'json') {
                 addOption(options, input.get('name'), JSON.parse(value));
             } else if (input.get('type') === 'accessor') {
-                addOption(options, input.get('name'), {
-                    field: value,
-                    _accessor: true
-                });
+                if (value !== null) {
+                    addOption(options, input.get('name'), {
+                        field: value,
+                        _accessor: true
+                    });
+                }
             }
             this.loadInputs(inputViews, options, done);
         },

@@ -177,11 +177,11 @@
             } else if (spec.object !== undefined) {
                 for (field in spec.object) {
                     if (spec.object.hasOwnProperty(field) && field !== '_accessor') {
-                        fieldMap[field] = flow.accessor(spec.object[field]);
+                        fieldMap[field] = window.flow.accessor(spec.object[field]);
                     }
                 }
                 func = function (d) {
-                    var value = {};
+                    var value = {}, field;
                     for (field in fieldMap) {
                         if (fieldMap.hasOwnProperty(field)) {
                             value[field] = fieldMap[field](d);
@@ -203,16 +203,16 @@
             if (_.isArray(spec)) {
                 out = [];
                 spec.forEach(function (d) {
-                    out.push(flow.accessorify(d));
+                    out.push(window.flow.accessorify(d));
                 });
             } else if (_.isObject(spec)) {
                 if (spec._accessor) {
-                    out = flow.accessor(spec);
+                    out = window.flow.accessor(spec);
                 } else {
                     out = {};
                     for (field in spec) {
                         if (spec.hasOwnProperty(field)) {
-                            out[field] = flow.accessorify(spec[field]);
+                            out[field] = window.flow.accessorify(spec[field]);
                         }
                     }
                 }
