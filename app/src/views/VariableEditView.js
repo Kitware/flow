@@ -48,7 +48,7 @@
                     model.description = values.description.data;
                 }
                 if (values.default && values.default.data !== '') {
-                    model['default'] = values.default.data;
+                    model['default'] = {data: values.default.data, format: 'text'};
                 }
                 list = values.values;
                 if (list && list.data !== '') {
@@ -79,7 +79,9 @@
             this.variableProperties.id['default'] = {data: this.model.get('id')};
             this.variableProperties.type['default'] = {data: this.model.get('type') + ':' + this.model.get('format')};
             this.variableProperties.description['default'] = {data: this.model.get('description')};
-            this.variableProperties['default']['default'] = {data: this.model.get('default')};
+            if (this.model.get('default') && this.model.get('default').hasOwnProperty('data')) {
+                this.variableProperties['default']['default'] = {data: this.model.get('default').data};
+            }
 
             // Set the domain-specific fields
             this.variableProperties.values['default'] = {data: ''};
