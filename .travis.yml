@@ -1,4 +1,15 @@
-language: cpp
+language: python
+python:
+    - "2.7"
+
+sudo: false
+
+addons:
+    apt:
+        packages:
+            - gfortran
+            - libcurl4-openssl-dev
+
 services: mongodb
 env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder:~/vtk-precise64/lib/python2.7/site-packages:~/vtk-precise64/lib R_LIBS_USER=~/R LD_LIBRARY_PATH=~/vtk-precise64/lib
 compiler:
@@ -6,48 +17,49 @@ compiler:
 
 before_install:
     - vmstat 1 1
-    # Terminate if in the bad memory condition
-    - python -c "import sys;sys.exit(int(open('/proc/meminfo').read().split('Cached:')[1].strip().split()[0])<32)"
-    - sudo apt-get install npm
     - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
 
 install:
     - pwd
     - echo $PYTHONPATH
-    - sudo pip install tangelo==0.7.0
-    - sudo pip install pep8 coverage
+
+    # Build R from source
+    - wget http://cran.rstudio.com/src/base/R-3/R-3.2.0.tar.gz
+    - tar xzf R-3.2.0.tar.gz
+    - cd R-3.2.0
+    - ./configure --enable-R-shlib
+    - make -j3
+    - export PATH=$PATH:`pwd`/bin
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib:`pwd`/bin
+    - echo $GITHUB_PAT
+    - export GITHUB_PAT=2a36e1270e28509d192f4683e1da9cec01c1510d
+    - which R Rscript
+    - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
+    - R --version
+    - R -e '.libPaths(); sessionInfo()'
+    - Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))'
+    - R -e 'options(repos="http://cran.cnr.Berkeley.edu");library(devtools);install_github("hafen/cardoonTools")'
+
+    - pip install tangelo==0.7.0 pep8 coverage
     - npm install -g grunt grunt-cli
 
     # Girder
+    - cd $TRAVIS_BUILD_DIR
     - git clone https://github.com/girder/girder.git
-    - cd $TRAVIS_BUILD_DIR/girder
-    - sudo pip install -r requirements.txt
-    - sudo python -c "import bcrypt"
+    - cd girder
+    - pip install -r requirements.txt
     - npm install
 
     # VTK
     - cd $TRAVIS_BUILD_DIR
     - wget http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz -O vtk-precise64.tar.gz
-    - tar xzvf vtk-precise64.tar.gz -C ~
-
-    # R
-    - sudo apt-add-repository -y "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/"
-    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-    - sudo apt-get update
-    - sudo apt-get install -y r-base-dev zlib1g-dev
-    - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
-    - R --version
-    - R -e '.libPaths(); sessionInfo()'
-
-    # R packages
-    # - Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))'
-    # - R -e 'options(repos="http://cran.cnr.Berkeley.edu");library(devtools);install_github("cardoonTools", "hafen")'
+    - tar xzf vtk-precise64.tar.gz -C ~
 
     # Romanesco
     - cd $TRAVIS_BUILD_DIR/girder/plugins
     - git clone https://github.com/Kitware/romanesco.git
     - cd $TRAVIS_BUILD_DIR/girder/plugins/romanesco
-    - sudo pip install -r requirements.txt
+    - pip install -r requirements.txt
     - python -m romanesco &
 
     # TangeloHub
