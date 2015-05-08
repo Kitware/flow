@@ -48,7 +48,7 @@
                     model.description = values.description.data;
                 }
                 if (values.default && values.default.data !== '') {
-                    model['default'] = {data: values.default.data, format: 'text'};
+                    model['default'] = values.default;
                 }
                 list = values.values;
                 if (list && list.data !== '') {
