@@ -55,7 +55,10 @@
         addChangeEvent: function (input) {
             var referredInputView,
                 findReferredInputView = _.bind(function (view) {
-                    var referredInput = view.collection.findWhere({name: input.get('domain').input});
+                    var referredInput = view.collection.findWhere({id: input.get('domain').input});
+                    if (!referredInput) {
+                        referredInput = view.collection.findWhere({name: input.get('domain').input});
+                    }
                     if (!referredInput && view.parentView && view.parentView.parentView) {
                         return findReferredInputView(view.parentView.parentView);
                     }
@@ -95,15 +98,16 @@
 
                     // Sometimes the view is a Backbone view, sometimes it is a plain control
                     value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                    dataset;
+                    dataset,
+                    id = input.get('id') || input.get('name');
 
                 if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                     dataset = this.datasets.get(value);
-                    result[input.get('name')] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.get('_id')));
+                    result[id] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.get('_id')));
                 } else if (input.get('type') === 'string') {
-                    result[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
+                    result[id] = {type: input.get('type'), format: 'text', data: value};
                 } else if (input.get('type') === 'number') {
-                    result[input.get('name')] = {type: input.get('type'), format: 'number', data: parseFloat(value)};
+                    result[id] = {type: input.get('type'), format: 'number', data: parseFloat(value)};
                 }
             }, this));
             return result;

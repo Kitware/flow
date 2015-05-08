@@ -18,8 +18,7 @@ workflow = function (selection, flow, girder) {
         dragPath,
         portOffset = 20,
         strokeColor = "#333",
-        write = false,
-        tooltip = selection.append("div").style("opacity", 0).style("position", "absolute");
+        write = false;
 
     // Update the SVG path for a connection
     function connectionPath(d) {
@@ -121,47 +120,33 @@ workflow = function (selection, flow, girder) {
         pathInput = d3.select(this).selectAll("path.input").data(step.inputs).enter().append("path")
             .classed("input", true)
             .attr("d", function (d, i) { return portShape(d.type, -portOffset, step.inputScale(i)); })
+            .attr("data-toggle", "tooltip")
+            .attr("data-placement", "top")
+            .attr("title", function (d) { return d.name + " (" + d.type + ")"; })
             .style("fill", "whitesmoke")
             .style("stroke", strokeColor)
             .style("stroke-width", 2)
             .on("mouseover", function (d) {
                 d3.select(this).style("fill", "#428BCA");
-                var rect = this.getBoundingClientRect();
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0.9);
-                tooltip.html(d.name + " (" + d.type + ")")
-                    .style("left", (rect.left) + "px")
-                    .style("top", (rect.top - 28) + "px");
             })
             .on("mouseout", function (d) {
                 d3.select(this).style("fill", "whitesmoke");
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0);
             });
 
         pathOutput = d3.select(this).selectAll("path.output").data(step.outputs).enter().append("path")
             .classed("output", true)
             .attr("d", function (d, i) { return portShape(d.type, 150 + portOffset, step.outputScale(i)); })
+            .attr("data-toggle", "tooltip")
+            .attr("data-placement", "top")
+            .attr("title", function (d) { return d.name + " (" + d.type + ")"; })
             .style("fill", "#eee")
             .style("stroke", strokeColor)
             .style("stroke-width", 2)
             .on("mouseover", function (d) {
                 d3.select(this).style("fill", "#428BCA");
-                var rect = this.getBoundingClientRect();
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0.9);
-                tooltip.html(d.name + " (" + d.type + ")")
-                    .style("left", (rect.left) + "px")
-                    .style("top", (rect.top - 28) + "px");
             })
             .on("mouseout", function (d) {
                 d3.select(this).style("fill", "whitesmoke");
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0);
             });
 
         if (write) {
@@ -371,6 +356,7 @@ workflow = function (selection, flow, girder) {
         }
 
         g.each(updateStep);
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'});
 
         // Text wrapping
         t = vis.selectAll("text.step-name");

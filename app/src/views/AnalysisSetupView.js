@@ -17,7 +17,8 @@
                 inputs = this.inputsView.values();
 
                 this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
-                    outputs[output.name] = {type: output.type, format: flow.webFormat[output.type]};
+                    var id = output.id || output.name;
+                    outputs[id] = {type: output.type, format: flow.webFormat[output.type]};
                 }, this));
                 this.taskBindings = {inputs: inputs, outputs: outputs};
 
