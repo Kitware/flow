@@ -9,6 +9,7 @@
         extensionToType: {
             phy: {type: 'tree', format: 'newick'},
             nex: {type: 'tree', format: 'nexus'},
+            'nested-json': {type: 'tree', format: 'nested.json'},
             csv: {type: 'table', format: 'csv'},
             tsv: {type: 'table', format: 'tsv'},
             png: {type: 'image', format: 'png'},
