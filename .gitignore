@@ -5,7 +5,6 @@ tangelo.log
 *.pyc
 .vagrant
 romanesco
-app/logo.png
 app/phylogenetic-signal
 app/ancestral-state
 ArborWebApps

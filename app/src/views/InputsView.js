@@ -62,6 +62,9 @@
                     if (!referredInput && view.parentView && view.parentView.parentView) {
                         return findReferredInputView(view.parentView.parentView);
                     }
+                    if (!referredInput) {
+                        return;
+                    }
                     return view.itemViews[referredInput.cid];
                 }, this);
 
@@ -69,7 +72,7 @@
                 if (input.get('domain') && (_.isObject(input.get('domain')) && !_.isArray(input.get('domain')))) {
                     referredInputView = findReferredInputView(this);
                     if (!referredInputView) {
-                        console.error('Referred input not found!');
+                        flow.bootstrapAlert("danger", "Error initializing input '" + input.get('name') + "'", 30);
                         return;
                     }
                     referredInputView.$el.change(_.bind(function () {
