@@ -75,6 +75,9 @@
                     referredInputView.$el.change(_.bind(function () {
                         var dataset = this.datasets.get(referredInputView.view.$el.val());
                         flow.retrieveDatasetAsFormat(dataset, referredInputView.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
+                            if (!this.itemViews[input.cid]) {
+                                return;
+                            }
                             var value = this.itemViews[input.cid].view.$el.val();
                             dataset.get('data').sort();
                             this.itemViews[input.cid].view.collection.set(dataset.get('data'));
@@ -86,7 +89,7 @@
         },
 
         triggerChangeEvent: function (input) {
-            if (this.itemViews[input.cid].inputMode === "dataset") {
+            if (this.itemViews[input.cid] && this.itemViews[input.cid].inputMode === "dataset") {
                 this.itemViews[input.cid].$el.change();
             }
         },
