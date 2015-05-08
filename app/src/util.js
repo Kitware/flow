@@ -229,8 +229,11 @@
             var file, bindEvents = function (file) {
                 file.on('g:upload.complete', function () {
                     success(arguments);
+                    flow.bootstrapAlert("success", "Upload complete!", 5);
                 }).on('g:upload.error', function () {
+                }).on('g:upload.error g:upload.errorStarting', function () {
                     error(arguments);
+                    flow.bootstrapAlert("danger", "Upload failed: " + arguments[0].response.statusText);
                 });
                 return file;
             };
