@@ -106,6 +106,7 @@
 
         render: function () {
             if (this.visualization) {
+                this.inputsView.collection.set([]);
                 this.inputsView.collection.set(this.visualization.get('meta').visualization.inputs);
                 this.inputsView.render();
             }
