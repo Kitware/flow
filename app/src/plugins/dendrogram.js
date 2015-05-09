@@ -49,9 +49,9 @@
             id: getID,
             // margin spacing
             margin: {
-                top: 35,
+                top: 25,
                 right: 25,
-                bottom: 25,
+                bottom: 50,
                 left: 25
             },
             // graph size in pixels or null to use the element size
@@ -61,6 +61,8 @@
             duration: 750,
             // the tree root
             data: {},
+            // accessor to distance
+            distance: tangelo.accessor({value: 1}),
             // accessor to node colors
             nodeColor: tangelo.accessor({value: "lightsteelblue"}),
             // accessor to font size of the labels
@@ -84,9 +86,6 @@
             expanded: function (d) {
                 return !d.collapse;
             },
-            // accessor to the label position
-            // should return "above" or "below"
-            labelPosition: tangelo.accessor({value: "above"}),
             // graph orientation: "vertical" or "horizontal"
             orientation: "vertical"
         },
@@ -131,7 +130,7 @@
         },
         _update: function () {
             var that = this, width, height, sw, sh,
-                tree = d3.layout.tree(),
+                tree = d3.layout.cluster(),
                 line,
                 id = tangelo.accessor(this.options.id),
                 selection, enter, exit, nodes, vert = this.options.orientation === "vertical",
@@ -183,7 +182,29 @@
             tree.size([width, height])
                 .children(getChildren);
 
+            console.log(this.options.data);
+            this.options.data._dist = 0;
+            this.walk(function (d) {
+                d._children.forEach(function (child) {
+                    child._dist = d._dist + that.options.distance(child);
+                    console.log(child._dist);
+                });
+            }, this.options.data, true);
+
             nodes = tree(this.options.data);
+
+            var xscale = d3.scale.linear().domain([0, d3.max(nodes, function (d) { return d._dist; })]).range([0, height - 100]);
+
+            this.options.data.y = 0;
+            this.options.data.y0 = 0;
+            this.walk(function (d) {
+                d._children.forEach(function (child) {
+                    child.y = xscale(child._dist);
+                    child.y0 = d.y;
+                });
+            }, this.options.data, true);
+
+            console.log(nodes);
 
             // select the node links
             selection = this.group.selectAll(".line")
@@ -211,7 +232,7 @@
                 line = d3.svg.diagonal();
             } else if (this.options.lineStyle === "axisAligned") {
                 line = function (obj) {
-                    var l = d3.svg.line().interpolate("step-before")
+                    var l = d3.svg.line().interpolate("step-after")
                                 .x(tangelo.accessor({field: "x"}))
                                 .y(tangelo.accessor({field: "y"}));
                     return l([obj.source, obj.target]);
@@ -273,23 +294,12 @@
 
             enter.append("text")
                 .attr("class", "label tree")
-                .attr("dy", function (d, i) {
-                    var pos = that.options.labelPosition(d, i),
-                        val;
-                    if (pos === "above") {
-                        val = "-0.8em";
-                    } else if (pos === "below") {
-                        val = "1.35em";
-                    } else {
-                        throw new Error("Invalid labelPosition");
-                    }
-                    return val;
-                })
+                .attr("dx", 5)
                 .attr("transform", function (d) {
                     var s = findSource(d);
                     return "translate(" + s.x0 + "," + s.y0 + ")" + rotString;
                 })
-                .attr("text-anchor", "middle")
+                .attr("text-anchor", "left")
                 .attr("font-size", this.options.labelSize)
                 .style("fill-opacity", 1e-6)
                 .text(this.options.label);
@@ -366,8 +376,8 @@
                     return d.y;
                 })
                 .attr("r", this.options.nodeSize)
-                .style("fill-opacity", 1)
-                .style("stroke-opacity", 1)
+                .style("fill-opacity", 0.5)
+                .style("stroke-opacity", 0.5)
                 .style("fill", this.options.nodeColor);
         }
     });
