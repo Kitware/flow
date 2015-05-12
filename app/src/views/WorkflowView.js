@@ -119,24 +119,37 @@
             };
 
             this.steps.forEach(function (step) {
+                var input, output;
                 if (step.get('isInput')) {
-                    task.inputs.push({
+                    input = {
                         id: step.id,
                         name: step.get('name'),
                         type: step.get('task').outputs[0].type,
                         format: step.get('task').outputs[0].format,
                         x: step.get('x'),
                         y: step.get('y')
+                    };
+                    ['mode', 'domain', 'default', 'constant', 'description'].forEach(function (key) {
+                        if (step.get(key)) {
+                            input[key] = step.get(key);
+                        }
                     });
+                    task.inputs.push(input);
                 } else if (step.get('isOutput')) {
-                    task.outputs.push({
+                    output ={
                         id: step.id,
                         name: step.get('name'),
                         type: step.get('task').inputs[0].type,
                         format: step.get('task').inputs[0].format,
                         x: step.get('x'),
                         y: step.get('y')
+                    };
+                    ['description'].forEach(function (key) {
+                        if (step.get(key)) {
+                            output[key] = step.get(key);
+                        }
                     });
+                    task.outputs.push(output);
                 } else {
                     task.steps.push({
                         x: step.get('x'),
