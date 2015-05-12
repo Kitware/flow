@@ -39,7 +39,7 @@
                     info.name = this.$(".analysis-edit-name").val();
                     info.description = this.$('#analysis-edit-description').val();
                     if (info.mode === "workflow") {
-                        curWorkflow = this.workflowEditor.serialize();
+                        curWorkflow = this.workflowView.serialize();
                         info.inputs = curWorkflow.inputs;
                         info.outputs = curWorkflow.outputs;
                         info.steps = curWorkflow.steps;
@@ -280,7 +280,7 @@
                     d3.select("#workflow-editor").classed("hidden", false);
                     d3.selectAll(".analysis-edit-controls").classed("hidden", true);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", false);
-                    this.workflowView = new flow.WorkflowView({el: '#workflow-editor', model: new Backbone.Model(this.analysis.get('meta').analysis)});
+                    this.workflowView = new flow.WorkflowView({el: '#workflow-editor', model: new Backbone.Model($.extend(true, {}, this.analysis.get('meta').analysis))});
                     this.workflowView.render();
                     // this.workflowEditor.data(this.analysis.get('meta').analysis);
                 } else {

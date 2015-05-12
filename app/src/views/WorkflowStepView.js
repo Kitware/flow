@@ -12,8 +12,8 @@
                     confirmCallback: _.bind(function () {
                         this.workflowView.connections.set(
                             this.workflowView.connections.filter(_.bind(function (d) {
-                                return d.get('inStep').id !== this.model.id &&
-                                    d.get('outStep').id !== this.model.id;
+                                return d.get('inputStep').id !== this.model.id &&
+                                    d.get('outputStep').id !== this.model.id;
                             }, this))
                         );
                         this.workflowView.steps.remove(this.model);
@@ -42,18 +42,24 @@
                         name: outputPort.name,
                         isOutput: true,
                         inputs: [_.clone(outputPort)],
-                        outputs: []
+                        outputs: [],
+                        x: this.model.get('x') + 300,
+                        y: this.model.get('y')
                     },
-                    outStep = this.workflowView.addStep(output);
+                    outputStep = this.workflowView.addStep(output);
 
                 this.workflowView.connections.add(new Backbone.Model({
-                    outStep: this.model,
+                    outputStep: this.model,
                     outputIndex: index,
                     outputPos: this.model.get('task').outputScale(index),
-                    inStep: outStep,
+                    inputStep: outputStep,
                     inputIndex: 0,
-                    inputPos: outStep.get('task').inputScale(0)
+                    inputPos: outputStep.get('task').inputScale(0)
                 }));
+            },
+
+            'mouseup .input': function (event) {
+                this.workflowView.checkConnectionComplete(this.model, $(event.target).index());
             }
 
         },
