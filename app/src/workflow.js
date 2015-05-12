@@ -122,7 +122,7 @@ workflow = function (selection, flow, girder) {
             .attr("d", function (d, i) { return portShape(d.type, -portOffset, step.inputScale(i)); })
             .attr("data-toggle", "tooltip")
             .attr("data-placement", "top")
-            .attr("title", function (d) { return d.name + " (" + d.type + ")"; })
+            .attr("title", function (d) { return d.name + " [" + d.type + "]"; })
             .style("fill", "whitesmoke")
             .style("stroke", strokeColor)
             .style("stroke-width", 2)
@@ -138,7 +138,7 @@ workflow = function (selection, flow, girder) {
             .attr("d", function (d, i) { return portShape(d.type, 150 + portOffset, step.outputScale(i)); })
             .attr("data-toggle", "tooltip")
             .attr("data-placement", "top")
-            .attr("title", function (d) { return d.name + " (" + d.type + ")"; })
+            .attr("title", function (d) { return d.name + " [" + d.type + "]"; })
             .style("fill", "#eee")
             .style("stroke", strokeColor)
             .style("stroke-width", 2)
@@ -247,6 +247,32 @@ workflow = function (selection, flow, girder) {
                 });
             });
 
+            // edit this step
+            d3.select(this).selectAll(".edit-step").on("click", function (d, i) {
+                var view, model = new Backbone.Model(d);
+                if (d.isInput) {
+                    view = new window.flow.VariableEditView({
+                        model: model,
+                        el: $('#workflow-input-variable-edit-dialog'),
+                        input: true,
+                        workflow: true
+                    });
+                } else if (d.isOutput) {
+                    view = new window.flow.VariableEditView({
+                        model: model,
+                        el: $('#workflow-output-variable-edit-dialog'),
+                        input: false,
+                        workflow: true
+                    });
+                }
+                model.on('change', function () {
+                    _.extend(d, model.toJSON());
+                    vis.selectAll('.step-name')
+                        .text(function (d) { return d.name; });
+                });
+                view.render();
+            });
+
             // refresh this step from the workflow
             d3.select(this).selectAll(".refresh-step").on("click", function (d, i) {
                 girder.confirm({
@@ -300,7 +326,7 @@ workflow = function (selection, flow, girder) {
             .style("fill", strokeColor)
             .style("text-anchor", "middle")
             .style("alignment-baseline", "central")
-            .text(function (d) { return d.id; })
+            .text(function (d) { return d.name; })
             .style("user-select", "none")
             .style("-webkit-user-select", "none")
             .style("pointer-events", "none");
@@ -317,6 +343,16 @@ workflow = function (selection, flow, girder) {
                 .style("cursor", "pointer")
                 .style("fill", "crimson")
                 .text("X");
+
+            // icon to edit this workflow step
+            g.append("text")
+                .attr("x", 85)
+                .attr("y", 15)
+                .attr("visibility", "hidden")
+                .attr("class", "edit-step")
+                .style("cursor", "pointer")
+                .style("fill", "black")
+                .text("edit");
 
             // icon to refresh this workflow step
             g.append("text")
@@ -347,10 +383,12 @@ workflow = function (selection, flow, girder) {
 
             g.on("mouseenter", function (d) {
                 $(this).find(".delete-step").attr("visibility", "visible");
+                $(this).find(".edit-step").attr("visibility", "visible");
                 $(this).find(".refresh-step").attr("visibility", "visible");
             });
             g.on("mouseleave", function (d) {
                 $(this).find(".delete-step").attr("visibility", "hidden");
+                $(this).find(".edit-step").attr("visibility", "hidden");
                 $(this).find(".refresh-step").attr("visibility", "hidden");
             });
         }
@@ -714,6 +752,7 @@ workflow = function (selection, flow, girder) {
         .on("dragstart", function (d) {
             dragPath.attr("visibility", "visible");
             dragPath.attr("d", connectionPath(dragConnection));
+            d3.event.sourceEvent.stopPropagation();
         })
         .on("drag", function (d) {
             dragConnection.inputStep.x += d3.event.dx;

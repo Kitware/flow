@@ -51,9 +51,6 @@ module.exports = function (grunt) {
                 files: {
                     'app/app.min.css': [
                         'app/src/stylesheets/index.styl'
-                    ],
-                    'app/workflows/app.min.css': [
-                        'app/src/stylesheets/workflowsApp.styl'
                     ]
                 }
             }
@@ -91,19 +88,13 @@ module.exports = function (grunt) {
                         'app/src/workflow.js',
                         'app/src/collections/**/*.js',
                         'app/src/ItemsView.js',
+                        'app/src/SVGView.js',
                         'app/src/plugins/**/*.js',
                         'app/src/views/**/*.js',
                         'app/src/app.js'
                     ],
                     'app/main.min.js': [
                         'app/src/main.js'
-                    ]
-                }
-            },
-            workflows: {
-                files: {
-                    'app/workflows/main.min.js': [
-                        'app/src/workflowsMain.js'
                     ]
                 }
             },
@@ -163,11 +154,6 @@ module.exports = function (grunt) {
                 tasks: ['jade-index'],
                 options: {failOnError: false}
             },
-            workflows_index: {
-                files: ['app/src/templates/workflows.jadehtml'],
-                tasks: ['workflows-index'],
-                options: {failOnError: false}
-            },
             sphinx: {
                 files: ['docs/*.rst'],
                 tasks: ['docs'],
@@ -217,33 +203,6 @@ module.exports = function (grunt) {
         console.log('Built index.html.');
     });
 
-    grunt.registerTask('workflows-index', 'Build workflows/index.html using jade', function () {
-        var jade = require('jade'),
-            buffer = fs.readFileSync('app/src/templates/workflows.jadehtml'),
-            fn = jade.compile(buffer, {
-                client: false,
-                pretty: true
-            }),
-            html = fn({
-                stylesheets: [
-                    '../lib/bootstrap/css/bootstrap.min.css',
-                    '../lib/material/css/ripples.min.css',
-                    '../lib/material/css/material-wfont.min.css',
-                    'app.min.css'
-                ],
-                scripts: [
-                    '../libs.min.js',
-                    '/girder/static/built/app.min.js',
-                    '../lib/material/js/ripples.min.js',
-                    '../lib/material/js/material.min.js',
-                    '../app.min.js',
-                    'main.min.js'
-                ]
-            });
-        fs.writeFileSync('app/workflows/index.html', html);
-        console.log('Built workflows/index.html.');
-    });
-
     grunt.registerTask('test-env-html', 'Build the phantom test html page.', function () {
         var buffer = fs.readFileSync('test/testEnv.jadehtml'),
             globs = grunt.config('uglify.app.files')['app/app.min.js'],
@@ -282,8 +241,6 @@ module.exports = function (grunt) {
         'jade',
         'jade-index',
         'uglify:app',
-        'workflows-index',
-        'uglify:workflows',
         'test-env-html'
     ]);
 
