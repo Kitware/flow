@@ -279,7 +279,6 @@
                     this.workflowView = new flow.WorkflowView({el: '#workflow-editor', model: new Backbone.Model($.extend(true, {}, this.analysis.get('meta').analysis))});
                     this.workflowView.editable(d3.select("#edit").classed("active"));
                     this.workflowView.render();
-                    // this.workflowEditor.data(this.analysis.get('meta').analysis);
                 } else {
                     d3.select("#code-editor").classed("hidden", false);
                     d3.select("#workflow-editor").classed("hidden", true);

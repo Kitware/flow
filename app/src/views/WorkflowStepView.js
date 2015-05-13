@@ -182,6 +182,49 @@
 
         rename: function () {
             this.$('.step-name').text(this.model.get('name'));
+            this.wrapText();
+        },
+
+        wrapText: function () {
+            var text = d3.select(this.el).select('.step-name'),
+                width = 150 - 10;
+
+            text.selectAll('tspan').remove();
+
+            var words = this.model.get('name').split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                x = text.attr('x'),
+                y = text.attr('y'),
+                tspan = text.text(null).append('tspan')
+                    .attr('x', x)
+                    .attr('y', y)
+                    .style('text-anchor', 'middle')
+                    .style('alignment-baseline', 'central');
+            word = words.pop();
+            while (word) {
+                line.push(word);
+                tspan.text(line.join(' '));
+                console.log(tspan.node().getComputedTextLength());
+                if (tspan.node().getComputedTextLength() > width) {
+                    lineNumber += 1;
+                    line.pop();
+                    tspan.text(line.join(' '));
+                    line = [word];
+                    tspan = text.append('tspan')
+                        .attr('x', x)
+                        .attr('y', y)
+                        .style('text-anchor', 'middle')
+                        .style('alignment-baseline', 'central')
+                        .text(word);
+                }
+                word = words.pop();
+            }
+            // Center the text
+            text.selectAll('tspan')
+                .attr('dy', function (d, i) { return (i - lineNumber / 2) * lineHeight + 'em'; });
         },
 
         render: function () {
@@ -245,6 +288,7 @@
                     .data(this.model.get('task').outputs)
                     .call(dragPort);
             }
+            this.wrapText();
             return this;
         }
     });
