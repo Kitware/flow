@@ -137,13 +137,19 @@
                         error: null
                     }).done(_.bind(function (data) {
                         var result = data.result,
-                            outputMessage = '<ul>';
+                            outputMessage = '<ul>',
+                            outputIdToName = {};
+
+                        this.model.get('meta').analysis.outputs.forEach(function (output) {
+                            outputIdToName[output.id] = output.name;
+                        });
+
                         // Put data into list
-                        $.each(result, _.bind(function (outputName, output) {
-                            if (outputName === '_visualizations') {
+                        $.each(result, _.bind(function (outputId, output) {
+                            if (outputId === '_visualizations') {
                                 return;
                             }
-                            var index = 1;
+                            var index = 1, outputName = outputIdToName[outputId];
                             output = new Backbone.Model(output);
                             output.set({name: this.model.get('name') + ' ' + outputName});
                             while (this.datasets.findWhere({name: output.get('name')})) {

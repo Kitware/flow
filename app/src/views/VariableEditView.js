@@ -30,13 +30,13 @@
             columnNamesInput: {name: "Input for column names", id: "columnNamesInput", type: "string", format: "text"}
         },
 
-        inputProperties: ['name', 'id', 'type', 'description', 'default', 'values', 'columnNamesInput'],
-
-        outputProperties: ['name', 'id', 'type', 'description'],
-
-        workflowInputProperties: ['name', 'id', 'description', 'constant', 'default', 'values', 'columnNamesInput'],
-
-        workflowOutputProperties: ['name', 'id', 'description'],
+        properties: {
+            input: ['name', 'id', 'type', 'description', 'default', 'values', 'columnNamesInput'],
+            output: ['name', 'id', 'type', 'description'],
+            workflowInput: ['name', 'id', 'description', 'constant', 'default', 'values', 'columnNamesInput'],
+            workflowOutput: ['name', 'id', 'description'],
+            workflowTask: ['name']
+        },
 
         events: {
             'click .update': function () {
@@ -48,10 +48,10 @@
                     model.type = values.type.data.split(':')[0];
                     model.format = values.type.data.split(':')[1];
                 }
-                if (values.id.data.length > 0) {
+                if (values.id && values.id.data.length > 0) {
                     model.id = values.id.data;
                 }
-                if (values.description.data !== '') {
+                if (values.description && values.description.data !== '') {
                     model.description = values.description.data;
                 }
                 if (values.default && values.default.data !== '') {
@@ -74,26 +74,12 @@
         },
 
         initialize: function (settings) {
-            var properties;
+            this.properties = this.properties[settings.mode];
             this.model = settings.model;
-            this.input = settings.input;
             this.workflow = settings.workflow;
-            if (this.input) {
-                if (this.workflow) {
-                    properties = this.workflowInputProperties;
-                } else {
-                    properties = this.inputProperties;
-                }
-            } else {
-                if (this.workflow) {
-                    properties = this.workflowOutputProperties;
-                } else {
-                    properties = this.outputProperties;
-                }
-            }
             this.$('.properties').empty();
             this.inputsView = new flow.InputsView({
-                collection: new Backbone.Collection(_.values(_.pick(this.variableProperties, properties))),
+                collection: new Backbone.Collection(_.values(_.pick(this.variableProperties, this.properties))),
                 idPrefix: 'variable-',
                 el: this.$('.properties')
             });
@@ -124,21 +110,8 @@
                 }
             }
 
-            if (this.input) {
-                if (this.workflow) {
-                    properties = this.workflowInputProperties;
-                } else {
-                    properties = this.inputProperties;
-                }
-            } else {
-                if (this.workflow) {
-                    properties = this.workflowOutputProperties;
-                } else {
-                    properties = this.outputProperties;
-                }
-            }
             this.inputsView.collection.set([]);
-            this.inputsView.collection.set(_.values(_.pick(this.variableProperties, properties)));
+            this.inputsView.collection.set(_.values(_.pick(this.variableProperties, this.properties)));
 
             // Show the model dialog
             this.inputsView.render();

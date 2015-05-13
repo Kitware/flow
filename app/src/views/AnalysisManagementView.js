@@ -198,10 +198,6 @@
                 }
             }, this));
 
-            // this.workflowEditor = workflow(d3.select("#workflow-editor"), flow, girder);
-            // this.workflowEditor.editable(false);
-            // this.workflowView = new flow.WorkflowView({el: '#workflow-editor'})
-
             this.analyses = settings.analyses;
             this.analysesView = new flow.ItemsView({el: this.$('#analysis'), itemView: flow.ItemOptionView, collection: this.analyses});
             this.analysesView.render();
@@ -214,14 +210,14 @@
 
             this.inputVariables = new Backbone.Collection();
             this.outputVariables = new Backbone.Collection();
-            this.inputVariableEditView = new flow.VariableEditView({el: $('#input-variable-edit-dialog'), input: true});
+            this.inputVariableEditView = new flow.VariableEditView({el: $('#input-variable-edit-dialog'), mode: 'input'});
             this.inputVariablesView = new flow.VariablesView({
                 el: this.$('.input-variables'),
                 itemView: flow.VariableView,
                 itemOptions: {editView: this.inputVariableEditView, collection: this.inputVariables},
                 collection: this.inputVariables
             });
-            this.outputVariableEditView = new flow.VariableEditView({el: $('#output-variable-edit-dialog'), input: false});
+            this.outputVariableEditView = new flow.VariableEditView({el: $('#output-variable-edit-dialog'), mode: 'output'});
             this.outputVariablesView = new flow.VariablesView({
                 el: this.$('.output-variables'),
                 itemView: flow.VariableView,
@@ -281,6 +277,7 @@
                     d3.selectAll(".analysis-edit-controls").classed("hidden", true);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", false);
                     this.workflowView = new flow.WorkflowView({el: '#workflow-editor', model: new Backbone.Model($.extend(true, {}, this.analysis.get('meta').analysis))});
+                    this.workflowView.editable(d3.select("#edit").classed("active"));
                     this.workflowView.render();
                     // this.workflowEditor.data(this.analysis.get('meta').analysis);
                 } else {

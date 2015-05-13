@@ -21,6 +21,30 @@
                 });
             },
 
+            'click .edit-step': function () {
+                var view;
+                if (this.model.get('isInput')) {
+                    view = new window.flow.VariableEditView({
+                        model: this.model,
+                        el: $('#workflow-input-variable-edit-dialog'),
+                        mode: 'workflowInput'
+                    });
+                } else if (this.model.get('isOutput')) {
+                    view = new window.flow.VariableEditView({
+                        model: this.model,
+                        el: $('#workflow-output-variable-edit-dialog'),
+                        mode: 'workflowOutput'
+                    });
+                } else {
+                    view = new window.flow.VariableEditView({
+                        model: this.model,
+                        el: $('#workflow-task-edit-dialog'),
+                        mode: 'workflowTask'
+                    });
+                }
+                view.render();
+            },
+
             'mouseenter .step': function () {
                 if (this.workflowView.edit) {
                     this.$('.delete-step').attr('visibility', 'visible');

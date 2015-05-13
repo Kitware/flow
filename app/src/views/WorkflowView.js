@@ -46,6 +46,12 @@
                     outName = d.output_step || d.name;
                 d.inputStep = this.steps.get(inName);
                 d.outputStep = this.steps.get(outName);
+                if (!d.inputStep) {
+                    d.inputStep = this.steps.findWhere({name: inName});
+                }
+                if (!d.outputStep) {
+                    d.outputStep = this.steps.findWhere({name: outName});
+                }
                 d.inputStep.get('task').inputs.forEach(function (input, index) {
                     if ((input.id || input.name) === (d.input || d.name)) {
                         d.inputIndex = index;
@@ -154,7 +160,6 @@
                     task.steps.push({
                         x: step.get('x'),
                         y: step.get('y'),
-                        id: step.id,
                         name: step.get('name'),
                         visualization: step.get('visualization'),
                         girderId: step.get('girderId'),
@@ -167,22 +172,22 @@
             this.connections.forEach(function (c) {
                 if (c.get('outputStep').get('isInput')) {
                     task.connections.push({
-                        name: c.get('outputStep').id,
-                        input_step: c.get('inputStep').id,
-                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
+                        name: c.get('outputStep').get('id') || c.get('outputStep').get('name'),
+                        input_step: c.get('inputStep').get('name'),
+                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].id || c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
                     });
                 } else if (c.get('inputStep').get('isOutput')) {
                     task.connections.push({
-                        name: c.get('inputStep').id,
-                        output_step: c.get('outputStep').id,
-                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].name
+                        name: c.get('inputStep').get('id') || c.get('inputStep').get('name'),
+                        output_step: c.get('outputStep').get('name'),
+                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].id || c.get('outputStep').get('task').outputs[c.get('outputIndex')].name
                     });
                 } else {
                     task.connections.push({
-                        output_step: c.get('outputStep').id,
-                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].name,
-                        input_step: c.get('inputStep').id,
-                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
+                        output_step: c.get('outputStep').get('name'),
+                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].id || c.get('outputStep').get('task').outputs[c.get('outputIndex')].name,
+                        input_step: c.get('inputStep').get('name'),
+                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].id || c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
                     });
                 }
             });
