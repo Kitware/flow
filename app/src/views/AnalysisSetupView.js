@@ -142,7 +142,7 @@
                             outputIdToName = {};
 
                         this.model.get('meta').analysis.outputs.forEach(function (output) {
-                            outputIdToName[output.id] = output.name;
+                            outputIdToName[output.id || output.name] = output.name;
                         });
 
                         // Put data into list
