@@ -45,6 +45,51 @@
                 view.render();
             },
 
+            'click .refresh-step': function() {
+                girder.confirm({
+                    text: 'Refresh the workflow step "' + this.model.id + '" ?',
+                    yesText: 'Refresh',
+                    confirmCallback: _.bind(function () {
+                        if (!this.model.get('girderId')) {
+                            flow.bootstrapAlert("danger", "Unable to refresh " + this.model.get('name') + " because it does not have a database ID set.  It was probably created before this feature was added.  Sorry about that.", 20);
+                            return;
+                        }
+
+                        girder.restRequest({
+                            path: '/item/' + this.model.get('girderId'),
+                            type: 'GET',
+                            error: null
+                        }).done(_.bind(function (result) {
+                            var d1, d2;
+                            d1 = Date.parse(this.model.get('modified'));
+                            d2 = Date.parse(result.updated);
+
+                            if (d2 <= d1) {
+                                flow.bootstrapAlert("info", this.model.get('name') + " is already up-to-date.");
+                                return;
+                            }
+
+                            if (!_.isEqual(this.model.get('task').inputs, result.meta.analysis.inputs)) {
+                                flow.bootstrapAlert("warning", this.model.get('name') + " cannot be updated because its inputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                                return;
+                            }
+
+                            if (!_.isEqual(this.model.get('task').outputs, result.meta.analysis.outputs)) {
+                                flow.bootstrapAlert("warning", this.model.get('name') + " cannot be updated because its outputs have changed.  If you still wish to update this step, please delete & recreate it.", 15);
+                                return;
+                            }
+
+                            this.model.set('task', result.meta.analysis);
+                            this.model.set('modified', result.updated);
+                            flow.bootstrapAlert("success", this.model.get('name') + " successfully updated!");
+                        }, this)).error(_.bind(function (error) {
+                            flow.bootstrapAlert("danger", "Unable to refresh " + this.model.get('name') + " because it does not appear in the database.  Perhaps somebody deleted it.", 15);
+                            return;
+                        }, this));
+                    }, this)
+                });
+            },
+
             'mouseenter .step': function () {
                 if (this.workflowView.edit) {
                     this.$('.delete-step').attr('visibility', 'visible');
@@ -70,7 +115,14 @@
                         x: this.model.get('x') + 300,
                         y: this.model.get('y')
                     },
-                    outputStep = this.workflowView.addStep(output);
+                    outputStep;
+
+                ['description'].forEach(function (key) {
+                    if (outputPort[key]) {
+                        output[key] = outputPort[key];
+                    }
+                });
+                outputStep = this.workflowView.addStep(output);
 
                 this.workflowView.connections.add(new Backbone.Model({
                     outputStep: this.model,
@@ -79,6 +131,36 @@
                     inputStep: outputStep,
                     inputIndex: 0,
                     inputPos: outputStep.get('task').inputScale(0)
+                }));
+            },
+
+            'click .input': function (event) {
+                var index = $(event.target).index(),
+                    inputPort = _.clone(this.model.get('task').inputs[index]),
+                    input = {
+                        name: inputPort.name,
+                        isInput: true,
+                        outputs: [_.clone(inputPort)],
+                        inputs: [],
+                        x: this.model.get('x') - 300,
+                        y: this.model.get('y')
+                    },
+                    inputStep;
+
+                ['mode', 'domain', 'default', 'constant', 'description'].forEach(function (key) {
+                    if (inputPort[key]) {
+                        input[key] = inputPort[key];
+                    }
+                });
+                inputStep = this.workflowView.addStep(input);
+
+                this.workflowView.connections.add(new Backbone.Model({
+                    inputStep: this.model,
+                    inputIndex: index,
+                    inputPos: this.model.get('task').inputScale(index),
+                    outputStep: inputStep,
+                    outputIndex: 0,
+                    outputPos: inputStep.get('task').outputScale(0)
                 }));
             },
 

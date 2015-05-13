@@ -14,7 +14,13 @@
             this.model.get('steps').forEach(function (d) {
                 d.id = d.id || d.name;
                 d.task.outputScale = d3.scale.linear().domain([0, d.task.outputs.length - 1]).range([10, 90]);
+                if (d.task.outputs.length === 1) {
+                    d.task.outputScale = function () { return 50; };
+                }
                 d.task.inputScale = d3.scale.linear().domain([0, d.task.inputs.length - 1]).range([10, 90]);
+                if (d.task.inputs.length === 1) {
+                    d.task.inputScale = function () { return 50; };
+                }
                 newSteps.push(d);
             });
             this.model.get('inputs').forEach(function (d) {
@@ -96,11 +102,22 @@
             step.visualization = task.visualization || false;
             step.task = task;
             step.task.outputScale = d3.scale.linear().domain([0, step.task.outputs.length - 1]).range([10, 90]);
+            if (step.task.outputs.length === 1) {
+                step.task.outputScale = function () { return 50; };
+            }
             step.task.inputScale = d3.scale.linear().domain([0, step.task.inputs.length - 1]).range([10, 90]);
+            if (step.task.inputs.length === 1) {
+                step.task.inputScale = function () { return 50; };
+            }
             step.girderId = girderId;
             step.modified = modified;
             step.x = task.x || 200;
             step.y = task.y || 200;
+            ['mode', 'domain', 'default', 'constant', 'description'].forEach(function (key) {
+                if (task[key]) {
+                    step[key] = task[key];
+                }
+            });
             while (this.steps.get(step.id)) {
                 step.id = (task.id || task.name) + ' ' + index;
                 step.name = step.id;
