@@ -58,7 +58,7 @@
                     model['default'] = values.default;
                 }
                 if (values.constant) {
-                    model.constant = values.constant === 'yes';
+                    model.constant = values.constant.data === 'yes';
                 }
                 list = values.values;
                 if (list && list.data !== '') {
@@ -96,6 +96,8 @@
             this.variableProperties.description['default'] = {data: this.model.get('description')};
             if (this.model.get('default') && this.model.get('default').hasOwnProperty('data')) {
                 this.variableProperties['default']['default'] = {data: this.model.get('default').data};
+            } else {
+                this.variableProperties['default']['default'] = {data: ''};
             }
 
             // Set the domain-specific fields

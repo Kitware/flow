@@ -207,7 +207,6 @@
             while (word) {
                 line.push(word);
                 tspan.text(line.join(' '));
-                console.log(tspan.node().getComputedTextLength());
                 if (tspan.node().getComputedTextLength() > width) {
                     lineNumber += 1;
                     line.pop();
