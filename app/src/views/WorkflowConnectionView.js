@@ -5,19 +5,19 @@
         tagName: 'g',
 
         events: {
-            'mouseover .connection': function() {
+            'mouseover .connection': function () {
                 if (this.workflowView.edit) {
                     $(event.target).attr('stroke', 'crimson').attr('opacity', '1.0');
                 }
             },
 
-            'mouseout .connection': function() {
+            'mouseout .connection': function () {
                 if (this.workflowView.edit) {
                     $(event.target).attr('stroke', '#333').attr('opacity', '0.75');
                 }
             },
 
-            'click .connection': function() {
+            'click .connection': function () {
                 if (this.workflowView.edit) {
                     girder.confirm({
                         text: 'Remove this connection from the workflow?',

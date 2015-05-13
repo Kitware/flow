@@ -45,7 +45,7 @@
                 view.render();
             },
 
-            'click .refresh-step': function() {
+            'click .refresh-step': function () {
                 girder.confirm({
                     text: 'Refresh the workflow step "' + this.model.id + '" ?',
                     yesText: 'Refresh',

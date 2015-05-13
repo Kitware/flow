@@ -32,7 +32,7 @@ html(lang="en")
         .container(style="width:100%;height:100%")
             #intro
                 .row.text-center
-                    img(src="arbor.jpg", alt="Arbor Logo", class="img-rounded")
+                    img(src="brands/#{brand}.png", alt="Logo", class="img-rounded")
                 .row
                     p.lead.text-center
                         | Use the panel below to visualize, analyze, or manage your data.
@@ -93,6 +93,8 @@ html(lang="en")
                                         | Save or download data
                                     .form-inline
                                         select.form-control.datasets
+                                        button.dataset-quick-view.btn.btn-primary
+                                            | Quick view
                                         span.dataset-save-form
                                             input.dataset-name.form-control(type="text", placeholder="Name")
                                             select.dataset-format-select.form-control
@@ -126,6 +128,10 @@ html(lang="en")
                                         button.btn.btn-primary#workflow-new
                                             span.glyphicon.glyphicon-plus
                                             |  New workflow
+                        .row.description-container.hide
+                            .col-sm-12
+                              #analysis-description
+                        .row.spacer
                         .form-inline#analysis-form
                             button.btn.btn-primary#setup
                                 span.glyphicon.glyphicon-play#run-icon
@@ -162,6 +168,18 @@ html(lang="en")
                                 button.btn.btn-primary#add-workstep
                                     span.glyphicon.glyphicon-plus
                                     | Add to workflow
+                                .form-group
+                                    label(for="workvis")
+                                        | Select visualization
+                                    select.form-control#workvis
+                                button.btn.btn-primary#add-workvis
+                                    span.glyphicon.glyphicon-plus
+                                    | Add to workflow
+                        .row.edit-controls
+                            .col-sm-12
+                                .form-group
+                                  label(for="analysis-edit-description") Description
+                                  textarea.form-control#analysis-edit-description
                         .row.spacer.edit-controls
                             .col-sm-6.analysis-edit-controls
                                 label
@@ -182,14 +200,33 @@ html(lang="en")
                                 .form-group
                                     label(for="visualization")
                                         | Select visualization
-                                    select.form-control#visualization
+                                    select.form-control.visualizations
                             .col-sm-6
                                 .inputs
                         .form-inline
-                            button.btn.btn-primary#show
-                                span.glyphicon.glyphicon-stats#show-icon
-                                span#show-text
+                            button.btn.btn-primary.show-visualization
+                                span.glyphicon.glyphicon-stats.show-icon
+                                span.show-text
                                     |  Update
+                            button.btn.btn-primary.add-to-presets
+                                span.glyphicon.glyphicon-plus
+                                span
+                                    |  Add to presets
+                        .row
+                            .col-sm-6
+                                .form-group
+                                    label(for="presets")
+                                        | Select preset visualization
+                                    select.form-control.presets
+                        .form-inline
+                            button.btn.btn-primary.show-preset
+                                span.glyphicon.glyphicon-stats
+                                span
+                                    |  Show
+                            button.btn.btn-primary.save.hidden
+                                span.glyphicon.glyphicon-save
+                                span
+                                    |  Save to checked collection
                         .row
                             .col-sm-12
                                 pre.hidden #prov
@@ -203,15 +240,24 @@ html(lang="en")
                             | &times;
                         h4.modal-title.analysis-setup-title
                     .modal-body
-                        p.row.hidden.bg-success.success-message
-                        p.row.hidden.bg-info.info-message
-                        p.row.hidden.bg-danger.error-message
+                        .analysis-setup-description
+                        .analysis-setup-outputs-container
+
+                        pre.bg-success.success-message.hidden
+                        pre.bg-info.info-message.hidden
+                        pre.bg-danger.error-message.hidden
                         .inputs
                         button.btn.btn-primary.run
                             span.glyphicon.glyphicon-play.run-icon
                             |  Run
-                        button.btn.btn-default(data-dismiss="modal")
+                        button.btn.btn-default#close-analysis-setup(data-dismiss="modal")
                             | Close
+                        button.btn.btn-default.pull-right#show-output(data-toggle="button")
+                            span.glyphicon.glyphicon-eye-open#show-output-icon
+                            | &nbsp;
+                            span#show-output-text
+                                | Show output log
+                        pre#analysis-output.hidden
         .modal.fade#input-variable-edit-dialog(tabindex="-1", role="dialog")
             .modal-dialog
                 .modal-content
@@ -240,6 +286,48 @@ html(lang="en")
                             | Update
                         button.btn.btn-default(data-dismiss="modal")
                             | Close
+        .modal.fade#workflow-input-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure input
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#workflow-output-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure output
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#workflow-task-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure task
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
         .modal.fade#confirm-delete(tabindex="-1", role="dialog")
             .modal-dialog
                 .modal-content
@@ -255,7 +343,9 @@ html(lang="en")
                             | Cancel
                         button.btn.btn-danger.really-delete-analysis
                             | Delete
+        #alert_placeholder.hidden
         .modal.fade#g-dialog-container
+        .modal.fade#th-dialog-container
         .hidden#template-container
             #variable-template
                 span.edit.glyphicon.glyphicon-pencil(title="Edit variable")

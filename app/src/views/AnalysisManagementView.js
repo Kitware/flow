@@ -13,14 +13,18 @@
                 d3.select("#show-script-icon").classed("glyphicon-eye-close", !hide);
                 d3.select("#show-script-text").text(hide ? "Show script" : "Hide script");
 
-                this.workflowView.render();
+                if (this.workflowView) {
+                    this.workflowView.render();
+                }
             },
 
             'click #edit': function () {
                 var edit = d3.select("#edit").classed("active");
                 this.editor.setReadOnly(edit);
                 this.editor.renderer.$cursorLayer.element.style.opacity = edit ? 0 : 1;
-                this.workflowView.editable(!edit);
+                if (this.workflowView) {
+                    this.workflowView.editable(!edit);
+                }
                 d3.selectAll(".edit-controls").classed("hidden", edit);
             },
 
@@ -197,6 +201,8 @@
                     $("#save").removeClass("btn-primary");
                 }
             }, this));
+
+            this.workflowView = null;
 
             this.analyses = settings.analyses;
             this.analysesView = new flow.ItemsView({el: this.$('#analysis'), itemView: flow.ItemOptionView, collection: this.analyses});

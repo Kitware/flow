@@ -31,7 +31,7 @@
                     inputs: [],
                     outputs: [d],
                     outputScale: function (d) { return 50; }
-                }
+                };
                 newSteps.push(input);
             });
             this.model.get('outputs').forEach(function (d) {
@@ -42,7 +42,7 @@
                     inputs: [d],
                     outputs: [],
                     inputScale: function (d) { return 50; }
-                }
+                };
                 newSteps.push(output);
             });
             this.steps.set(newSteps);
@@ -93,7 +93,7 @@
             return this;
         },
 
-        addStep: function(task, girderId, modified) {
+        addStep: function (task, girderId, modified) {
             var step = {}, index = 1, model;
             step.id = task.id || task.name;
             step.name = step.id;
@@ -159,7 +159,7 @@
                     });
                     task.inputs.push(input);
                 } else if (step.get('isOutput')) {
-                    output ={
+                    output = {
                         id: step.id,
                         name: step.get('name'),
                         type: step.get('task').inputs[0].type,
@@ -225,7 +225,7 @@
                 outPos = {x: d.get('outputStep').get('x'), y: d.get('outputStep').get('y')},
                 inputPos = d.get('inputPos'),
                 outputPos = d.get('outputPos');
-            delta = [outPos.x- inPos.x, outPos.y - inPos.y];
+            delta = [outPos.x - inPos.x, outPos.y - inPos.y];
             dist = Math.sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
             offset = 0.4 * dist - 50;
             offset = offset < 0 ? 0 : offset;

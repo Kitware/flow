@@ -85,7 +85,6 @@ module.exports = function (grunt) {
                     'app/app.min.js': [
                         'app/templates.js',
                         'app/src/util.js',
-                        'app/src/workflow.js',
                         'app/src/collections/**/*.js',
                         'app/src/ItemsView.js',
                         'app/src/SVGView.js',
@@ -221,6 +220,7 @@ module.exports = function (grunt) {
             pretty: true
         });
         fs.writeFileSync('app/testEnv.html', fn({
+            brand: brand,
             stylesheets: [
                 '../../test/lib/jasmine-1.3.1/jasmine.css',
                 'lib/bootstrap/css/bootstrap.min.css',
