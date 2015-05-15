@@ -65,6 +65,7 @@
       - apache2
       - cmake
       - git
+      - libxml2-dev
 
   - name: install grunt and grunt-cli globally
     npm: name={{ item }} global=yes
