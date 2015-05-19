@@ -4,7 +4,7 @@
     // The view for managing data saving and downloading
     flow.DatasetManagementView = Backbone.View.extend({
         saveFormats: {
-            table: ['csv', 'tsv', 'rows.json', 'objectlist.json', 'vtktable.serialized'],
+            table: ['csv', 'tsv', 'rows.json', 'objectlist.json', 'vtktable.serialized', 'jsonlines'],
             tree: ['nested.json', 'nexus', 'newick', 'vtktree.serialized'],
             image: ['png'],
             r: ['serialized'],
@@ -17,6 +17,7 @@
             "table:tsv": "tsv",
             "table:rows.json": "rows-json",
             "table:objectlist.json": "objectlist-json",
+            "table:jsonlines": "jsonlines",
             "table:vtktable.serialized": "vtk",
             "tree:nested.json": "nested-json",
             "tree:nexus": "nex",
@@ -93,8 +94,10 @@
                         this.$('.dataset-name').val('');
                         this.datasets.remove(dataset);
                         this.$('.datasets').change();
+                        this.$('.dataset-name').val('');
+                        flow.bootstrapAlert("success", dataset.get('name') + " successfully deleted!", 5);
                     }, this).once('g:error', function () {
-                        window.alert('You do not have permission to delete this item.');
+                        flow.bootstrapAlert("danger", "You do not have permission to delete this item.", 5);
                     }).destroy();
                 } else {
                     this.datasets.remove(dataset);
@@ -176,18 +179,26 @@
                     },
                     extension = file.name.split('.').slice(-1);
 
+                extension = extension[extension.length - 1];
+                if (!(extension in flow.extensionToType)) {
+                    flow.bootstrapAlert("danger", extension + " files are unsupported.", 15);
+                    return;
+                }
+
                 _.extend(dataset, flow.extensionToType[extension]);
                 dataset = new Backbone.Model(dataset);
 
                 this.datasets.add(dataset);
+                flow.bootstrapAlert("success", file.name + " loaded successfully!", 5);
             }, this);
 
             reader.readAsText(file);
         },
 
         updateDataset: function () {
-            var options, valid;
+            var options, valid, format;
             this.dataset = this.datasets.get(this.$('.datasets').val());
+            format = this.dataset.get("format");
 
             if (!this.dataset) {
                 return;
@@ -203,7 +214,8 @@
                     .data(this.saveFormats[this.dataset.get('type')], function (d) { return d; });
                 options.enter().append('option')
                     .text(function (d) { return d; })
-                    .attr('value', function (d) { return d; });
+                    .attr('value', function (d) { return d; })
+                    .attr('selected', function (d) { if (d === format) { return "selected"; } });
                 options.exit().remove();
             }
         },

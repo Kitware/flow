@@ -190,6 +190,68 @@
                         ]
                     }
                 ]
+            },
+            {
+                name: "geojsMap",
+                inputs: [
+                    {
+                        name: "data",
+                        type: "table",
+                        format: "objectlist"
+                    },
+                    {
+                        name: "tileUrl",
+                        type: "string",
+                        domain: [
+                            'http://otile1.mqcdn.com/tiles/1.0.0/map/<zoom>/<x>/<y>.png',
+                            'http://otile1.mqcdn.com/tiles/1.0.0/sat/<zoom>/<x>/<y>.png',
+                            'http://tile.openstreetmap.org/<zoom>/<x>/<y>.png',
+                            'http://tile.stamen.com/toner-lite/<zoom>/<x>/<y>.png'
+                        ]
+                    },
+                    {
+                        name: "layers",
+                        type: "array",
+                        components: [
+                            {
+                                name: "renderer",
+                                type: "string",
+                                domain: ["d3", "vgl"]
+                            },
+                            {
+                                name: "features",
+                                type: "array",
+                                components: [
+                                    {
+                                        name: "type",
+                                        type: "string",
+                                        domain: ["point"]
+                                    },
+                                    {
+                                        name: "position",
+                                        type: "coordinate",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "size",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "fillColor",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    },
+                                    {
+                                        name: "strokeColor",
+                                        type: "accessor",
+                                        domain: {input: "data", format: "column.names"}
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ],
 

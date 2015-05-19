@@ -7,9 +7,14 @@
 
         events: {
             'change .visualizations': 'changeVisualization',
+
             'click .show-visualization': function () {
-                this.loadInputs(_.values(this.inputsView.itemViews), {}, this.show);
+                var vis = this.visualizations.get($('.visualizations').val());
+                this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (inputs) {
+                    this.show(vis, inputs);
+                }, this));
             },
+
             'click .add-to-presets': function () {
                 var vis = this.visualizations.get($('.visualizations').val());
                 this.loadInputs(_.values(this.inputsView.itemViews), {}, _.bind(function (inputs) {
@@ -36,6 +41,7 @@
                     });
                 }, this));
             },
+
             'click .save': function () {
                 var preset = this.presets.get($('.presets').val()),
                     vis = preset.get('meta').visualization,
@@ -55,9 +61,10 @@
                     console.error(error);
                 }).save();
             },
+
             'click .show-preset': function () {
-                this.visualization = this.presets.get($('.presets').val());
-                this.show(this.visualization.get('meta').visualization.inputs);
+                var vis = this.presets.get($('.presets').val());
+                this.show(vis, vis.get('meta').visualization.inputs);
             }
         },
 
@@ -93,6 +100,7 @@
 
         render: function () {
             if (this.visualization) {
+                this.inputsView.collection.set([]);
                 this.inputsView.collection.set(this.visualization.get('meta').visualization.inputs);
                 this.inputsView.render();
             }
@@ -118,7 +126,24 @@
         },
 
         loadInputs: function (inputViews, options, done) {
-            var input, inputView, dataset, value;
+            var input,
+                inputView,
+                dataset,
+                value,
+                accessor,
+                // Add an option that may be nested with dots
+                addOption = function (options, name, value) {
+                    var path = name.split('.'),
+                        obj = options;
+                    path.slice(0, -1).forEach(function (f) {
+                        if (!obj.hasOwnProperty(f)) {
+                            obj[f] = {};
+                        }
+                        obj = obj[f];
+                    });
+                    obj[path[path.length - 1]] = value;
+                };
+
             if (inputViews.length === 0) {
                 done(options);
                 return;
@@ -132,7 +157,19 @@
             // Sometimes the view is a Backbone view, sometimes it is a plain control, sometimes is is an array
             if (_.isArray(inputView.view)) {
                 this.loadInputsArray(inputView.view, [], _.bind(function (optionsArray) {
-                    options[input.get('name')] = optionsArray;
+                    addOption(options, input.get('name'), optionsArray);
+                    this.loadInputs(inputViews, options, done);
+                }, this));
+                return;
+            } else if (input.get('type') === 'coordinate') {
+                this.loadInputs(_.values(inputView.view.itemViews), {}, _.bind(function (coordOptions) {
+                    addOption(options, input.get('name'), {
+                        object: {
+                            x: coordOptions.longitude,
+                            y: coordOptions.latitude
+                        },
+                        _accessor: true
+                    });
                     this.loadInputs(inputViews, options, done);
                 }, this));
                 return;
@@ -149,7 +186,7 @@
                         .text(JSON.stringify(dataset.get('bindings').inputs, null, "    "));
                 }
                 flow.retrieveDatasetAsFormat(dataset, input.get('type'), input.get('format'), input.get('dataIsURI'), _.bind(function (error, converted) {
-                    options[input.get('name')] = converted.get('data');
+                    addOption(options, input.get('name'), converted.get('data'));
 
                     // Handle the rest once we're done taking care of this one
                     this.loadInputs(inputViews, options, done);
@@ -158,32 +195,39 @@
             }
 
             if (input.get('type') === 'string') {
-                options[input.get('name')] = value;
+                addOption(options, input.get('name'), value);
             } else if (input.get('type') === 'number') {
-                options[input.get('name')] = parseFloat(value);
+                addOption(options, input.get('name'), parseFloat(value));
             } else if (input.get('type') === 'json') {
-                options[input.get('name')] = JSON.parse(value);
+                addOption(options, input.get('name'), JSON.parse(value));
             } else if (input.get('type') === 'accessor') {
-                options[input.get('name')] = function (d) { return d[value]; };
-                options[input.get('name')].field = value;
+                if (value !== null) {
+                    addOption(options, input.get('name'), {
+                        field: value,
+                        _accessor: true
+                    });
+                }
             }
             this.loadInputs(inputViews, options, done);
         },
 
-        show: function (options) {
+        show: function (vis, options) {
             var inner = $('<div style="width:100%;height:100%"></div>');
             $("#vis").empty();
             $("#vis").append(inner);
             flow.setDisplay('vis');
 
-            options.modified = _.bind(this.saveModifiedData, this);
+            options.modified = _.bind(function (inputName, newDataValue) {
+                this.saveModifiedData(vis, inputName, newDataValue);
+            }, this);
 
             setTimeout(_.bind(function () {
-                var vis = this.visualization.get('meta').visualization;
-                if (vis.preset) {
-                    inner[vis.type](options);
+                var visualization = vis.get('meta').visualization,
+                    convertedOptions = flow.accessorify(options);
+                if (visualization.preset) {
+                    inner[visualization.type](convertedOptions);
                 } else {
-                    inner[vis.name](options);
+                    inner[visualization.name](convertedOptions);
                 }
             }, this), 1000);
 
@@ -194,11 +238,11 @@
             }
         },
 
-        saveModifiedData: function (inputName, newDataValue) {
+        saveModifiedData: function (vis, inputName, newDataValue) {
             // Find the index of the input that we're saving a new version of.
             var found = false,
                 inputIndex,
-                visualizationInputs = this.visualization.get("inputs"),
+                visualizationInputs = vis.get("inputs"),
                 inputView,
                 datasetIndex,
                 dataset,

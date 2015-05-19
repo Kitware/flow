@@ -106,6 +106,7 @@
                 this.inputsView.inputs = $.map(this.model.get('meta').analysis.inputs, function (value) {
                     return $.extend(true, {}, value);
                 });
+                this.inputsView.collection.set([]);
                 this.inputsView.collection.set(this.model.get('meta').analysis.inputs);
             }
             this.inputsView.render({

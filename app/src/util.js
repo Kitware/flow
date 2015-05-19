@@ -9,11 +9,13 @@
         extensionToType: {
             phy: {type: 'tree', format: 'newick'},
             nex: {type: 'tree', format: 'nexus'},
+            'nested-json': {type: 'tree', format: 'nested.json'},
             csv: {type: 'table', format: 'csv'},
             tsv: {type: 'table', format: 'tsv'},
             png: {type: 'image', format: 'png'},
             rds: {type: 'r', format: 'serialized'},
             'objectlist-json': {type: 'table', format: 'objectlist.json'},
+            jsonlines: {type: 'table', format: 'jsonlines'},
             'rows-json': {type: 'table', format: 'rows.json'},
             'number-json': {type: 'number', format: 'json'}
         },
@@ -158,6 +160,72 @@
             });
         },
 
+        accessor: function (spec) {
+            var func,
+                field,
+                fieldMap = {};
+
+            if (spec.field !== undefined) {
+                func = function (d) {
+                    var path = spec.field.split('.'),
+                        obj = d;
+                    path.slice(0, -1).forEach(function (field) {
+                        if (obj[field] !== undefined) {
+                            obj = obj[field];
+                        }
+                    });
+                    return obj[path[path.length - 1]];
+                };
+            } else if (spec.value !== undefined) {
+                func = function (d) { return spec.value; };
+            } else if (spec.object !== undefined) {
+                for (field in spec.object) {
+                    if (spec.object.hasOwnProperty(field) && field !== '_accessor') {
+                        fieldMap[field] = window.flow.accessor(spec.object[field]);
+                    }
+                }
+                func = function (d) {
+                    var value = {}, field;
+                    for (field in fieldMap) {
+                        if (fieldMap.hasOwnProperty(field)) {
+                            value[field] = fieldMap[field](d);
+                        }
+                    }
+                    return value;
+                };
+            }
+
+            func.spec = spec;
+            spec._accessor = true;
+            return func;
+        },
+
+        accessorify: function (spec) {
+            var out,
+                field;
+
+            if (_.isArray(spec)) {
+                out = [];
+                spec.forEach(function (d) {
+                    out.push(window.flow.accessorify(d));
+                });
+            } else if (_.isObject(spec)) {
+                if (spec._accessor) {
+                    out = window.flow.accessor(spec);
+                } else {
+                    out = {};
+                    for (field in spec) {
+                        if (spec.hasOwnProperty(field)) {
+                            out[field] = window.flow.accessorify(spec[field]);
+                        }
+                    }
+                }
+            } else {
+                out = spec;
+            }
+            return out;
+        },
+
         girderUpload: function (data, name, folderId, itemToOverwrite, success, error) {
             success = success || function () {};
             error = error || function () {};
@@ -165,8 +233,11 @@
             var file, bindEvents = function (file) {
                 file.on('g:upload.complete', function () {
                     success(arguments);
+                    window.flow.bootstrapAlert("success", "Upload complete!", 5);
                 }).on('g:upload.error', function () {
+                }).on('g:upload.error g:upload.errorStarting', function () {
                     error(arguments);
+                    window.flow.bootstrapAlert("danger", "Upload failed: " + arguments[0].response.statusText);
                 });
                 return file;
             };

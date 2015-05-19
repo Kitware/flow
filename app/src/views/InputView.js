@@ -14,7 +14,8 @@
             json: {inputMode: "line"},
             geometry: {inputMode: "dataset"},
             accessor: {inputMode: "line"},
-            array: {inputMode: "array"}
+            array: {inputMode: "array"},
+            coordinate: {inputMode: "line"}
         },
 
         initialize: function (settings) {
@@ -59,6 +60,24 @@
                         parentView: this
                     }).render());
                 }, this));
+            } else if (this.model.get('type') === 'coordinate') {
+                this.view = new flow.InputsView({
+                    collection: new Backbone.Collection([
+                        {
+                            name: "latitude",
+                            type: "accessor",
+                            domain: this.model.get('domain')
+                        },
+                        {
+                            name: "longitude",
+                            type: "accessor",
+                            domain: this.model.get('domain')
+                        }
+                    ]),
+                    el: div.node(),
+                    datasets: this.datasets,
+                    parentView: this
+                }).render();
             } else if (this.inputMode === 'dataset') {
                 this.view = new flow.ItemsView({
                     el: $('<select class="form-control"/>').appendTo(div.node()),

@@ -62,6 +62,9 @@
                     if (!referredInput && view.parentView && view.parentView.parentView) {
                         return findReferredInputView(view.parentView.parentView);
                     }
+                    if (!referredInput) {
+                        return;
+                    }
                     return view.itemViews[referredInput.cid];
                 }, this);
 
@@ -69,12 +72,15 @@
                 if (input.get('domain') && (_.isObject(input.get('domain')) && !_.isArray(input.get('domain')))) {
                     referredInputView = findReferredInputView(this);
                     if (!referredInputView) {
-                        console.error('Referred input not found!');
+                        flow.bootstrapAlert("danger", "Error initializing input '" + input.get('name') + "'", 30);
                         return;
                     }
                     referredInputView.$el.change(_.bind(function () {
                         var dataset = this.datasets.get(referredInputView.view.$el.val());
                         flow.retrieveDatasetAsFormat(dataset, referredInputView.model.get('type'), input.get('domain').format, false, _.bind(function (error, dataset) {
+                            if (!this.itemViews[input.cid]) {
+                                return;
+                            }
                             var value = this.itemViews[input.cid].view.$el.val();
                             dataset.get('data').sort();
                             this.itemViews[input.cid].view.collection.set(dataset.get('data'));
@@ -86,7 +92,7 @@
         },
 
         triggerChangeEvent: function (input) {
-            if (this.itemViews[input.cid].inputMode === "dataset") {
+            if (this.itemViews[input.cid] && this.itemViews[input.cid].inputMode === "dataset") {
                 this.itemViews[input.cid].$el.change();
             }
         },
