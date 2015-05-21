@@ -13,16 +13,18 @@
                 d3.select("#show-script-icon").classed("glyphicon-eye-close", !hide);
                 d3.select("#show-script-text").text(hide ? "Show script" : "Hide script");
 
-                // This may be showing the workflow view for the first time, so
-                // make sure to redraw it.
-                this.workflowEditor.update();
+                if (this.workflowView) {
+                    this.workflowView.render();
+                }
             },
 
             'click #edit': function () {
                 var edit = d3.select("#edit").classed("active");
                 this.editor.setReadOnly(edit);
                 this.editor.renderer.$cursorLayer.element.style.opacity = edit ? 0 : 1;
-                this.workflowEditor.editable(!edit);
+                if (this.workflowView) {
+                    this.workflowView.editable(!edit);
+                }
                 d3.selectAll(".edit-controls").classed("hidden", edit);
             },
 
@@ -41,7 +43,7 @@
                     info.name = this.$(".analysis-edit-name").val();
                     info.description = this.$('#analysis-edit-description').val();
                     if (info.mode === "workflow") {
-                        curWorkflow = this.workflowEditor.serialize();
+                        curWorkflow = this.workflowView.serialize();
                         info.inputs = curWorkflow.inputs;
                         info.outputs = curWorkflow.outputs;
                         info.steps = curWorkflow.steps;
@@ -121,12 +123,12 @@
 
             'click #add-workstep': function () {
                 var analysis = this.analyses.get($("#workstep").val());
-                this.workflowEditor.add(analysis.get("meta").analysis, analysis.id, analysis.get("updated"));
+                this.workflowView.addStep(analysis.get("meta").analysis, analysis.id, analysis.get("updated"));
             },
 
             'click #add-workvis': function () {
                 var vis = this.visualizations.get($("#workvis").val());
-                this.workflowEditor.add(vis.get("meta").visualization);
+                this.workflowView.addStep(vis.get("meta").visualization);
             },
 
             'click #analysis-download': function () {
@@ -188,8 +190,7 @@
                 }
             }, this));
 
-            this.workflowEditor = workflow(d3.select("#workflow-editor"), flow, girder);
-            this.workflowEditor.editable(false);
+            this.workflowView = null;
 
             this.analyses = settings.analyses;
             this.analysesView = new flow.ItemsView({el: this.$('#analysis'), itemView: flow.ItemOptionView, collection: this.analyses});
@@ -203,14 +204,14 @@
 
             this.inputVariables = new Backbone.Collection();
             this.outputVariables = new Backbone.Collection();
-            this.inputVariableEditView = new flow.VariableEditView({el: $('#input-variable-edit-dialog'), input: true});
+            this.inputVariableEditView = new flow.VariableEditView({el: $('#input-variable-edit-dialog'), mode: 'input'});
             this.inputVariablesView = new flow.VariablesView({
                 el: this.$('.input-variables'),
                 itemView: flow.VariableView,
                 itemOptions: {editView: this.inputVariableEditView, collection: this.inputVariables},
                 collection: this.inputVariables
             });
-            this.outputVariableEditView = new flow.VariableEditView({el: $('#output-variable-edit-dialog'), input: false});
+            this.outputVariableEditView = new flow.VariableEditView({el: $('#output-variable-edit-dialog'), mode: 'output'});
             this.outputVariablesView = new flow.VariablesView({
                 el: this.$('.output-variables'),
                 itemView: flow.VariableView,
@@ -263,7 +264,9 @@
                     d3.select("#workflow-editor").classed("hidden", false);
                     d3.selectAll(".analysis-edit-controls").classed("hidden", true);
                     d3.selectAll(".workflow-edit-controls").classed("hidden", false);
-                    this.workflowEditor.data(this.analysis.get('meta').analysis);
+                    this.workflowView = new flow.WorkflowView({el: '#workflow-editor', model: new Backbone.Model($.extend(true, {}, this.analysis.get('meta').analysis))});
+                    this.workflowView.editable(d3.select("#edit").classed("active"));
+                    this.workflowView.render();
                 } else {
                     d3.select("#code-editor").classed("hidden", false);
                     d3.select("#workflow-editor").classed("hidden", true);

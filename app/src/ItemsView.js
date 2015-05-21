@@ -37,7 +37,8 @@
         add: function (item) {
             if (this.matches(item)) {
                 var view = new this.itemView(_.extend({model: item}, this.itemOptions));
-                this.$el.append(view.render().$el);
+                this.$el.append(view.$el);
+                view.render();
                 this.itemViews[item.cid] = view;
             }
         },

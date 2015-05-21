@@ -263,6 +263,48 @@ html(lang="en")
                             | Update
                         button.btn.btn-default(data-dismiss="modal")
                             | Close
+        .modal.fade#workflow-input-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure input
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#workflow-output-variable-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure output
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
+        .modal.fade#workflow-task-edit-dialog(tabindex="-1", role="dialog")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                            | &times;
+                        h4.modal-title
+                            | Configure task
+                    .modal-body
+                        .properties
+                        button.btn.btn-primary.update
+                            | Update
+                        button.btn.btn-default(data-dismiss="modal")
+                            | Close
         .modal.fade#confirm-delete(tabindex="-1", role="dialog")
             .modal-dialog
                 .modal-content

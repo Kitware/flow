@@ -1,164 +1,290 @@
-/*jslint browser: true, nomen: true */
-
-(function (flow, $, Backbone) {
-    "use strict";
+(function (flow, $, d3, Backbone) {
+    'use strict';
 
     flow.WorkflowView = Backbone.View.extend({
-        template: jade.templates.workflow,
-
-        events: {
-            'click .panel-body': function () {
-                // If we're already selected, carry on.
-                if (this.$('.panel').hasClass('active')) {
-                    return;
-                }
-
-                this.$el.parent().find('.panel').removeClass('active').removeClass('active-prev');
-                this.$el.parent().find('.th-details').addClass('hidden');
-                if (this.$el.prev()) {
-                    this.$el.prev().find('.panel').addClass('active-prev');
-                }
-                this.$('.panel').addClass('active');
-                this.$('.th-details').removeClass('hidden');
-                if (!this.inputsViewRendered) {
-                    this.inputsView = new flow.WorkflowInputsView({
-                        collection: new Backbone.Collection(this.model.get('meta').analysis.inputs),
-                        idPrefix: this.model.id + '-',
-                        el: this.$('.th-inputs'),
-                        datasets: this.datasets
-                    });
-                    this.inputsView.render();
-                    this.inputsViewRendered = true;
-                }
-            },
-
-            'click .th-go': function () {
-                var inputs = {},
-                    outputs = {};
-
-                this.$('.th-go')
-                    .attr('disabled', 'disabled');
-
-                _.each(this.inputsView.itemViews, _.bind(function (inputView) {
-                    var input = inputView.model,
-
-                        // Sometimes the view is a Backbone view, sometimes it is a plain control
-                        value = inputView.view.$el ? inputView.view.$el.val() : inputView.view.val(),
-                        dataset,
-                        uri;
-
-                    if (input.get('type') === 'geometry' || input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
-                        dataset = this.datasets.get(value);
-                        uri = window.location.origin + girder.apiRoot + '/item/' + dataset.id + '/download';
-                        if (girder.currentUser) {
-                            uri += '?token=' + girder.currentUser.get('token');
-                        }
-                        inputs[input.get('name')] = _.extend(dataset.toJSON(), {uri: uri});
-                    } else if (input.get('type') === 'string') {
-                        inputs[input.get('name')] = {type: input.get('type'), format: 'text', data: value};
-                    } else if (input.get('type') === 'number') {
-                        inputs[input.get('name')] = {type: input.get('type'), format: 'number', data: parseFloat(value)};
-                    }
-                }, this));
-                this.model.get('meta').analysis.outputs.forEach(_.bind(function (output) {
-                    outputs[output.name] = {type: output.type, format: flow.webFormat[output.type]};
-                }, this));
-                flow.performAnalysis(this.model.id, inputs, outputs,
-                    _.bind(function (error, result) {
-                        // if (error) {
-                        //     console.log(error);
-                        //     d3.select('.run')
-                        //         .classed('btn-primary', true)
-                        //         .classed('btn-default', false)
-                        //         .attr('disabled', null);
-                        //     d3.select('.success-message').classed('hidden', true);
-                        //     d3.select('.error-message').classed('hidden', false).text('Error: See console for details.');
-                        //     d3.select('.info-message').classed('hidden', true);
-                        //     return;
-                        // }
-                        // if (result.error) {
-                        //     d3.select('.run')
-                        //         .classed('btn-primary', true)
-                        //         .classed('btn-default', false)
-                        //         .attr('disabled', null);
-                        //     d3.select('.success-message').classed('hidden', true);
-                        //     d3.select('.error-message').classed('hidden', false).html('Error: <pre>' + result.message + '</pre>');
-                        //     d3.select('.info-message').classed('hidden', true);
-                        //     return;
-                        // }
-                        this.taskId = result.id;
-                        setTimeout(_.bind(this.checkTaskResult, this), 1000);
-                    }, this));
-            }
-        },
 
         initialize: function (settings) {
-            this.datasets = settings.datasets;
-            this.model.on('change', this.render, this);
+            this.steps = new Backbone.Collection();
+            this.connections = new Backbone.Collection();
+            this.edit = settings.edit || false;
         },
 
         render: function () {
-            this.$el.html(this.template(this.model.attributes));
-            this.inputsViewRendered = false;
+            var newSteps = [], newConnections = [];
+            this.model.get('steps').forEach(function (d) {
+                d.id = d.id || d.name;
+                d.task.outputScale = d3.scale.linear().domain([0, d.task.outputs.length - 1]).range([10, 90]);
+                if (d.task.outputs.length === 1) {
+                    d.task.outputScale = function () { return 50; };
+                }
+                d.task.inputScale = d3.scale.linear().domain([0, d.task.inputs.length - 1]).range([10, 90]);
+                if (d.task.inputs.length === 1) {
+                    d.task.inputScale = function () { return 50; };
+                }
+                newSteps.push(d);
+            });
+            this.model.get('inputs').forEach(function (d) {
+                var input = $.extend(true, {}, d);
+                input.isInput = true;
+                input.id = d.id || d.name;
+                input.task = {
+                    inputs: [],
+                    outputs: [d],
+                    outputScale: function (d) { return 50; }
+                };
+                newSteps.push(input);
+            });
+            this.model.get('outputs').forEach(function (d) {
+                var output = $.extend(true, {}, d);
+                output.isOutput = true;
+                output.id = d.id || d.name;
+                output.task = {
+                    inputs: [d],
+                    outputs: [],
+                    inputScale: function (d) { return 50; }
+                };
+                newSteps.push(output);
+            });
+            this.steps.set(newSteps);
+
+            this.model.get('connections').forEach(_.bind(function (d) {
+                var inName = d.input_step || d.name,
+                    outName = d.output_step || d.name;
+                d.inputStep = this.steps.get(inName);
+                d.outputStep = this.steps.get(outName);
+                if (!d.inputStep) {
+                    d.inputStep = this.steps.findWhere({name: inName});
+                }
+                if (!d.outputStep) {
+                    d.outputStep = this.steps.findWhere({name: outName});
+                }
+                d.inputStep.get('task').inputs.forEach(function (input, index) {
+                    if ((input.id || input.name) === (d.input || d.name)) {
+                        d.inputIndex = index;
+                        d.inputPos = d.inputStep.get('task').inputScale(index);
+                    }
+                });
+                d.outputStep.get('task').outputs.forEach(function (output, index) {
+                    if ((output.id || output.name) === (d.output || d.name)) {
+                        d.outputIndex = index;
+                        d.outputPos = d.outputStep.get('task').outputScale(index);
+                    }
+                });
+                newConnections.push(d);
+            }, this));
+            this.connections.set(newConnections);
+
+            this.$el.html(jade.templates.workflow(this.model.toJSON()));
+
+            this.stepsView = new flow.ItemsView({
+                el: this.$('.steps'),
+                collection: this.steps,
+                itemView: flow.WorkflowStepView,
+                itemOptions: {workflowView: this}
+            });
+            this.stepsView.render();
+            this.connectionsView = new flow.ItemsView({
+                el: this.$('.connections'),
+                collection: this.connections,
+                itemView: flow.WorkflowConnectionView,
+                itemOptions: {workflowView: this}
+            });
+            this.connectionsView.render();
             return this;
         },
 
-        checkTaskResult: function () {
-            girder.restRequest({
-                path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/status',
-                error: null
-            }).done(_.bind(function (result) {
-                console.log(result.status);
-                if (result.status === 'SUCCESS' || result.status === 'FAILURE') {
-                    // Very strange - order of CSS class names seems to be important here
-                    this.$('.th-go')
-                        .removeAttr('disabled');
+        addStep: function (task, girderId, modified) {
+            var step = {}, index = 1, model;
+            step.id = task.id || task.name;
+            step.name = step.id;
+            step.isOutput = task.isOutput;
+            step.isInput = task.isInput;
+            step.visualization = task.visualization || false;
+            step.task = task;
+            step.task.outputScale = d3.scale.linear().domain([0, step.task.outputs.length - 1]).range([10, 90]);
+            if (step.task.outputs.length === 1) {
+                step.task.outputScale = function () { return 50; };
+            }
+            step.task.inputScale = d3.scale.linear().domain([0, step.task.inputs.length - 1]).range([10, 90]);
+            if (step.task.inputs.length === 1) {
+                step.task.inputScale = function () { return 50; };
+            }
+            step.girderId = girderId;
+            step.modified = modified;
+            step.x = task.x || 200;
+            step.y = task.y || 200;
+            ['mode', 'domain', 'default', 'constant', 'description'].forEach(function (key) {
+                if (task[key]) {
+                    step[key] = task[key];
+                }
+            });
+            while (this.steps.get(step.id)) {
+                step.id = (task.id || task.name) + ' ' + index;
+                step.name = step.id;
+                index += 1;
+            }
+            model = new Backbone.Model(step);
+            this.steps.add(model);
+            return model;
+        },
+
+        editable: function (edit) {
+            this.edit = edit;
+            this.render();
+        },
+
+        serialize: function () {
+            var task = {
+                inputs: [],
+                outputs: [],
+                steps: [],
+                connections: []
+            };
+
+            this.steps.forEach(function (step) {
+                var input, output;
+                if (step.get('isInput')) {
+                    input = {
+                        id: step.id,
+                        name: step.get('name'),
+                        type: step.get('task').outputs[0].type,
+                        format: step.get('task').outputs[0].format,
+                        x: step.get('x'),
+                        y: step.get('y')
+                    };
+                    ['mode', 'domain', 'default', 'constant', 'description'].forEach(function (key) {
+                        if (step.get(key)) {
+                            input[key] = step.get(key);
+                        }
+                    });
+                    task.inputs.push(input);
+                } else if (step.get('isOutput')) {
+                    output = {
+                        id: step.id,
+                        name: step.get('name'),
+                        type: step.get('task').inputs[0].type,
+                        format: step.get('task').inputs[0].format,
+                        x: step.get('x'),
+                        y: step.get('y')
+                    };
+                    ['description'].forEach(function (key) {
+                        if (step.get(key)) {
+                            output[key] = step.get(key);
+                        }
+                    });
+                    task.outputs.push(output);
                 } else {
-                    setTimeout(_.bind(this.checkTaskResult, this), 1000);
+                    task.steps.push({
+                        x: step.get('x'),
+                        y: step.get('y'),
+                        name: step.get('name'),
+                        visualization: step.get('visualization'),
+                        girderId: step.get('girderId'),
+                        modified: step.get('modified'),
+                        task: step.get('task')
+                    });
                 }
-                if (result.status === 'SUCCESS') {
-                    girder.restRequest({
-                        path: 'item/' + this.model.id + '/romanesco/' + this.taskId + '/result',
-                        error: null
-                    }).done(_.bind(function (data) {
-                        var result = data.result,
-                            visualizations = result._visualizations || [],
-                            outputs = [];
+            });
 
-                        $.each(result, _.bind(function (outputName, output) {
-                            if (outputName === '_visualizations') {
-                                return;
-                            }
-                            output.name = outputName;
-                            outputs.push(output);
-                        }, this));
-
-                        this.$('.th-results').removeClass('hidden').empty();
-                        $.each(visualizations, _.bind(function (i, visualization) {
-                            var options = {},
-                                $div;
-
-                            $('<h4/>').text(visualization.type).appendTo(this.$('.th-results'));
-                            $div = $('<div/>').addClass('th-visualization').appendTo(this.$('.th-results'));
-
-                            $.each(visualization.inputs, function (name, value) {
-                                options[name] = value.data;
-                            });
-
-                            $div[visualization.type](options);
-
-                        }, this));
-
-                        console.log(data);
-                    }, this)).error(_.bind(function (error) {
-                        // TODO report error
-                    }, this));
+            this.connections.forEach(function (c) {
+                if (c.get('outputStep').get('isInput')) {
+                    task.connections.push({
+                        name: c.get('outputStep').get('id') || c.get('outputStep').get('name'),
+                        input_step: c.get('inputStep').get('name'),
+                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].id || c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
+                    });
+                } else if (c.get('inputStep').get('isOutput')) {
+                    task.connections.push({
+                        name: c.get('inputStep').get('id') || c.get('inputStep').get('name'),
+                        output_step: c.get('outputStep').get('name'),
+                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].id || c.get('outputStep').get('task').outputs[c.get('outputIndex')].name
+                    });
+                } else {
+                    task.connections.push({
+                        output_step: c.get('outputStep').get('name'),
+                        output: c.get('outputStep').get('task').outputs[c.get('outputIndex')].id || c.get('outputStep').get('task').outputs[c.get('outputIndex')].name,
+                        input_step: c.get('inputStep').get('name'),
+                        input: c.get('inputStep').get('task').inputs[c.get('inputIndex')].id || c.get('inputStep').get('task').inputs[c.get('inputIndex')].name
+                    });
                 }
-                // TODO report error if FAILURE
-            }, this)).error(_.bind(function (error) {
-                // TODO report error
-            }, this));
+            });
+
+            return task;
+        },
+
+        removeTooltips: function () {
+            this.$('.tooltip').remove();
+        },
+
+        connectionPath: function (d) {
+            var dist,
+                delta,
+                offset,
+                portOffset = 20,
+                inPos = {x: d.get('inputStep').get('x'), y: d.get('inputStep').get('y')},
+                outPos = {x: d.get('outputStep').get('x'), y: d.get('outputStep').get('y')},
+                inputPos = d.get('inputPos'),
+                outputPos = d.get('outputPos');
+            delta = [outPos.x - inPos.x, outPos.y - inPos.y];
+            dist = Math.sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
+            offset = 0.4 * dist - 50;
+            offset = offset < 0 ? 0 : offset;
+            return 'M ' + (outPos.x + 150 + portOffset) + ' ' + (outPos.y + outputPos) +
+                ' C ' + (outPos.x + 150 + portOffset + offset) + ' ' + (outPos.y + outputPos) +
+                ' ' + (inPos.x  - portOffset - offset) + ' ' + (inPos.y + inputPos) +
+                ' ' + (inPos.x - portOffset) + ' ' + (inPos.y + inputPos);
+        },
+
+        startConnectionDrag: function (step, index) {
+            var portOffset = 20;
+            this.dragOutput = step;
+            this.dragOutputIndex = index;
+            this.dragConnection = new Backbone.Model({
+                outputStep: step,
+                outputPos: step.get('task').outputScale(index),
+                inputStep: new Backbone.Model({x: step.get('x') + 150 + portOffset + 20, y: step.get('y') + step.get('task').outputScale(index)}),
+                inputPos: 0
+            });
+            this.$('.drag-connection').attr('visibility', 'visible');
+            this.$('.drag-connection').attr('d', this.connectionPath(this.dragConnection));
+        },
+
+        updateConnectionDrag: function (dx, dy) {
+            this.dragConnection.get('inputStep').set('x', this.dragConnection.get('inputStep').get('x') + dx);
+            this.dragConnection.get('inputStep').set('y', this.dragConnection.get('inputStep').get('y') + dy);
+            this.$('.drag-connection').attr('d', this.connectionPath(this.dragConnection));
+        },
+
+        endConnectionDrag: function () {
+            this.$('.drag-connection').attr('visibility', 'hidden');
+            this.dragOutput = undefined;
+            this.dragOutputIndex = undefined;
+        },
+
+        checkConnectionComplete: function (step, index) {
+            var existing;
+            if (this.dragOutput !== undefined &&
+                this.dragOutput.get('task').outputs[this.dragOutputIndex].type === step.get('task').inputs[index].type) {
+
+                // Remove any existing connection to this input
+                this.connections.remove(this.connections.filter(function (conn) {
+                    return conn.get('inputStep') === step && conn.get('inputIndex') === index;
+                }));
+
+                // Add the new connection
+                this.connections.add({
+                    outputStep: this.dragOutput,
+                    outputIndex: this.dragOutputIndex,
+                    outputPos: this.dragOutput.get('task').outputScale(this.dragOutputIndex),
+                    inputStep: step,
+                    inputIndex: index,
+                    inputPos: step.get('task').inputScale(index)
+                });
+
+                this.dragOutput = undefined;
+                this.dragOutputIndex = undefined;
+            }
         }
     });
 
-}(window.flow, window.$, window.Backbone));
+}(window.flow, window.$, window.d3, window.Backbone));

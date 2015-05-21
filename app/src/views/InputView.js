@@ -21,6 +21,10 @@
         initialize: function (settings) {
             var div;
 
+            if (this.model.get('constant')) {
+                $(this.el).addClass('hidden');
+            }
+
             this.datasets = settings.datasets;
             this.parentView = settings.parentView;
             this.idPrefix = settings.idPrefix || '';

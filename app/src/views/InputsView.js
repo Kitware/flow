@@ -82,6 +82,9 @@
                                 return;
                             }
                             var value = this.itemViews[input.cid].view.$el.val();
+                            if (value === null && input.get('default')) {
+                                value = input.get('default').data;
+                            }
                             dataset.get('data').sort();
                             this.itemViews[input.cid].view.collection.set(dataset.get('data'));
                             this.itemViews[input.cid].view.$el.val(value);
