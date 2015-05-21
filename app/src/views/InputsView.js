@@ -109,7 +109,7 @@
 
                 if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
                     dataset = this.datasets.get(value);
-                    result[id] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.id));
+                    result[id] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.get('_id')));
                 } else if (input.get('type') === 'string') {
                     result[id] = {type: input.get('type'), format: 'text', data: value};
                 } else if (input.get('type') === 'number') {

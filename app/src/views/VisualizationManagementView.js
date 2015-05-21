@@ -44,28 +44,22 @@
 
             'click .save': function () {
                 var preset = this.presets.get($('.presets').val()),
-                    vis = preset.get('meta').visualization;
-                girder.restRequest({
-                    path: 'item/?name=' + encodeURIComponent(preset.get('name')) + '&folderId=' + flow.saveLocation.get('visualizationFolder'),
-                    type: 'POST',
-                    error: null
-                }).done(_.bind(function (result) {
-                    var analysisUri = 'item/' + result._id;
-                    girder.restRequest({
-                        path: analysisUri + '/metadata',
-                        type: 'PUT',
-                        contentType: 'application/json',
-                        data: JSON.stringify(preset.get('meta')),
-                        error: null
-                    }).done(_.bind(function (result) {
-                        preset.id = result._id;
+                    vis = preset.get('meta').visualization,
+                    item = new girder.models.ItemModel({
+                        name: preset.get('name'),
+                        folderId: flow.saveLocation.get('visualizationFolder')
+                    });
+
+                item.on('g:saved', function () {
+                    item._sendMetadata(preset.get('meta'), function () {
+                        preset.id = item.get('_id');
                         preset.set({collection: flow.saveLocation});
-                    }, this)).error(_.bind(function (error) {
-                        // TODO report error
-                    }, this));
-                }, this)).error(_.bind(function (error) {
-                    console.log(JSON.stringify(JSON.parse(error.responseText), null, "  "));
-                }, this));
+                    }, function (error) {
+                        console.error(error);
+                    });
+                }, this).on('g:error', function (error) {
+                    console.error(error);
+                }).save();
             },
 
             'click .show-preset': function () {
