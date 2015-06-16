@@ -171,10 +171,10 @@
     command: python easymode-setup.py /vagrant/ArborWebApps chdir=/vagrant/devops/ansible
 
   - name: tangelo-hub | create ancestral-state symbolic link
-    command: ln -s /vagrant/ArborWebApps/ancestral-state chdir=/vagrant/app
+    file: src=/vagrant/ArborWebApps/ancestral-state dest=/vagrant/app/ancestral-state state=link
 
   - name: tangelo-hub | create phylogenetic-signal symbolic link
-    command: ln -s /vagrant/ArborWebApps/phylogenetic-signal chdir=/vagrant/app
+    file: src=/vagrant/ArborWebApps/phylogenetic-signal dest=/vagrant/app/phylogenetic-signal state=link
 
   - name: apache | enable http proxy
     command: a2enmod proxy_http
