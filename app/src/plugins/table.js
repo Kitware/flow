@@ -7,14 +7,13 @@
 
     $.widget("tangelo.table", {
         options: {
-            data: null,
-            modified: null
+            data: null
         },
 
         _create: function () {
             var that = this, saveButton;
 
-            if (this.options.modified) {
+            if ('saveChanges' in this.options && this.options.saveChanges) {
 
                 // create editable table
                 this.table = $('<table contenteditable class="table table-bordered table-striped"></table>');
@@ -32,8 +31,8 @@
                     }).get().join();
 
                     // trigger the save event
-                    if (that.options.modified) {
-                        that.options.modified('data', csv);
+                    if ('saveChanges' in that.options && that.options.saveChanges) {
+                        that.options.saveChanges('data', csv);
                     }
 
                     // give the user some visual feedback
