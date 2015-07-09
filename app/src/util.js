@@ -209,6 +209,8 @@
                 spec.forEach(function (d) {
                     out.push(window.flow.accessorify(d));
                 });
+            } else if (_.isFunction(spec)) {
+                out = spec;
             } else if (_.isObject(spec)) {
                 if (spec._accessor) {
                     out = window.flow.accessor(spec);

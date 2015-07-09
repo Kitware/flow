@@ -217,9 +217,11 @@
             $("#vis").append(inner);
             flow.setDisplay('vis');
 
-            options.modified = _.bind(function (inputName, newDataValue) {
-                this.saveModifiedData(vis, inputName, newDataValue);
-            }, this);
+            if (flow.saveLocation) {
+                options.saveChanges = _.bind(function (inputName, newDataValue) {
+                    this.saveModifiedData(vis, inputName, newDataValue);
+                }, this);
+            }
 
             setTimeout(_.bind(function () {
                 var visualization = vis.get('meta').visualization,
@@ -242,7 +244,7 @@
             // Find the index of the input that we're saving a new version of.
             var found = false,
                 inputIndex,
-                visualizationInputs = vis.get("inputs"),
+                visualizationInputs = vis.get("meta").visualization.inputs,
                 inputView,
                 datasetIndex,
                 dataset,
