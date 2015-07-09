@@ -10,6 +10,7 @@
             phy: {type: 'tree', format: 'newick'},
             nex: {type: 'tree', format: 'nexus'},
             'nested-json': {type: 'tree', format: 'nested.json'},
+            'collection-json': {type: 'collection', format: 'json'},
             csv: {type: 'table', format: 'csv'},
             tsv: {type: 'table', format: 'tsv'},
             png: {type: 'image', format: 'png'},
@@ -23,6 +24,7 @@
         webFormat: {
             table: 'rows',
             tree: 'nested',
+            collection: 'json',
             string: 'text',
             number: 'number',
             image: 'png.base64',

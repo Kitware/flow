@@ -31,7 +31,9 @@
             'change #mode': function () {
                 if (this.analysis) {
                     this.analysis.get('meta').analysis.mode = $("#mode").val();
-                    this.editor.getSession().setMode("ace/mode/" + this.analysis.get('meta').analysis.mode);
+                    var language = this.analysis.get('meta').analysis.mode.split('.');
+                    language = language[language.length - 1];
+                    this.editor.getSession().setMode("ace/mode/" + language);
                 }
             },
 

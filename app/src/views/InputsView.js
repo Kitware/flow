@@ -110,7 +110,7 @@
                     dataset,
                     id = input.get('id') || input.get('name');
 
-                if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r') {
+                if (input.get('type') === 'table' || input.get('type') === 'tree' || input.get('type') === 'image' || input.get('type') === 'r' || input.get('type') === 'collection') {
                     dataset = this.datasets.get(value);
                     result[id] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.get('_id')));
                 } else if (input.get('type') === 'string') {
