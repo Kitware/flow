@@ -278,6 +278,14 @@
                 }).on('g:saved', function () {
                     $('.new-collection-name').val('');
                     this.collection.fetch({}, true);
+
+                    _.each(['Data', 'Analyses', 'Visualizations'], function (name) {
+                        new girder.models.FolderModel({
+                            parentType: 'collection',
+                            parentId: collection.get('_id'),
+                            name: name
+                        }).save();
+                    }, this);
                 }, this).on('g:error', function () {
                     $('.new-collection-name').val('');
                     console.error(message);
