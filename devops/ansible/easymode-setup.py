@@ -1,4 +1,4 @@
-from GirderClient import *
+from girder_client import GirderClient
 import json
 import pymongo
 import sys
@@ -20,16 +20,22 @@ with open ("%s/phylogenetic-signal/Phylogenetic_signal.json" % arborWebAppsPath,
 PGS['analysis'] = json.loads(pgsStr)
 
 # Get the ID for our Analyses folder.
-c = GirderClient('localhost', 9000)
+c = GirderClient(host='localhost', port=9000)
 c.authenticate('girder', 'girder')
-folderSearch = c.sendRestRequest('GET', 'resource/search', {
+folderSearch = c.get('resource/search', parameters={
     'q': 'Analyses',
     'types': '["folder"]'
 })
 folderId = folderSearch['folder'][0]['_id']
 
 # Upload our analyses to girder.
-itemId = c.createItem(folderId, 'aceArbor', 'Ancestral state reconstruction')
-c.addMetaDataToItem(itemId, ACR)
-itemId = c.createItem(folderId, 'Phylogenetic signal', 'Phylogenetic signal')
-c.addMetaDataToItem(itemId, PGS)
+item = c.createItem(folderId, 'aceArbor', 'Ancestral state reconstruction')
+c.addMetadataToItem(item['_id'], ACR)
+item = c.createItem(folderId, 'Phylogenetic signal', 'Phylogenetic signal')
+c.addMetadataToItem(item['_id'], PGS)
+
+# Disable authorization requirements for running romanesco tasks
+c.put('system/setting', parameters={
+    'key': 'romanesco.require_auth',
+    'value': 'false'
+})
