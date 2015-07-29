@@ -283,7 +283,8 @@
                         new girder.models.FolderModel({
                             parentType: 'collection',
                             parentId: collection.get('_id'),
-                            name: name
+                            name: name,
+                            public: isPublic
                         }).save();
                     }, this);
                 }, this).on('g:error', function () {
