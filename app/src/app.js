@@ -272,21 +272,25 @@
                 var name = $('.new-collection-name').val(),
                     isPublic = $('.new-collection-public').is(':checked');
 
-                girder.restRequest({
-                    path: 'collection/romanesco/module',
-                    type: 'post',
-                    data: {
-                        name: name,
-                        description: '',
-                        public: isPublic
-                    }
-                }).done(_.bind(function (collection) {
+                var collection = new girder.models.CollectionModel({
+                    name: name,
+                    public: isPublic
+                }).on('g:saved', function () {
                     $('.new-collection-name').val('');
                     this.collection.fetch({}, true);
-                }, this)).error(_.bind(function (xhr, status, message) {
+
+                    _.each(['Data', 'Analyses', 'Visualizations'], function (name) {
+                        new girder.models.FolderModel({
+                            parentType: 'collection',
+                            parentId: collection.get('_id'),
+                            name: name,
+                            public: isPublic
+                        }).save();
+                    }, this);
+                }, this).on('g:error', function () {
                     $('.new-collection-name').val('');
                     console.error(message);
-                }, this));
+                }).save();
             }
         },
 
