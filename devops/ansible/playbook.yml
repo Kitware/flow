@@ -127,6 +127,10 @@
     notify:
       - restart romanesco
 
+  - name: restart romanesco service
+    shell: stop romanesco; start romanesco
+    sudo: yes
+
   - name: ArborWebApps | checkout ArborWebApps
     git: repo=https://github.com/arborworkflows/ArborWebApps.git dest=/vagrant/ArborWebApps update=yes
 
@@ -163,10 +167,17 @@
   - name: girder | wait for girder initialization
     wait_for: port=9000 delay=2
 
-  - name: girder | setup admin user
+  - name: girder | setup admin user and turn on romanesco plugin
     command: python girder-setup.py chdir=/vagrant/devops/ansible
     notify:
       - restart girder
+
+  - name: girder | restart
+    shell: stop girder; start girder
+    sudo: yes
+
+  - name: girder | wait for girder initialization
+    wait_for: port=9000 delay=2
 
   - name: girder | install easy mode analyses and disable auth requirement for romanesco
     command: python easymode-setup.py /vagrant/ArborWebApps chdir=/vagrant/devops/ansible
