@@ -1,4 +1,4 @@
-from GirderClient import *
+from girder_client import GirderClient
 import json
 import pymongo
 import sys
@@ -9,26 +9,32 @@ if len(sys.argv) < 2:
 arborWebAppsPath = sys.argv[1]
 
 # Get the ID for our Analyses folder.
-c = GirderClient('localhost', 9000)
+c = GirderClient(host='localhost', port=9000)
 c.authenticate('girder', 'girder')
-folderSearch = c.sendRestRequest('GET', 'resource/search', {
+folderSearch = c.get('resource/search', parameters={
     'q': 'Analyses',
     'types': '["folder"]'
 })
 folderId = folderSearch['folder'][0]['_id']
 
+# Disable authorization requirements for running romanesco tasks
+c.put('system/setting', parameters={
+    'key': 'romanesco.require_auth',
+    'value': 'false'
+})
+
 # Check if these analyses already exist.  If so, we won't re-upload them.
 uploadACR = False
 uploadPGS = False
 
-searchACR = c.sendRestRequest('GET', 'resource/search', {
+searchACR = c.get('resource/search', {
     'q': 'aceArbor',
     'types': '["item"]'
 })
 if len(searchACR['item']) == 0:
   uploadACR = True
 
-searchPGS = c.sendRestRequest('GET', 'resource/search', {
+searchPGS = c.get('resource/search', {
     'q': 'Phylogenetic signal',
     'types': '["item"]'
 })
@@ -41,8 +47,8 @@ if uploadACR:
   with open ("%s/ancestral-state/aceArbor.json" % arborWebAppsPath, "r") as acrFile:
       acrStr = acrFile.read()
   ACR['analysis'] = json.loads(acrStr)
-  itemId = c.createItem(folderId, 'aceArbor', 'Ancestral state reconstruction')
-  c.addMetaDataToItem(itemId, ACR)
+  item = c.createItem(folderId, 'aceArbor', 'Ancestral state reconstruction')
+  c.addMetadataToItem(item['_id'], ACR)
   print "aceArbor successfully uploaded"
 else:
   print "aceArbor already exists"
@@ -52,8 +58,8 @@ if uploadPGS:
   with open ("%s/phylogenetic-signal/Phylogenetic_signal.json" % arborWebAppsPath, "r") as pgsFile:
       pgsStr = pgsFile.read()
   PGS['analysis'] = json.loads(pgsStr)
-  itemId = c.createItem(folderId, 'Phylogenetic signal', 'Phylogenetic signal')
-  c.addMetaDataToItem(itemId, PGS)
+  item = c.createItem(folderId, 'Phylogenetic signal', 'Phylogenetic signal')
+  c.addMetadataToItem(item['_id'], PGS)
   print "Phylogenetic signal successfully uploaded"
 else:
   print "Phylogenetic signal already exists"

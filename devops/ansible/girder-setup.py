@@ -1,7 +1,6 @@
-from GirderClient import *
-import pymongo
+from girder_client import GirderClient
 
-c = GirderClient('localhost', 9000)
+c = GirderClient(host='localhost', port=9000)
 
 # Create an admin user if there isn't one
 try:
@@ -17,24 +16,37 @@ except:
     c.authenticate('girder', 'girder')
 
 # Create a tangelo hub collection if there isn't one
-coll_search = c.sendRestRequest('GET', 'resource/search', {
+coll_search = c.get('resource/search', parameters={
     'q': 'Default',
     'types': '["collection"]'
 })
 if len(coll_search["collection"]) == 0:
-    collection = c.createCollection(
-        'Default', 'Default workspace', public='true')
-    c.createFolder(
-        collection, 'collection', 'Data', 'Data folder', public='true')
-    c.createFolder(
-        collection, 'collection', 'Analyses', 'Analysis folder', public='true')
+    collection = c.post('collection', parameters={
+        'name': 'Default',
+        'description': 'Default workspace',
+        'public': 'true'
+    })
+    c.post('folder', parameters={
+        'parentType': 'collection',
+        'parentId': collection['_id'],
+        'name': 'Data',
+        'description': 'Data Folder',
+        'public': 'true'
+    })
+    c.post('folder', parameters={
+        'parentType': 'collection',
+        'parentId': collection['_id'],
+        'name': 'Analyses',
+        'description': 'Analysis folder',
+        'public': 'true'
+    })
 
 # Turn on the romanesco plugin
-c.sendRestRequest('PUT', 'system/plugins', {"plugins": '["romanesco"]'})
+c.put('system/plugins', parameters={"plugins": '["romanesco"]'})
 
 # Create an assetstore if there isn't one
-if len(c.sendRestRequest('GET', 'assetstore')) == 0:
-    c.sendRestRequest('POST', 'assetstore', {
+if len(c.get('assetstore')) == 0:
+    c.post('assetstore', parameters={
         'type': '1',
         'name': 'GridFS',
         'db': 'girder-gridfs'
