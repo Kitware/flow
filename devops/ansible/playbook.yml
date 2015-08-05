@@ -115,6 +115,14 @@
   - name: romanesco | checkout romanesco
     git: repo=https://github.com/Kitware/romanesco.git dest=/vagrant/romanesco update=yes
 
+  - name: romanesco | create worker local config file
+    copy: src=worker.local.cfg dest=/vagrant/romanesco/romanesco/worker.local.cfg owner=root group=staff mode=0644
+    sudo: yes
+
+  - name: romanesco | install all required pip packages
+    command: python /vagrant/romanesco/scripts/install_requirements.py
+    sudo: yes
+
   - name: romanesco | install girder plugin
     command: girder-install -f plugin -s /vagrant/romanesco
     sudo: yes
