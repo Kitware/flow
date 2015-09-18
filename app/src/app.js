@@ -287,9 +287,12 @@
                             public: isPublic
                         }).save();
                     }, this);
-                }, this).on('g:error', function () {
+                }, this).on('g:error', function (error) {
                     $('.new-collection-name').val('');
-                    console.error(message);
+
+                    if ('message' in error.responseJSON) {
+                        console.error(error.responseJSON.message);
+                    }
                 }).save();
             }
         },
