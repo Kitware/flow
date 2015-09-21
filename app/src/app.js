@@ -270,27 +270,29 @@
 
             'click .new-collection': function () {
                 var name = $('.new-collection-name').val(),
-                    isPublic = $('.new-collection-public').is(':checked');
+                    isPublic = $('.new-collection-public').is(':checked'),
+                    collection = new girder.models.CollectionModel({
+                        name: name,
+                        public: isPublic
+                    }).on('g:saved', function () {
+                        $('.new-collection-name').val('');
+                        this.collection.fetch({}, true);
 
-                var collection = new girder.models.CollectionModel({
-                    name: name,
-                    public: isPublic
-                }).on('g:saved', function () {
-                    $('.new-collection-name').val('');
-                    this.collection.fetch({}, true);
+                        _.each(['Data', 'Analyses', 'Visualizations'], function (name) {
+                            new girder.models.FolderModel({
+                                parentType: 'collection',
+                                parentId: collection.get('_id'),
+                                name: name,
+                                public: isPublic
+                            }).save();
+                        }, this);
+                    }, this).on('g:error', function (error) {
+                        $('.new-collection-name').val('');
 
-                    _.each(['Data', 'Analyses', 'Visualizations'], function (name) {
-                        new girder.models.FolderModel({
-                            parentType: 'collection',
-                            parentId: collection.get('_id'),
-                            name: name,
-                            public: isPublic
-                        }).save();
-                    }, this);
-                }, this).on('g:error', function () {
-                    $('.new-collection-name').val('');
-                    console.error(message);
-                }).save();
+                        if ('message' in error.responseJSON) {
+                            console.error(error.responseJSON.message);
+                        }
+                    }).save();
             }
         },
 
