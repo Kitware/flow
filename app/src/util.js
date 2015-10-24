@@ -30,6 +30,46 @@
             geometry: 'vtkpolydata.serialized'
         },
 
+        validatorNiceName: function (validator) {
+            return validator.type + ':' + validator.format;
+        },
+
+        // entities should be key val
+        // with the key being a UI friendly string
+        // val being the actual object - which is passed to done
+        resolveEntities: function (entities, done) {
+            done = (_.isFunction(done)) ? done : function () {};
+
+            if (_.isEmpty(entities)) {
+                this.bootstrapAlert("danger", "files are unsupported.", 15);
+            } else if (_.size(entities) == 1) {
+                done(_.first(_.values(entities)));
+            } else {
+                $('#th-dialog-container').html(jade.templates.prompt({
+                    prompt: 'What type of data is this?',
+                    choices: _.keys(entities)
+                })).modal();
+
+                $('#th-dialog-container').on('shown.bs.modal', function () {
+                    $('#th-dialog-container').off('shown');
+                });
+
+                $('#th-dialog-container .th-confirm-button').click(function () {
+                    $('#th-dialog-container').modal('hide');
+                    done(entities[$('#prompt-choice').val()]);
+                });
+            }
+        },
+
+        resolveTypeFormats: function (typeFormats, done) {
+            this.resolveEntities(_.object(_.map(typeFormats, flow.validatorNiceName),
+                                          typeFormats), done);
+        },
+
+        resolveExtensions: function (extensions, done) {
+            this.resolveEntities(_.object(extensions, extensions), done);
+        },
+
         setDisplay: function (mode) {
             ["intro", "vis", "editor"].forEach(function (d) {
                 d3.select("#" + d).classed("hidden", mode !== d);
