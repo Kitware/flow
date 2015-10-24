@@ -306,6 +306,15 @@
                 this.render();
             }, this));
 
+            girder.restRequest({
+                path: 'romanesco_validator'
+            }).done(_.bind(function (data) {
+                flow.validators = data;
+                flow.events.trigger('flow:validators-loaded');
+            }, this)).error(_.bind(function (error) {
+                console.log(error);
+            }));
+
             this.$("#control-panel").controlPanel();
 
             // Keep a mapping from folders to collections
@@ -335,11 +344,13 @@
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
-            this.datasetsView = new flow.DatasetManagementView({
-                el: this.$('#dataset-management'),
-                datasets: this.datasets
-            });
-            this.datasetsView.render();
+            flow.events.once('flow:validators-loaded', function () {
+                this.datasetsView = new flow.DatasetManagementView({
+                    el: this.$('#dataset-management'),
+                    datasets: this.datasets
+                });
+                this.datasetsView.render();
+            }, this);
 
             this.visualizations = new Backbone.Collection();
             this.visualizationDescriptors.forEach(_.bind(function (vis) {
@@ -367,14 +378,16 @@
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
-            this.analysesView = new flow.AnalysisManagementView({
-                el: this.$('#analysis-management'),
-                analyses: this.analyses,
-                datasets: this.datasets,
-                visualizations: this.visualizations,
-                presets: this.presets
-            });
-            this.analysesView.render();
+            flow.events.once('flow:validators-loaded', function () {
+                this.analysesView = new flow.AnalysisManagementView({
+                    el: this.$('#analysis-management'),
+                    analyses: this.analyses,
+                    datasets: this.datasets,
+                    visualizations: this.visualizations,
+                    presets: this.presets
+                });
+                this.analysesView.render();
+            }, this);
 
             this.visualizationsView = new flow.VisualizationManagementView({
                 el: this.$('#visualization-management'),

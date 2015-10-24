@@ -36,6 +36,33 @@
             });
         },
 
+        // @todo should this be renamed? It actually returns "validators"
+        // Given an extension, like "csv", return the types/formats
+        // that can be associated with it
+        getTypeFormatsFromExtension: function (extension) {
+            return _.filter(this.validators, function (validator) {
+                return (_.has(validator, 'validator') &&
+                        _.has(validator.validator, 'extensions') &&
+                        _.contains(validator.validator.extensions, extension));
+            });
+        },
+
+        // could be stored as. Both parameters are optional, so called with 0 arguments would
+        // return all extensions registered to any type/format.
+        getExtensionsFromTypeFormat: function (type, format) {
+            var typeFormats = _.filter(this.validators, function (typeFormat) {
+                    return ((_.isUndefined(type) || typeFormat.type === type) &&
+                            (_.isUndefined(format) || typeFormat.format === format));
+                }),
+                validators = _.pluck(typeFormats, 'validator'),
+                extensions = _.filter(_.flatten(_.pluck(validators, 'extensions')),
+                                      function (ext) {
+                                          return ext !== undefined;
+                                      });
+
+            return extensions;
+        },
+
         // Converts a dataset (either a Girder-backed dataset or dataset
         // stored in the browser) into another format and returns the result
         // to the done function.
