@@ -177,19 +177,24 @@
                         name: file.name,
                         data: e.target.result
                     },
-                    extension = file.name.split('.').slice(-1);
+                    extension = _.last(file.name.split('.')),
+                    typeFormats = flow.getTypeFormatsFromExtension(extension),
+                    typeFormat;
 
-                extension = extension[extension.length - 1];
-                if (!(extension in flow.extensionToType)) {
+                if (_.isEmpty(typeFormats)) {
                     flow.bootstrapAlert("danger", extension + " files are unsupported.", 15);
-                    return;
+                } else {
+                    // @todo Just pick one for now, until resolution is implemented
+                    typeFormat = _.first(typeFormats);
+
+                    _.extend(dataset, typeFormat);
+                    dataset = new Backbone.Model(dataset);
+                    this.datasets.add(dataset);
+                    flow.bootstrapAlert(
+                        "success",
+                        file.name + "(" + typeFormat.type + ") loaded successfully!",
+                        5);
                 }
-
-                _.extend(dataset, flow.extensionToType[extension]);
-                dataset = new Backbone.Model(dataset);
-
-                this.datasets.add(dataset);
-                flow.bootstrapAlert("success", file.name + " loaded successfully!", 5);
             }, this);
 
             reader.readAsText(file);

@@ -6,20 +6,6 @@
 
         saveLocation: null,
 
-        extensionToType: {
-            phy: {type: 'tree', format: 'newick'},
-            nex: {type: 'tree', format: 'nexus'},
-            'nested-json': {type: 'tree', format: 'nested.json'},
-            csv: {type: 'table', format: 'csv'},
-            tsv: {type: 'table', format: 'tsv'},
-            png: {type: 'image', format: 'png'},
-            rds: {type: 'r', format: 'serialized'},
-            'objectlist-json': {type: 'table', format: 'objectlist.json'},
-            jsonlines: {type: 'table', format: 'jsonlines'},
-            'rows-json': {type: 'table', format: 'rows.json'},
-            'number-json': {type: 'number', format: 'json'}
-        },
-
         webFormat: {
             table: 'rows',
             tree: 'nested',

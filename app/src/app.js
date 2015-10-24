@@ -338,8 +338,7 @@
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
             this.datasets.on('add', function (item) {
-                var extension = item.get('name').split('.').slice(-1);
-                item.set(flow.extensionToType[extension]);
+                item.set(flow.getTypeFormatsFromExtension(_.last(item.get('name').split('.'))));
                 item.id = item._id;
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
