@@ -89,6 +89,12 @@
             return extensions;
         },
 
+        getFormatStringsFromType: function (type) {
+            return _.pluck(_.filter(this.validators, function (typeFormat) {
+                return typeFormat.type === type;
+            }), 'format');
+        },
+
         // Converts a dataset (either a Girder-backed dataset or dataset
         // stored in the browser) into another format and returns the result
         // to the done function.

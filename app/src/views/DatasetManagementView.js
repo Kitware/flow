@@ -3,15 +3,6 @@
 
     // The view for managing data saving and downloading
     flow.DatasetManagementView = Backbone.View.extend({
-        saveFormats: {
-            table: ['csv', 'tsv', 'rows.json', 'objectlist.json', 'vtktable.serialized', 'jsonlines'],
-            tree: ['nested.json', 'nexus', 'newick', 'vtktree.serialized'],
-            image: ['png'],
-            r: ['serialized'],
-            geometry: ['vtkpolydata.serialized'],
-            number: ['json']
-        },
-
         extensions: {
             "table:csv": "csv",
             "table:tsv": "tsv",
@@ -216,7 +207,7 @@
             if (valid) {
                 this.$('.dataset-name').val(this.dataset.get('name'));
                 options = d3.select('.dataset-format-select').selectAll('option')
-                    .data(this.saveFormats[this.dataset.get('type')], function (d) { return d; });
+                    .data(flow.getFormatStringsFromType(this.dataset.get('type')));
                 options.enter().append('option')
                     .text(function (d) { return d; })
                     .attr('value', function (d) { return d; })
