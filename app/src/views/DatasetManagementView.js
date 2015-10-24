@@ -3,23 +3,6 @@
 
     // The view for managing data saving and downloading
     flow.DatasetManagementView = Backbone.View.extend({
-        extensions: {
-            "table:csv": "csv",
-            "table:tsv": "tsv",
-            "table:rows.json": "rows-json",
-            "table:objectlist.json": "objectlist-json",
-            "table:jsonlines": "jsonlines",
-            "table:vtktable.serialized": "vtk",
-            "tree:nested.json": "nested-json",
-            "tree:nexus": "nex",
-            "tree:newick": "phy",
-            "tree:vtktree.serialized": "vtk",
-            "image:png": "png",
-            "r:serialized": "rds",
-            "geometry:vtkpolydata.serialized": "vtk",
-            "number:json": "number-json"
-        },
-
         defaultViews: {
             table: "table",
             string: "string",
@@ -45,7 +28,8 @@
                     dataset = this.datasets.get(this.$('.datasets').val());
                 flow.retrieveDatasetAsFormat(dataset, dataset.get('type'), format, false, _.bind(function (error, converted) {
                     var blob = new Blob([converted.get('data')]),
-                        extension = this.extensions[dataset.get('type') + ":" + format],
+                        // @todo resolution
+                        extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
                     file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
@@ -66,7 +50,8 @@
                         return;
                     }
                     var blob = new Blob([converted.get('data')]),
-                        extension = this.extensions[dataset.get('type') + ":" + format],
+                        // @todo resolution
+                        extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
                         anchor = $('<a href="' + URL.createObjectURL(blob) + '" download="' + nameWithExtension + '" class="hidden"></a>');
