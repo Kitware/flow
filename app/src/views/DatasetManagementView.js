@@ -175,27 +175,28 @@
         },
 
         updateDataset: function () {
-            var options, valid, format;
+            var options, valid, format, canQuickView;
             this.dataset = this.datasets.get(this.$('.datasets').val());
             format = this.dataset.get("format");
 
-            if (!this.dataset) {
-                return;
-            }
+            if (this.dataset) {
+                // If we don't know the format, don't let them download it
+                valid = this.dataset.get('type') !== undefined && this.dataset.get('format') !== undefined;
+                canQuickView = valid && _.has(this.defaultViews, this.dataset.get('type'));
 
-            // If we don't know the format, don't let them download it
-            valid = this.dataset.get('type') !== undefined && this.dataset.get('format') !== undefined;
-            this.$('.dataset-save-form').toggleClass('hidden', !valid);
+                this.$('.dataset-save-form').toggleClass('hidden', !valid);
+                $('#dataset-management button.dataset-quick-view').attr('disabled', !canQuickView);
 
-            if (valid) {
-                this.$('.dataset-name').val(this.dataset.get('name'));
-                options = d3.select('.dataset-format-select').selectAll('option')
-                    .data(flow.getFormatStringsFromType(this.dataset.get('type')));
-                options.enter().append('option')
-                    .text(function (d) { return d; })
-                    .attr('value', function (d) { return d; })
-                    .attr('selected', function (d) { if (d === format) { return "selected"; } });
-                options.exit().remove();
+                if (valid) {
+                    this.$('.dataset-name').val(this.dataset.get('name'));
+                    options = d3.select('.dataset-format-select').selectAll('option')
+                        .data(flow.getFormatStringsFromType(this.dataset.get('type')));
+                    options.enter().append('option')
+                        .text(function (d) { return d; })
+                        .attr('value', function (d) { return d; })
+                        .attr('selected', function (d) { if (d === format) { return "selected"; } });
+                    options.exit().remove();
+                }
             }
         },
 
