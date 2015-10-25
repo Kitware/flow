@@ -154,22 +154,20 @@
                         data: e.target.result
                     },
                     extension = _.last(file.name.split('.')),
-                    typeFormats = flow.getTypeFormatsFromExtension(extension),
-                    typeFormat;
+                    typeFormats = flow.getTypeFormatsFromExtension(extension);
 
                 if (_.isEmpty(typeFormats)) {
                     flow.bootstrapAlert("danger", extension + " files are unsupported.", 15);
                 } else {
-                    // @todo Just pick one for now, until resolution is implemented
-                    typeFormat = _.first(typeFormats);
-
-                    _.extend(dataset, typeFormat);
-                    dataset = new Backbone.Model(dataset);
-                    this.datasets.add(dataset);
-                    flow.bootstrapAlert(
-                        "success",
-                        file.name + "(" + typeFormat.type + ") loaded successfully!",
-                        5);
+                    flow.resolveTypeFormats(typeFormats, _.bind(function (typeFormat) {
+                        _.extend(dataset, typeFormat);
+                        dataset = new Backbone.Model(dataset);
+                        this.datasets.add(dataset);
+                        flow.bootstrapAlert(
+                            "success",
+                            file.name + "(" + typeFormat.type + ") loaded successfully!",
+                            5);
+                    }, this));
                 }
             }, this);
 
