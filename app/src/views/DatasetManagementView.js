@@ -33,9 +33,22 @@
                         extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
-                    file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
-                        dataset.set({id: file.get('itemId')});
-                    });
+                        file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
+                            // Save type/format on the item for retrievel later
+                            // These get set directly on the dataset model
+                            var item = new girder.models.ItemModel({
+                                _id: file.get('itemId')
+                            }).fetch();
+
+                            item.addMetadata('flow', {
+                                type: dataset.get('type'),
+                                format: dataset.get('format')
+                            }, function () {}, function () {
+                                window.flow.bootstrapAlert("danger", "Failed to set metadata on item");
+                            });
+
+                            dataset.set({id: file.get('itemId')});
+                        });
                     dataset.set({collection: flow.saveLocation});
                 }, this));
             },
@@ -139,8 +152,18 @@
             this.saveLocationChange();
 
             // Once the first dataset is added, make it the active dataset
-            this.datasets.on('add', _.bind(function () {
+            this.datasets.on('add', _.bind(function (dataset) {
                 if (!this.dataset) {
+                    this.dataset = this.datasets.get(this.$('.datasets').val());
+
+                    // Set any flow metadata stored in girder on the dataset model
+                    if (dataset.has('meta') &&
+                        _.has(dataset.get('meta'), 'flow')) {
+                        _.each(dataset.get('meta').flow, _.bind(function (val, key) {
+                            this.dataset.set(key, val);
+                        }, this));
+                    }
+
                     this.updateDataset();
                 }
             }, this));
