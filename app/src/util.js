@@ -73,7 +73,8 @@
             });
         },
 
-        // could be stored as. Both parameters are optional, so called with 0 arguments would
+        // Returns the extensions a given type/format could be stored as.
+        // Both parameters are optional, so called with 0 arguments would
         // return all extensions registered to any type/format.
         getExtensionsFromTypeFormat: function (type, format) {
             var typeFormats = _.filter(this.validators, function (typeFormat) {

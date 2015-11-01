@@ -29,7 +29,6 @@
                     dataset = this.datasets.get(this.$('.datasets').val());
                 flow.retrieveDatasetAsFormat(dataset, dataset.get('type'), format, false, _.bind(function (error, converted) {
                     var blob = new Blob([converted.get('data')]),
-                        // @todo resolution
                         extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
@@ -40,10 +39,11 @@
                                 _id: file.get('itemId')
                             }).fetch();
 
+                            // _.noop Can be undefined with girder/girder#1057
                             item.addMetadata('flow', {
                                 type: dataset.get('type'),
                                 format: dataset.get('format')
-                            }, function () {}, function () {
+                            }, _.noop, function () {
                                 window.flow.bootstrapAlert("danger", "Failed to set metadata on item");
                             });
 
@@ -64,7 +64,6 @@
                         return;
                     }
                     var blob = new Blob([converted.get('data')]),
-                        // @todo resolution
                         extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
                         parts = name.split('.'),
                         nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
