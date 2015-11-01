@@ -92,7 +92,7 @@ def dropTestDatabase():
     """
     from girder.models import getDbConnection
     db_connection = getDbConnection()
-    model_importer.clearModels()  # Must clear the models so indices are rebuit
+    model_importer.reinitializeAll()  # Must clear the models so indices are rebuit
     dbName = cherrypy.config['database']['uri'].split('/')[-1]
 
     if 'girder_test_' not in dbName:
