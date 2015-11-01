@@ -7,6 +7,10 @@
 
         visualizationDescriptors: [
             {
+                name: "graph",
+                inputs: [{name: "data", id: "data", type: "graph", format: "networkx.json", inputMode: "dataset"}]
+            },
+            {
                 name: "table",
                 inputs: [
                     {name: "data", id: "data", type: "table", format: "rows", inputMode: "dataset"}

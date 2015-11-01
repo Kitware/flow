@@ -7,7 +7,8 @@
             table: "table",
             string: "string",
             tree: "dendrogram",
-            image: "image"
+            image: "image",
+            graph: "graph"
         },
 
         events: {
