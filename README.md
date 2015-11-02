@@ -1,4 +1,4 @@
-TangeloHub [![Build Status](https://travis-ci.org/Kitware/tangelohub.png?branch=master)](https://travis-ci.org/Kitware/tangelohub)
+TangeloHub [![Build Status](https://travis-ci.org/Kitware/flow.png?branch=master)](https://travis-ci.org/Kitware/tangelohub)
 ===========
 
 A flexible data management, workflow execution, and visualization application.
