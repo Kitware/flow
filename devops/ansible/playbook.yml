@@ -40,12 +40,12 @@
     apt: pkg=mongodb-org state=present update_cache=yes
     sudo: yes
 
-  - name: install pycurl package in order to use the apt_repository module
-    apt: pkg=python-pycurl state=present
+  - name: install curl so we can install nodejs
+    apt: pkg=curl state=present
     sudo: yes
 
   - name: add nodejs ppa
-    apt_repository: repo='ppa:chris-lea/node.js'
+    shell: curl -sL https://deb.nodesource.com/setup | sudo bash -
     sudo: yes
 
   - name: update apt cache
