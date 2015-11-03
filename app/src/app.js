@@ -301,6 +301,8 @@
         },
 
         initialize: function () {
+            var timer;
+
             girder.fetchCurrentUser().success(_.bind(function (user) {
                 if (user) {
                     girder.currentUser = new girder.models.UserModel(user);
@@ -310,9 +312,18 @@
                 this.render();
             }, this));
 
+            timer = setTimeout(function () {
+                flow.bootstrapAlert('warning',
+                                    'The Romanesco worker is taking a long time to respond..',
+                                    false);
+            }, 3000);
+
             girder.restRequest({
                 path: 'romanesco_validator'
             }).done(_.bind(function (data) {
+                clearTimeout(timer);
+                $('#alert').alert('close');
+
                 flow.validators = data;
                 flow.events.trigger('flow:validators-loaded');
             }, this)).error(_.bind(function (error) {
