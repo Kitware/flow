@@ -299,7 +299,9 @@
         initialize: function () {
             girder.fetchCurrentUser().success(_.bind(function (user) {
                 if (user) {
-                    girder.currentUser = new girder.models.UserModel(user);
+                    girder.currentUser = new girder.models.UserModel(_.extend(user, {
+                        token: girder.cookie.find('girderToken')
+                    }));
                 }
                 this.render();
             }, this)).error(_.bind(function () {
@@ -474,6 +476,9 @@
         },
 
         login: function () {
+            if (girder.currentUser) {
+                girder.currentUser.set('token', girder.cookie.find('girderToken'));
+            }
             this.render();
             this.collection.fetch({}, true);
         }
