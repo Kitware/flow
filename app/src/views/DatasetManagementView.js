@@ -23,6 +23,15 @@
                 $('#visualization-management .show-visualization').click();
             },
 
+            'click a.resolve-data-type': function (e) {
+                e.preventDefault();
+                var dataset = this.dataset,
+                    extension = _.last(dataset.get('name').split('.')),
+                    typeFormats = flow.getTypeFormatsFromExtension(extension);
+
+                flow.resolveTypeFormats(typeFormats, _.bind(this.resolveDataTypeFormat, this));
+            },
+
             'click .dataset-save': function () {
                 var name = this.$('.dataset-name').val(),
                     format = this.$('.dataset-format-select').val(),
@@ -158,6 +167,25 @@
             }, this));
         },
 
+        resolveDataTypeFormat: function (typeFormat) {
+            typeFormat = _.omit(typeFormat, 'validator');
+            var item = new girder.models.ItemModel({
+                _id: this.dataset.get('_id')
+            }).fetch();
+
+            // Update the item metadata
+            item.addMetadata('flow', typeFormat, _.bind(function () {
+                this.dataset.set('meta', {
+                    flow: typeFormat
+                });
+
+                $('a.resolve-data-type').remove();
+                this.updateDataset();
+            }, this), function () {
+                window.flow.bootstrapAlert("danger", "Failed to set metadata on item");
+            });
+        },
+
         upload: function (file) {
             var reader = new FileReader();
 
@@ -197,9 +225,13 @@
                 valid = this.dataset.get('type') !== undefined && this.dataset.get('format') !== undefined;
                 canQuickView = valid && _.has(this.defaultViews, this.dataset.get('type'));
 
+                this.$('a.resolve-data-type').remove();
                 this.$('.dataset-save-form').toggleClass('hidden', !valid);
                 $('#dataset-management button.dataset-quick-view').attr('disabled', !canQuickView);
 
+                // If it's valid then populate select boxes,
+                // if it's not, attempt to auto-resolve (only 1 extension) and fill it in on the fly
+                // otherwise, give the user a message forcing them to resolve (more than 1 applicable extension).
                 if (valid) {
                     this.$('.dataset-name').val(this.dataset.get('name'));
                     $('.dataset-format-select').empty();
@@ -208,6 +240,15 @@
                         $('.dataset-format-select')
                             .append('<option value="' + formatString + '" ' + selected + '>' + formatString + '</option>');
                     });
+                } else {
+                    var typeFormats = flow.getTypeFormatsFromExtension(_.last(this.dataset.get('name').split('.')));
+
+                    if (_.size(typeFormats) === 1) {
+                        this.resolveDataTypeFormat(_.first(typeFormats));
+                    } else {
+                        this.$('.form-inline:last')
+                            .append('<a href="#" class="resolve-data-type">' + 'Flow can\'t tell what type of data this is, resolve?' + '</a>');
+                    }
                 }
             }
         },
