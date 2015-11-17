@@ -153,16 +153,6 @@
             // Once the first dataset is added, make it the active dataset
             this.datasets.on('add', _.bind(function (dataset) {
                 if (!this.dataset) {
-                    this.dataset = this.datasets.get(this.$('.datasets').val());
-
-                    // Set any flow metadata stored in girder on the dataset model
-                    if (dataset.has('meta') &&
-                        _.has(dataset.get('meta'), 'flow')) {
-                        _.each(dataset.get('meta').flow, _.bind(function (val, key) {
-                            this.dataset.set(key, val);
-                        }, this));
-                    }
-
                     this.updateDataset();
                 }
             }, this));
