@@ -85,6 +85,7 @@ module.exports = function (grunt) {
                     'app/app.min.js': [
                         'app/templates.js',
                         'app/src/util.js',
+                        'app/src/models/**/*.js',
                         'app/src/collections/**/*.js',
                         'app/src/ItemsView.js',
                         'app/src/SVGView.js',
