@@ -37,11 +37,22 @@
                     format = this.$('.dataset-format-select').val(),
                     dataset = this.datasets.get(this.$('.datasets').val());
                 flow.retrieveDatasetAsFormat(dataset, dataset.get('type'), format, false, _.bind(function (error, converted) {
+                    function fullyQualifiedFilename(name) {
+                        /**
+                         * Determine the extension needed to save the file. If it has no extension or the extension isn't allowed
+                         * for that data type/format, append the first allowable extension.
+                         **/
+                        var allowableExtensions = flow.getExtensionsFromTypeFormat(dataset.get('type'), format);
+
+                        if (name.indexOf('.') === -1 || !_.contains(allowableExtensions, _.last(name.split('.')))) {
+                            name += '.' + _.first(allowableExtensions);
+                        }
+
+                        return name;
+                    }
+
                     var blob = new Blob([converted.get('data')]),
-                        extension = _.first(flow.getExtensionsFromTypeFormat(dataset.get('type'), format)),
-                        parts = name.split('.'),
-                        nameWithExtension = parts[parts.length - 1] === extension ? name : name + '.' + extension,
-                        file = flow.girderUpload(blob, nameWithExtension, flow.saveLocation.get('dataFolder'), false, function () {
+                        file = flow.girderUpload(blob, fullyQualifiedFilename(name), flow.saveLocation.get('dataFolder'), false, function () {
                             // Save type/format on the item for retrievel later
                             // These get set directly on the dataset model
                             var item = new girder.models.ItemModel({
@@ -191,9 +202,9 @@
 
             reader.onload = _.bind(function (e) {
                 var dataset = {
-                        name: file.name,
-                        data: e.target.result
-                    },
+                    name: file.name,
+                    data: e.target.result
+                },
                     extension = _.last(file.name.split('.')),
                     typeFormats = flow.getTypeFormatsFromExtension(extension);
 
