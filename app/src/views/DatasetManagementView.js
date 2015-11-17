@@ -202,13 +202,12 @@
 
                 if (valid) {
                     this.$('.dataset-name').val(this.dataset.get('name'));
-                    options = d3.select('.dataset-format-select').selectAll('option')
-                        .data(flow.getFormatStringsFromType(this.dataset.get('type')));
-                    options.enter().append('option')
-                        .text(function (d) { return d; })
-                        .attr('value', function (d) { return d; })
-                        .attr('selected', function (d) { if (d === format) { return "selected"; } });
-                    options.exit().remove();
+                    $('.dataset-format-select').empty();
+                    _.each(flow.getFormatStringsFromType(this.dataset.get('type')), function (formatString) {
+                        var selected = (format == formatString) ? 'selected="selected"' : '';
+                        $('.dataset-format-select')
+                            .append('<option value="' + formatString + '" ' + selected + '>' + formatString + '</option>');
+                    });
                 }
             }
         },
