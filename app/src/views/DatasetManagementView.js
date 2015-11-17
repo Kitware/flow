@@ -42,7 +42,7 @@
                             // _.noop Can be undefined with girder/girder#1057
                             item.addMetadata('flow', {
                                 type: dataset.get('type'),
-                                format: dataset.get('format')
+                                format: format
                             }, _.noop, function () {
                                 window.flow.bootstrapAlert("danger", "Failed to set metadata on item");
                             });
