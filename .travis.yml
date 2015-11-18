@@ -31,6 +31,7 @@ install:
 
     # Build R from source
     - if ($FLOW_BUILD_R); then
+      mkdir -p $R_LIBS_USER &&
       wget http://cran.rstudio.com/src/base/R-3/R-3.2.0.tar.gz &&
       tar xzf R-3.2.0.tar.gz &&
       cd R-3.2.0 &&
@@ -41,7 +42,6 @@ install:
       echo $GITHUB_PAT &&
       export GITHUB_PAT=2a36e1270e28509d192f4683e1da9cec01c1510d &&
       which R Rscript &&
-      "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}" &&
       R --version &&
       R -e '.libPaths(); sessionInfo()' &&
       Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))' &&
@@ -78,4 +78,4 @@ script:
     - mkdir build
     - cd build
     - cmake ..
-    - ctest -VV -S ../cmake/travis_continuous.cmake
+    - ctest -VV
