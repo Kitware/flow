@@ -21,6 +21,8 @@
                 'number:number',
                 'image:png.base64',
                 'r:object',
+                'collection:json',
+                'collection:spark.rdd',
                 'geometry:vtkpolydata'
             ]},
             description: {name: "Description", id: "description", type: "string", format: "text"},
@@ -67,6 +69,8 @@
                 columnNamesInput = values.columnNamesInput;
                 if (columnNamesInput && columnNamesInput.data !== '') {
                     model.domain = {format: 'column.names', input: columnNamesInput.data};
+                } else {
+                    model.domain = undefined;
                 }
                 this.model.set(model);
                 this.$el.modal('hide');

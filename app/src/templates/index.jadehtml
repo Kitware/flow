@@ -131,6 +131,8 @@ html(lang="en")
                                             | R
                                         option(value="python")
                                             | Python
+                                        option(value="spark.python")
+                                            | Spark Python
                                 button.btn.btn-default#save
                                     span.glyphicon.glyphicon-save
                                     |  Save

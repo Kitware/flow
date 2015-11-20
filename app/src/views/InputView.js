@@ -8,6 +8,7 @@
             table: {inputMode: "dataset"},
             tree: {inputMode: "dataset"},
             image: {inputMode: "dataset"},
+            collection: {inputMode: "dataset"},
             r: {inputMode: "dataset"},
             string: {inputMode: "line"},
             number: {inputMode: "line"},
