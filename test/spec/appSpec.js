@@ -3,7 +3,7 @@
  */
 var app;
 $(function () {
-    girder.apiRoot = '/girder/api/v1';
+    girder.apiRoot = '/api/v1';
     girder.router.enabled(false);
     app = new flow.App();
     app.render();
