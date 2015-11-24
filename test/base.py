@@ -20,6 +20,7 @@
 import base64
 import codecs
 import cherrypy
+import girder
 import io
 import json
 import mimetypes
@@ -38,9 +39,77 @@ from girder.utility.server import setup as setupServer
 from girder.constants import AccessType, ROOT_DIR, SettingKey
 from . import mock_smtp
 
-# local = cherrypy.lib.httputil.Host('127.0.0.1', 50000, '')
-# remote = cherrypy.lib.httputil.Host('127.0.0.1', 50001, '')
-process = None
+
+class FlowAppRoot(object):
+    exposed = True
+    indexHtml = None
+    vars = {
+        'apiRoot': 'girder/api/v1',
+        'staticRoot': 'built',
+        'girderRoot': 'girder/static',
+        'iniSettings': ''
+    }
+
+    def GET(self, *args, **kwargs):
+        self.indexHtml = open('app/testEnv.html').read()
+        return self.indexHtml
+
+class FlowApp():
+    def __del__(self):
+        cherrypy.engine.exit()
+
+    def start(self):
+        cherrypy.lib.httputil.Host('127.0.0.1', 50001)
+        cherrypy.engine.timeout_monitor.unsubscribe()
+        self.root = FlowAppRoot()
+        # Create the girder services and place them at /girder
+        self.root.girder, appconf = girder.utility.server.configureServer()
+        curConfig = girder.utility.config.getConfig()
+        localappconf = {
+            '/static': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(os.getcwd(), 'app', 'static')
+            },
+            '/brands': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(os.getcwd(), 'app', 'brands')
+            },
+            '/lib': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(os.getcwd(), 'app', 'lib')
+            },
+            '/src': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(os.getcwd(), 'app', 'src')
+            },
+            '/test': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(os.getcwd(), 'test')
+            },
+            '/girder/static': curConfig['/static'],
+            '/girder/static/lib/bootstrap/fonts': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(
+                    ROOT_DIR, 'built/lib/bootstrap/fonts')
+            },
+        }
+        appconf.update(localappconf)
+        appconf['/']['tools.trailing_slash.on'] = False
+        curConfig.update(localappconf)
+
+        curConfig['server.socket_port'] = int(os.environ['PORT']) if 'PORT' in os.environ else 50001
+        curConfig['server.mode'] = 'testing'
+
+        self.server = cherrypy.tree.mount(self.root, '/', appconf)
+        # move the girder API from /girder/api to /api
+        self.root.api = self.root.girder.api
+        del self.root.girder.api
+
+        # The specified path here is relative to the /api path
+        self.root.girder.updateHtmlVars({'staticRoot': '../girder/static'})
+        self.root.api.v1.updateHtmlVars({'staticRoot': '../girder/static'})
+
+        cherrypy.engine.start()
 
 
 def startServer():
@@ -48,28 +117,8 @@ def startServer():
     Test cases that communicate with the server should call this
     function in their setUpModule() function.
     """
-    # Start tangelo on the testing port, and bail out with error if it fails.
-    global process
-    appPath = os.path.join(os.environ['ROOT_DIR'], "app")
-    tangeloArgs = [
-        os.environ['TANGELO'], "start",
-        "--host", "127.0.0.1",
-        "--port", os.environ['PORT'],
-        "--root", appPath,
-        "-nd",
-        "--logdir", ".",
-        "--girder-path", "/girder",
-        "--no-config"
-    ]
-    print(" ".join(tangeloArgs))
-    process = subprocess.Popen(
-        tangeloArgs,
-        stdout=sys.stdout.fileno(),
-        stderr=sys.stdout.fileno()
-    )
-
-    # Give it time to spin up
-    time.sleep(2)
+    app = FlowApp()
+    app.start()
 
 
 def stopServer():
@@ -77,12 +126,7 @@ def stopServer():
     Test cases that communicate with the server should call this
     function in their tearDownModule() function.
     """
-    global process
-    code = process.poll()
-    if code is not None:
-        print("Tangelo exited prematurely with code {}.".format(code))
-    else:
-        process.kill()
+    cherrypy.engine.exit()
 
 
 def dropTestDatabase():
