@@ -59,7 +59,6 @@ class FlowApp():
         cherrypy.engine.exit()
 
     def start(self):
-        cherrypy.lib.httputil.Host('127.0.0.1', 50001)
         cherrypy.engine.timeout_monitor.unsubscribe()
         self.root = FlowAppRoot()
         # Create the girder services and place them at /girder
@@ -96,9 +95,8 @@ class FlowApp():
         appconf.update(localappconf)
         appconf['/']['tools.trailing_slash.on'] = False
         curConfig.update(localappconf)
-
-        curConfig['server.socket_port'] = int(os.environ['PORT']) if 'PORT' in os.environ else 50001
-        curConfig['server.mode'] = 'testing'
+        curConfig.update({'server.mode': 'testing',
+                          'server.socket_port': int(os.environ['PORT']) if 'PORT' in os.environ else 50001})
 
         self.server = cherrypy.tree.mount(self.root, '/', appconf)
         # move the girder API from /girder/api to /api
@@ -109,7 +107,8 @@ class FlowApp():
         self.root.girder.updateHtmlVars({'staticRoot': '../girder/static'})
         self.root.api.v1.updateHtmlVars({'staticRoot': '../girder/static'})
 
-        cherrypy.engine.start()
+        cherrypy.server.unsubscribe()
+        cherrypy.server.start()
 
 
 def startServer():
@@ -447,7 +446,6 @@ class MultipartFormdataEncoder(object):
 
 def _sigintHandler(*args):
     print 'Received SIGINT, shutting down mock SMTP server...'
-    mockSmtp.stop()
     sys.exit(1)
 
 
