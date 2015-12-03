@@ -109,6 +109,7 @@ class FlowApp():
 
         cherrypy.server.unsubscribe()
         cherrypy.server.start()
+        cherrypy.config.update({'environment': 'embedded'})
 
 
 def startServer():
