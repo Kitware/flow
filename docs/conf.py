@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'TangeloHub'
+project = 'Flow'
 copyright = '2013-2014, Kitware, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
