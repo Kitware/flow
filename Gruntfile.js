@@ -39,7 +39,7 @@ module.exports = function (grunt) {
             },
             core: {
                 files: {
-                    'app/templates.js': [
+                    'app/static/templates.js': [
                         'app/src/templates/**/*.jade'
                     ]
                 }
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
         stylus: {
             core: {
                 files: {
-                    'app/app.min.css': [
+                    'app/static/app.min.css': [
                         'app/src/stylesheets/index.styl'
                     ]
                 }
@@ -82,8 +82,8 @@ module.exports = function (grunt) {
             },
             app: {
                 files: {
-                    'app/app.min.js': [
-                        'app/templates.js',
+                    'app/static/app.min.js': [
+                        'app/src/templates.js',
                         'app/src/util.js',
                         'app/src/models/**/*.js',
                         'app/src/collections/**/*.js',
@@ -93,14 +93,14 @@ module.exports = function (grunt) {
                         'app/src/views/**/*.js',
                         'app/src/app.js'
                     ],
-                    'app/main.min.js': [
+                    'app/static/main.min.js': [
                         'app/src/main.js'
                     ]
                 }
             },
             libs: {
                 files: {
-                    'app/libs.min.js': [
+                    'app/static/libs.min.js': [
                         'node_modules/jquery-browser/lib/jquery.js',
                         'node_modules/jqueryui-browser/ui/jquery-ui.js',
                         'node_modules/jade/runtime.js',
@@ -121,7 +121,7 @@ module.exports = function (grunt) {
                         'lib/js/tangelo.js',
                         'lib/js/controlPanel.js'
                     ],
-                    'app/testing.min.js': [
+                    'app/static/testing.min.js': [
                         'test/lib/jasmine-1.3.1/jasmine.js',
                         'node_modules/blanket/dist/jasmine/blanket_jasmine.js',
                         'test/lib/jasmine-1.3.1/ConsoleReporter.js',
@@ -185,17 +185,17 @@ module.exports = function (grunt) {
             html = fn({
                 brand: brand,
                 stylesheets: [
-                    'lib/bootstrap/css/bootstrap.min.css',
-                    'lib/css/d3.dependencyedgebundling.css',
-                    'lib/css/d3.edgebundling.css',
-                    'app.min.css'
+                    '/lib/bootstrap/css/bootstrap.min.css',
+                    '/lib/css/d3.dependencyedgebundling.css',
+                    '/lib/css/d3.edgebundling.css',
+                    '/static/app.min.css'
                 ],
                 scripts: [
-                    'libs.min.js',
-                    'lib/ace-builds/src-noconflict/ace.js',
+                    '/static/libs.min.js',
+                    '/lib/ace-builds/src-noconflict/ace.js',
                     '/girder/static/built/app.min.js',
-                    'app.min.js',
-                    'main.min.js'
+                    '/static/app.min.js',
+                    '/static/main.min.js'
                 ]
             });
         fs.writeFileSync('app/index.html', html);
@@ -204,7 +204,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test-env-html', 'Build the phantom test html page.', function () {
         var buffer = fs.readFileSync('test/testEnv.jadehtml'),
-            globs = grunt.config('uglify.app.files')['app/app.min.js'],
+            globs = grunt.config('uglify.app.files')['app/static/app.min.js'],
             inputs = [],
             fn;
 
@@ -222,17 +222,17 @@ module.exports = function (grunt) {
         fs.writeFileSync('app/testEnv.html', fn({
             brand: brand,
             stylesheets: [
-                '../../test/lib/jasmine-1.3.1/jasmine.css',
-                'lib/bootstrap/css/bootstrap.min.css',
-                'lib/css/d3.dependencyedgebundling.css',
-                'lib/css/d3.edgebundling.css',
-                'app.min.css'
+                '../../../test/lib/jasmine-1.3.1/jasmine.css',
+                '/lib/bootstrap/css/bootstrap.min.css',
+                '/lib/css/d3.dependencyedgebundling.css',
+                '/lib/css/d3.edgebundling.css',
+                '/static/app.min.css'
             ],
             scripts: [
-                'testing.min.js',
-                'libs.min.js',
+                '/static/testing.min.js',
+                '/static/libs.min.js',
                 '/girder/static/built/app.min.js',
-                'lib/ace-builds/src-noconflict/ace.js',
+                '/lib/ace-builds/src-noconflict/ace.js'
             ],
             blanketScripts: inputs
         }));

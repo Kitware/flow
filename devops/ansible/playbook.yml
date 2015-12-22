@@ -5,7 +5,7 @@
     r_mirror: http://cran.cnr.Berkeley.edu
 
     # Set to true for Arbor bioinformatics tools
-    arbor: true
+    arbor: false
 
     # Set to true for Visualization Toolkit tools
     vtk: false
