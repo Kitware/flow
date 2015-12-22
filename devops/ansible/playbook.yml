@@ -40,19 +40,23 @@
     apt: pkg=mongodb-org state=present update_cache=yes
     sudo: yes
 
+  - name: install system curl
+    apt: name=curl state=present
+    sudo: yes
+
   - name: install pycurl package in order to use the apt_repository module
     apt: pkg=python-pycurl state=present
     sudo: yes
 
   - name: add nodejs ppa
-    apt_repository: repo='ppa:chris-lea/node.js'
+    shell: curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
     sudo: yes
 
   - name: update apt cache
     apt: update_cache=yes
     sudo: yes
 
-  - name: install package dependencies
+  - name: install APT package dependencies
     apt: name={{ item }} state=present
     sudo: yes
     with_items:
@@ -74,10 +78,11 @@
       - grunt-cli
     sudo: yes
 
-  - name: install python packages
+  - name: install pip packages
     pip: name={{ item }} extra_args='-U'
     sudo: yes
     with_items:
+      - setuptools
       - pip
       - pep8
       - virtualenv
@@ -85,11 +90,7 @@
       - girder_client
 
   - name: girder | install girder web client
-    command: girder-install -f web
-    sudo: yes
-
-  - name: girder | install default girder plugins
-    command: girder-install -f plugin
+    command: girder-install web
     sudo: yes
 
   - name: r | add R repository
@@ -123,8 +124,8 @@
     command: python /vagrant/romanesco/scripts/install_requirements.py
     sudo: yes
 
-  - name: romanesco | install girder plugin
-    command: girder-install -f plugin -s /vagrant/romanesco
+  - name: romanesco | install girder plugin (also builds web client)
+    command: girder-install plugin -f -s /vagrant/romanesco
     sudo: yes
     notify:
       - restart girder

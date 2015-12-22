@@ -7,7 +7,7 @@ the `demonstration video <http://youtu.be/n2M5F0EjISg>`_.
 
 To create an analysis, start with the following steps:
 
-* Log in to TangeloHub (or first register for an account).
+* Log in to Flow (or first register for an account).
 * Navigate to the Data Management tab.
 * Click the pencil icon on the left for the collection you want
   to add an analysis to. If you do not have edit permissions on

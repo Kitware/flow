@@ -6,14 +6,14 @@ Vagrant Install
 ---------------
 
 A Vagrant install is an easy way to get everything running in a local virtual machine.
-This includes an install of MongoDB, Girder, Romanesco, Apache, and the TangeloHub application.
+This includes an install of MongoDB, Girder, Romanesco, Apache, and the Flow application.
 To get started, install `Vagrant <http://www.vagrantup.com/>`_,
 `VirtualBox <https://www.virtualbox.org/>`_,
 and `Ansible <http://docs.ansible.com/intro_installation.html>`_.
 It's then a matter of cloning this repository and running ``vagrant up``: ::
 
-    git clone https://github.com/Kitware/tangelothub.git
-    cd tangelohub
+    git clone https://github.com/Kitware/flow.git
+    cd flow
     vagrant up
 
 When that completes (it will take some time - get a coffee),
@@ -21,7 +21,7 @@ visit `http://localhost:9080/ <http://localhost:9080/>`_ to visit the interface.
 
 To see the Girder interface, visit `http://localhost:9080/girder <http://localhost:9080/girder>`_.
 
-To create new analyses and save data, login to TangeloHub or Girder with username `girder` and password `girder`.
+To create new analyses and save data, login to Flow or Girder with username `girder` and password `girder`.
 
 To log in to your virtual machine, run: ::
 
@@ -52,16 +52,16 @@ which takes a significant amount of time. To turn off this step, edit
 Apache Installation
 --------------------
 
-The TangeloHub application requires several components, as well as the main
-TangeloHub source.
+The Flow application requires several components, as well as the main
+Flow source.
 
-Check out the TangeloHub repository. As a team developer: ::
+Check out the Flow repository. As a team developer: ::
 
-    git clone git@github.com:Kitware/tangelohub.git
+    git clone git@github.com:Kitware/flow.git
 
 Or as a contributor: ::
 
-    git clone https://github.com/Kitware/tangelohub.git
+    git clone https://github.com/Kitware/flow.git
 
 Next, install `Girder
 <http://girder.readthedocs.org/en/latest/installation.html>`_.  Follow the link
@@ -85,7 +85,7 @@ the ``girder-install`` command: ::
 
 Install an appropriate Girder config file: ::
 
-    sudo cp tangelohub/devops/ansible/girder.local.cfg path/to/site-packages/girder/conf/
+    sudo cp flow/devops/ansible/girder.local.cfg path/to/site-packages/girder/conf/
 
 You can find your ``path/to/site-packages`` with: ::
 
@@ -103,7 +103,7 @@ Start a Romanesco worker with: ::
     sudo pip install -r requirements.txt
     python -m romanesco &
 
-TangeloHub requires npm and Grunt, which should already have been
+Flow requires npm and Grunt, which should already have been
 installed as part of the Girder installation: ::
 
     curl -sL https://deb.nodesource.com/setup | sudo bash -
@@ -112,10 +112,10 @@ installed as part of the Girder installation: ::
 
 Enter the source folder and build out all the npm dependencies: ::
 
-    cd tangelohub
+    cd flow
     npm install
 
-If you modify the TangeloHub source, you can rebuild the app: ::
+If you modify the Flow source, you can rebuild the app: ::
 
     grunt init
     grunt
@@ -128,7 +128,7 @@ If you are using Apache, use something like the following file in the
     Listen 9080
 
     <VirtualHost *:9080>
-        DocumentRoot /path/to/tangelohub/app
+        DocumentRoot /path/to/flow/app
         ProxyPass /girder http://localhost:9000
         ProxyPassReverse /girder http://localhost:9000
     </VirtualHost>
@@ -143,7 +143,7 @@ interface at `http://localhost:9080/girder <http://localhost:9080/girder>`_ to
 enable the Romanesco plugin from the admin console.  A restart of Girder is
 required to fully enable the Romanesco plugin.
 
-Now you should be able to visit the running TangeloHub instance at
+Now you should be able to visit the running Flow instance at
 `http://localhost:9080 <http://localhost:9080>`_.
 
 .. note::

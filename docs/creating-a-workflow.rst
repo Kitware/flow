@@ -5,7 +5,7 @@
 A workflow is an analysis made up of other analyses chained together.
 Similar to script-based analyses, you must first do the following:
 
-* Log in to TangeloHub (or first register for an account).
+* Log in to Flow (or first register for an account).
 * Navigate to the Data Management tab.
 * Click the pencil icon on the left for the collection you want
   to add an analysis to. If you do not have edit permissions on

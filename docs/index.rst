@@ -1,12 +1,12 @@
 ===============================================================
-    TangeloHub - Workflows you can create, run, share, see.
+    Flow - Workflows you can create, run, share, see.
 ===============================================================
 
-Please visit the `TangeloHub homepage`_ or the `GitHub repository`_ for more
+Please visit the `Flow homepage`_ or the `GitHub repository`_ for more
 information.
 
-.. _TangeloHub homepage: http://www.tangelohub.org/tangelohub
-.. _GitHub repository: https://github.com/Kitware/tangelohub
+.. _Flow homepage: http://www.tangelohub.org/tangelohub
+.. _GitHub repository: https://github.com/Kitware/flow
 
 User's Guide
 ============
