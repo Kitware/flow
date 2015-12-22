@@ -15,7 +15,8 @@
             geometry: {inputMode: "dataset"},
             accessor: {inputMode: "line"},
             array: {inputMode: "array"},
-            coordinate: {inputMode: "line"}
+            coordinate: {inputMode: "line"},
+            graph: {inputMode: "dataset"}
         },
 
         initialize: function (settings) {

@@ -1,0 +1,17 @@
+.modal-dialog
+    .modal-content
+        .modal-header
+            button.close(type="button", data-dismiss="modal")
+                span(aria-hidden="true")
+                    | &times;
+                span.sr-only
+                    | Close
+            h4.modal-title
+                | #{prompt}
+        .modal-body
+            .form-inline
+              select.form-control(id="prompt-choice")
+                each choice in choices
+                  option= choice
+        .modal-footer
+            a.th-confirm-button.btn.btn-small() Done

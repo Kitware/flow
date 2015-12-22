@@ -6,23 +6,7 @@
         variableProperties: {
             name: {name: "Name", id: "name", type: "string", format: "text"},
             id: {name: "Id", id: "id", type: "string", format: "text"},
-            type: {name: "Type", id: "type", type: "string", format: "text", domain: [
-                'table:rows',
-                'table:objectlist',
-                'table:r.dataframe',
-                'table:csv',
-                'table:tsv',
-                'table:vtktable',
-                'tree:nested',
-                'tree:newick',
-                'tree:r.apetree',
-                'tree:vtktree',
-                'string:text',
-                'number:number',
-                'image:png.base64',
-                'r:object',
-                'geometry:vtkpolydata'
-            ]},
+            type: {name: "Type", id: "type", type: "string", format: "text"},
             description: {name: "Description", id: "description", type: "string", format: "text"},
             default: {name: "Default", id: "default", type: "string", format: "text"},
             constant: {name: "Fixed", id: "constant", type: "string", format: "text", domain: ["yes", "no"], default: "no"},
@@ -74,6 +58,11 @@
         },
 
         initialize: function (settings) {
+            this.variableProperties.type.domain = _.map(flow.validators,
+                                                        flow.validatorNiceName)
+                .sort(function (a, b) {
+                    return a.localeCompare(b);
+                });
             this.properties = this.properties[settings.mode];
             this.model = settings.model;
             this.workflow = settings.workflow;

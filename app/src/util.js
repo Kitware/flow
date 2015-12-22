@@ -6,20 +6,6 @@
 
         saveLocation: null,
 
-        extensionToType: {
-            phy: {type: 'tree', format: 'newick'},
-            nex: {type: 'tree', format: 'nexus'},
-            'nested-json': {type: 'tree', format: 'nested.json'},
-            csv: {type: 'table', format: 'csv'},
-            tsv: {type: 'table', format: 'tsv'},
-            png: {type: 'image', format: 'png'},
-            rds: {type: 'r', format: 'serialized'},
-            'objectlist-json': {type: 'table', format: 'objectlist.json'},
-            jsonlines: {type: 'table', format: 'jsonlines'},
-            'rows-json': {type: 'table', format: 'rows.json'},
-            'number-json': {type: 'number', format: 'json'}
-        },
-
         webFormat: {
             table: 'rows',
             tree: 'nested',
@@ -30,10 +16,84 @@
             geometry: 'vtkpolydata.serialized'
         },
 
+        validatorNiceName: function (validator) {
+            return validator.type + ':' + validator.format;
+        },
+
+        // entities should be key val
+        // with the key being a UI friendly string
+        // val being the actual object - which is passed to done
+        resolveEntities: function (entities, done) {
+            done = (_.isFunction(done)) ? done : function () {};
+
+            if (_.isEmpty(entities)) {
+                this.bootstrapAlert("danger", "files are unsupported.", 15);
+            } else if (_.size(entities) == 1) {
+                done(_.first(_.values(entities)));
+            } else {
+                $('#th-dialog-container').html(jade.templates.prompt({
+                    prompt: 'What type of data is this?',
+                    choices: _.keys(entities)
+                })).modal();
+
+                $('#th-dialog-container').on('shown.bs.modal', function () {
+                    $('#th-dialog-container').off('shown');
+                });
+
+                $('#th-dialog-container .th-confirm-button').click(function () {
+                    $('#th-dialog-container').modal('hide');
+                    done(entities[$('#prompt-choice').val()]);
+                });
+            }
+        },
+
+        resolveTypeFormats: function (typeFormats, done) {
+            this.resolveEntities(_.object(_.map(typeFormats, flow.validatorNiceName),
+                                          typeFormats), done);
+        },
+
+        resolveExtensions: function (extensions, done) {
+            this.resolveEntities(_.object(extensions, extensions), done);
+        },
+
         setDisplay: function (mode) {
             ["intro", "vis", "editor"].forEach(function (d) {
                 d3.select("#" + d).classed("hidden", mode !== d);
             });
+        },
+
+        // @todo should this be renamed? It actually returns "validators"
+        // Given an extension, like "csv", return the types/formats
+        // that can be associated with it
+        getTypeFormatsFromExtension: function (extension) {
+            return _.filter(this.validators, function (validator) {
+                return (_.has(validator, 'validator') &&
+                        _.has(validator.validator, 'extensions') &&
+                        _.contains(validator.validator.extensions, extension));
+            });
+        },
+
+        // Returns the extensions a given type/format could be stored as.
+        // Both parameters are optional, so called with 0 arguments would
+        // return all extensions registered to any type/format.
+        getExtensionsFromTypeFormat: function (type, format) {
+            var typeFormats = _.filter(this.validators, function (typeFormat) {
+                    return ((_.isUndefined(type) || typeFormat.type === type) &&
+                            (_.isUndefined(format) || typeFormat.format === format));
+                }),
+                validators = _.pluck(typeFormats, 'validator'),
+                extensions = _.filter(_.flatten(_.pluck(validators, 'extensions')),
+                                      function (ext) {
+                                          return ext !== undefined;
+                                      });
+
+            return extensions;
+        },
+
+        getFormatStringsFromType: function (type) {
+            return _.pluck(_.filter(this.validators, function (typeFormat) {
+                return typeFormat.type === type;
+            }), 'format');
         },
 
         // Converts a dataset (either a Girder-backed dataset or dataset
@@ -265,9 +325,12 @@
         // Display a bootstrap-style alert message to the user.
         // Type should be success, info, warning, or danger.
         // Timeout is how long the alert should be display.  Defaults to 5 seconds.
+        // If timeout is false, the alert persists.
         bootstrapAlert: function (type, message, timeout) {
-            timeout = typeof timeout !== 'undefined' ? timeout : 5;
-            timeout *= 1000; // convert to milliseconds
+            if (timeout !== false) {
+                timeout = typeof timeout !== 'undefined' ? timeout : 5;
+                timeout *= 1000; // convert to milliseconds
+            }
 
             $('#alert_placeholder').html('<div id="alert" class="alert alert-' + type + ' alert-dismissable fade in"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span id="alert_message"></span></div>');
             $('#alert_message').text(message);
@@ -276,9 +339,12 @@
                 $('#alert_placeholder').addClass("hidden");
             });
             $('#alert_placeholder').show();
-            window.setTimeout(function () {
-                $('#alert').alert('close');
-            }, timeout);
+
+            if (timeout !== false) {
+                window.setTimeout(function () {
+                    $('#alert').alert('close');
+                }, timeout);
+            }
         },
 
         girderItemInput: function (itemId) {

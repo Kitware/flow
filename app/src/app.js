@@ -7,6 +7,10 @@
 
         visualizationDescriptors: [
             {
+                name: "graph",
+                inputs: [{name: "data", id: "data", type: "graph", format: "networkx.json", inputMode: "dataset"}]
+            },
+            {
                 name: "table",
                 inputs: [
                     {name: "data", id: "data", type: "table", format: "rows", inputMode: "dataset"}
@@ -297,6 +301,8 @@
         },
 
         initialize: function () {
+            var timer;
+
             girder.fetchCurrentUser().success(_.bind(function (user) {
                 if (user) {
                     girder.currentUser = new girder.models.UserModel(_.extend(user, {
@@ -307,6 +313,24 @@
             }, this)).error(_.bind(function () {
                 this.render();
             }, this));
+
+            timer = setTimeout(function () {
+                flow.bootstrapAlert('warning',
+                                    'The Romanesco worker is taking a long time to respond..',
+                                    false);
+            }, 3000);
+
+            girder.restRequest({
+                path: 'romanesco_validator'
+            }).done(_.bind(function (data) {
+                clearTimeout(timer);
+                $('#alert').alert('close');
+
+                flow.validators = data;
+                flow.events.trigger('flow:validators-loaded');
+            }, this)).error(_.bind(function (error) {
+                console.log(error);
+            }));
 
             this.$("#control-panel").controlPanel();
 
@@ -331,17 +355,18 @@
             this.datasets.append = true;
             this.datasets.pageLimit = 100;
             this.datasets.on('add', function (item) {
-                var extension = item.get('name').split('.').slice(-1);
-                item.set(flow.extensionToType[extension]);
+                item.set(flow.getTypeFormatsFromExtension(_.last(item.get('name').split('.'))));
                 item.id = item._id;
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
-            this.datasetsView = new flow.DatasetManagementView({
-                el: this.$('#dataset-management'),
-                datasets: this.datasets
-            });
-            this.datasetsView.render();
+            flow.events.once('flow:validators-loaded', function () {
+                this.datasetsView = new flow.DatasetManagementView({
+                    el: this.$('#dataset-management'),
+                    datasets: this.datasets
+                });
+                this.datasetsView.render();
+            }, this);
 
             this.visualizations = new Backbone.Collection();
             this.visualizationDescriptors.forEach(_.bind(function (vis) {
@@ -369,14 +394,16 @@
                 item.set({collection: flow.collectionForFolder[item.get('folderId')]});
             });
 
-            this.analysesView = new flow.AnalysisManagementView({
-                el: this.$('#analysis-management'),
-                analyses: this.analyses,
-                datasets: this.datasets,
-                visualizations: this.visualizations,
-                presets: this.presets
-            });
-            this.analysesView.render();
+            flow.events.once('flow:validators-loaded', function () {
+                this.analysesView = new flow.AnalysisManagementView({
+                    el: this.$('#analysis-management'),
+                    analyses: this.analyses,
+                    datasets: this.datasets,
+                    visualizations: this.visualizations,
+                    presets: this.presets
+                });
+                this.analysesView.render();
+            }, this);
 
             this.visualizationsView = new flow.VisualizationManagementView({
                 el: this.$('#visualization-management'),
