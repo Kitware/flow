@@ -1,0 +1,11 @@
+{
+    "name": "Flow",
+    "description": "Data science environment",
+    "version": "0.0.1",
+    "dependencies": [
+        "romanesco"
+    ],
+    "grunt": {
+        "file": "Gruntfile.js"
+    }
+}
