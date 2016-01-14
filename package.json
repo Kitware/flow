@@ -1,10 +1,10 @@
 {
-  "name": "tangelo-hub",
+  "name": "Flow",
   "description": "Data science environment",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tangelo-hub/tangelo-hub.git"
+    "url": "git://github.com/Kitware/flow.git"
   },
   "dependencies": {
     "backbone": "1.0.0",

@@ -2,7 +2,8 @@ module.exports = function (grunt) {
     grunt.config.merge({
         plugin: {
             flow: {
-                test: '<%= pluginDir %>/flow/web_client/tests',
+                stylesheets: '<%= pluginDir %>/flow/web_client/stylesheets',
+                tests: '<%= pluginDir %>/flow/web_client/tests',
                 source: '<%= pluginDir %>/flow/web_client/js',
                 templates: '<%= pluginDir %>/flow/web_client/templates',
                 static: '<%= staticDir %>/built/plugins/flow'
@@ -19,6 +20,16 @@ module.exports = function (grunt) {
                     compileDebug: false,
                     namespace: 'jade.templates'
                 }
+            }
+        },
+        stylus: {
+            flow: {
+                files: [
+                    {
+                        src: ['<%= plugin.flow.stylesheets %>/index.styl'],
+                        dest: '<%= staticDir %>/built/plugins/flow/flow.min.css'
+                    }
+                ]
             }
         },
         uglify: {
@@ -84,11 +95,11 @@ module.exports = function (grunt) {
                     },
                     {
                         src: [
-                            '<%= plugin.flow.test %>/lib/jasmine-1.3.1/jasmine.js',
+                            '<%= plugin.flow.tests %>/lib/jasmine-1.3.1/jasmine.js',
                             '<%= pluginDir %>/flow/node_modules/blanket/dist/jasmine/blanket_jasmine.js',
-                            '<%= plugin.flow.test %>/lib/jasmine-1.3.1/ConsoleReporter.js',
-                            '<%= plugin.flow.test %>/lib/blob/Blob.js',
-                            '<%= plugin.flow.test %>/testUtils.js'
+                            '<%= plugin.flow.tests %>/lib/jasmine-1.3.1/ConsoleReporter.js',
+                            '<%= plugin.flow.tests %>/lib/blob/Blob.js',
+                            '<%= plugin.flow.tests %>/testUtils.js'
                         ],
                         dest: '<%= staticDir %>/built/plugins/flow/testing.js'
                     }
@@ -107,7 +118,7 @@ module.exports = function (grunt) {
         var fs = require('fs'),
             jade = require('jade'),
             brand = grunt.option('brand') || 'Flow',
-            buffer = fs.readFileSync(grunt.config.get('plugin.flow.test') + '/testEnv.jadehtml'),
+            buffer = fs.readFileSync(grunt.config.get('plugin.flow.tests') + '/testEnvFlow.jadehtml'),
             globs = grunt.config('uglify.flow.files')[0].src, // @todo rearranging list will cause this to fail
             inputs = [],
             fn;
@@ -115,7 +126,7 @@ module.exports = function (grunt) {
         globs.forEach(function (glob) {
             var files = grunt.file.expand(glob);
             files.forEach(function (file) {
-                inputs.push('/' + file.split('/').slice(1).join('/'));
+                inputs.push('/plugins/' + file.split('/').slice(1).join('/'));
             });
         });
 
@@ -123,24 +134,29 @@ module.exports = function (grunt) {
             client: false,
             pretty: true
         });
-        fs.writeFileSync(grunt.config.get('plugin.flow.static') + '/testEnv.html', fn({
+        fs.writeFileSync(grunt.config.get('plugin.flow.static') + '/testEnvFlow.html', fn({
             brand: brand,
             stylesheets: [
-                '../../test/lib/jasmine-1.3.1/jasmine.css',
-                'lib/bootstrap/css/bootstrap.min.css',
-                'lib/css/d3.dependencyedgebundling.css',
-                'lib/css/d3.edgebundling.css',
-                'app.min.css'
+                '/' + grunt.config('plugin.flow.tests') + '/lib/jasmine-1.3.1/jasmine.css',
+                // 'lib/css/d3.dependencyedgebundling.css',
+                // 'lib/css/d3.edgebundling.css',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/app.min.js'
             ],
             scripts: [
-                grunt.config.get('staticDir') + '/built/plugins/flow/testing.js',
-                grunt.config.get('staticDir') + '/built/plugins/flow/libs.min.js',
-                grunt.config.get('staticDir') + '/built/plugins/flow/ace.min.js',
-                '/girder/static/built/app.min.js',
-                grunt.config.get('staticDir') + '/built/plugins/flow/app.min.js',
-                grunt.config.get('staticDir') + '/built/plugins/flow/main.min.js'
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/testing.js',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/libs.min.js',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/ace.min.js',
+                '/clients/web/static/built/girder.app.min.js',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/app.min.js',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/main.min.js'
             ],
             blanketScripts: inputs
         }));
+    });
+
+    grunt.config.merge({
+        default: {
+            'test-env-html:flow': {}
+        }
     });
 };
