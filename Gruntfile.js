@@ -52,15 +52,10 @@ module.exports = function (grunt) {
                             '<%= plugin.flow.source %>/SVGView.js',
                             '<%= plugin.flow.source %>/plugins/**/*.js',
                             '<%= plugin.flow.source %>/views/**/*.js',
-                            '<%= plugin.flow.source %>/app.js'
-                        ],
-                        dest: '<%= staticDir %>/built/plugins/flow/app.min.js'
-                    },
-                    {
-                        src: [
+                            '<%= plugin.flow.source %>/app.js',
                             '<%= plugin.flow.source %>/main.js'
                         ],
-                        dest: '<%= staticDir %>/built/plugins/flow/main.min.js'
+                        dest: '<%= staticDir %>/built/plugins/flow/app.min.js'
                     },
                     {
                         src: [
@@ -139,16 +134,16 @@ module.exports = function (grunt) {
             stylesheets: [
                 '/' + grunt.config('plugin.flow.tests') + '/lib/jasmine-1.3.1/jasmine.css',
                 // 'lib/css/d3.dependencyedgebundling.css',
-                // 'lib/css/d3.edgebundling.css',
-                '/' + grunt.config('staticDir') + '/built/plugins/flow/app.min.js'
+                // 'lib/css/d3.edgebundling.css', @todo
+                '/clients/web/static/lib/bootstrap/css/bootstrap.min.css',
+                '/clients/web/static/built/girder.app.min.css',
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/plugin.min.css'
             ],
             scripts: [
                 '/' + grunt.config('staticDir') + '/built/plugins/flow/testing.js',
                 '/' + grunt.config('staticDir') + '/built/plugins/flow/libs.min.js',
                 '/' + grunt.config('staticDir') + '/built/plugins/flow/ace.min.js',
-                '/clients/web/static/built/girder.app.min.js',
-                '/' + grunt.config('staticDir') + '/built/plugins/flow/app.min.js',
-                '/' + grunt.config('staticDir') + '/built/plugins/flow/main.min.js'
+                '/clients/web/static/built/girder.app.min.js'
             ],
             blanketScripts: inputs
         }));
@@ -156,7 +151,9 @@ module.exports = function (grunt) {
 
     grunt.config.merge({
         default: {
-            'test-env-html:flow': {}
+            'test-env-html:flow': {
+                depends: ['uglify:flow']
+            }
         }
     });
 };
