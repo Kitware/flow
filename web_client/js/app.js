@@ -303,6 +303,8 @@
         initialize: function () {
             var timer;
 
+            girder.apiRoot = '/api/v1';
+
             girder.fetchCurrentUser().success(_.bind(function (user) {
                 if (user) {
                     girder.currentUser = new girder.models.UserModel(_.extend(user, {
