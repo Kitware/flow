@@ -116,7 +116,10 @@
                                 'image',
                                 'r'], input.get('type'))) {
                     dataset = this.datasets.get(value);
-                    result[id] = _.extend(dataset.toJSON(), flow.girderItemInput(dataset.get('_id')));
+                    result[id] = dataset.toJSON();
+                    if (dataset.get('_id')) {
+                        result[id] = _.extend(result[id], flow.girderItemInput(dataset.get('_id')));
+                    }
                 } else if (input.get('type') === 'string') {
                     result[id] = {type: input.get('type'), format: 'text', data: value};
                 } else if (input.get('type') === 'number') {
