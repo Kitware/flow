@@ -3,8 +3,6 @@
 
     // The main app view
     flow.App = Backbone.View.extend({
-        el: 'body',
-
         visualizationDescriptors: [
             {
                 name: "graph",

@@ -8,11 +8,11 @@ $(function () {
 
     girder.apiRoot = '/api/v1';
     girder.router.enabled(false);
-    app = new flow.App();
-    app.render();
+    app = new flow.App({
+        el: 'body'
+    });
 
     flow.events.once('flow:validators-loaded', function () {
-
         describe('App is running', function () {
             it('app had rendered', function () {
                 runs(function () {

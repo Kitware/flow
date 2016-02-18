@@ -64,7 +64,6 @@
                     return a.localeCompare(b);
                 });
             this.properties = this.properties[settings.mode];
-            this.model = settings.model;
             this.workflow = settings.workflow;
             this.$('.properties').empty();
             this.inputsView = new flow.InputsView({
