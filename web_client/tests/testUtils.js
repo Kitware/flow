@@ -1,7 +1,7 @@
 /**
  * Contains utility functions used in the girder jasmine tests.
  */
-var tangeloHubTest = tangeloHubTest || {};
+var flowTest = flowTest || {};
 
 window.alert = function (msg) {
     // alerts block phantomjs and will destroy us.
@@ -9,9 +9,9 @@ window.alert = function (msg) {
 };
 
 // Timeout to wait for asynchronous actions
-tangeloHubTest.TIMEOUT = 5000;
+flowTest.TIMEOUT = 5000;
 
-tangeloHubTest.createUser = function (login, email, firstName, lastName, password) {
+flowTest.createUser = function (login, email, firstName, lastName, password) {
 
     return function () {
         runs(function () {
@@ -26,7 +26,7 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
             $('#register').click();
         });
 
-        tangeloHubTest.waitForDialog();
+        flowTest.waitForDialog();
         waitsFor(function () {
             return $('input#g-email').length > 0;
         }, 'register dialog to appear');
@@ -39,7 +39,7 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
             $('#g-password,#g-password2').val(password);
             $('#g-register-button').click();
         });
-        tangeloHubTest.waitForLoad();
+        flowTest.waitForLoad();
         waitsFor(function () {
             return $('#name').text() === 'Logged in as ' + firstName + ' ' + lastName;
         }, 'user to be logged in');
@@ -52,7 +52,7 @@ tangeloHubTest.createUser = function (login, email, firstName, lastName, passwor
     };
 };
 
-tangeloHubTest.logout = function () {
+flowTest.logout = function () {
 
     return function () {
         runs(function () {
@@ -75,7 +75,7 @@ tangeloHubTest.logout = function () {
 
 // This assumes that you're logged into the system and on the create collection
 // page.
-tangeloHubTest.createCollection = function (collName, collDesc) {
+flowTest.createCollection = function (collName, collDesc) {
 
     return function () {
 
@@ -113,7 +113,7 @@ tangeloHubTest.createCollection = function (collName, collDesc) {
 /**
  * Wait for a dialog to be visible.
  */
-tangeloHubTest.waitForDialog = function (desc) {
+flowTest.waitForDialog = function (desc) {
     desc = desc ? ' (' + desc + ')' : '';
     waitsFor(function () {
         return $('#g-dialog-container').data('bs.modal') &&
@@ -127,7 +127,7 @@ tangeloHubTest.waitForDialog = function (desc) {
  * backdrop, since it isn't properly removed on phantomJS.  This should not be
  * called on dialogs.
  */
-tangeloHubTest.waitForLoad = function (desc) {
+flowTest.waitForLoad = function (desc) {
     desc = desc ? ' (' + desc + ')' : '';
     waitsFor(function () {
         return $('#g-dialog-container:visible').length === 0;

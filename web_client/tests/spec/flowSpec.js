@@ -25,7 +25,7 @@ $(function () {
 
         describe('Able to create account', function () {
             it('account created',
-                tangeloHubTest.createUser(
+                flowTest.createUser(
                     'admin',
                     'admin@email.com',
                     'Admin',

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TangeloHub</title>
+    <title>Flow</title>
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Droid+Sans:400,700">
     <link rel="stylesheet" href="static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="lib/css/d3.dependencyedgebundling.css">
