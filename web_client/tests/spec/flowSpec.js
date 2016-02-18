@@ -8,11 +8,13 @@ $(function () {
 
     girder.apiRoot = '/api/v1';
     girder.router.enabled(false);
+
     app = new flow.App({
         el: 'body'
     });
 
-    flow.events.once('flow:validators-loaded', function () {
+    var loadTests = function () {
+        var settingSaved = false;
         describe('App is running', function () {
             it('app had rendered', function () {
                 runs(function () {
@@ -23,14 +25,33 @@ $(function () {
 
         describe('Able to create account', function () {
             it('account created',
-               tangeloHubTest.createUser(
-                   'admin',
-                   'admin@email.com',
-                   'Admin',
-                   'Admin',
-                   'adminpassword!'
-               )
-              );
+                tangeloHubTest.createUser(
+                    'admin',
+                    'admin@email.com',
+                    'Admin',
+                    'Admin',
+                    'adminpassword!'
+                )
+            );
+
+            it('disables authorization', function () {
+                runs(function () {
+                    girder.restRequest({
+                        path: 'system/setting',
+                        type: 'PUT',
+                        data: {
+                            key: 'romanesco.require_auth',
+                            value: 'false'
+                        }
+                    }).done(function () {
+                        settingSaved = true;
+                    });
+                });
+
+                waitsFor(function () {
+                    return settingSaved;
+                }, 'setting to be saved');
+            });
         });
 
         describe('Able to create collection', function () {
@@ -198,5 +219,11 @@ $(function () {
                 });
             });
         });
-    });
+    };
+
+    if (flow.validators) {
+        loadTests();
+    } else {
+        flow.events.once('flow:validators-loaded', loadTests);
+    }
 });

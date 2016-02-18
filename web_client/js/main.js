@@ -7,6 +7,5 @@
         window.app = new flow.App({
             el: 'body'
         });
-        window.app.render();
     });
 }(window.flow, window.$, window.girder));

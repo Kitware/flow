@@ -319,5 +319,6 @@
     <script src="static/built/plugins/flow/ace.min.js" charset="utf-8"></script>
     <script src="static/built/app.min.js" charset="utf-8"></script>
     <script src="static/built/plugins/flow/app.min.js" charset="utf-8"></script>
+    <script src="static/built/plugins/flow/main.min.js" charset="utf-8"></script>
   </body>
 </html>

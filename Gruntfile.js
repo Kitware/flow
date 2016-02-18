@@ -52,10 +52,15 @@ module.exports = function (grunt) {
                             '<%= plugin.flow.source %>/SVGView.js',
                             '<%= plugin.flow.source %>/plugins/**/*.js',
                             '<%= plugin.flow.source %>/views/**/*.js',
-                            '<%= plugin.flow.source %>/app.js',
-                            '<%= plugin.flow.source %>/main.js'
+                            '<%= plugin.flow.source %>/app.js'
                         ],
                         dest: '<%= staticDir %>/built/plugins/flow/app.min.js'
+                    },
+                    {
+                        src: [
+                            '<%= plugin.flow.source %>/main.js'
+                        ],
+                        dest: '<%= staticDir %>/built/plugins/flow/main.min.js'
                     },
                     {
                         src: [
