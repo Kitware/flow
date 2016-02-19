@@ -11,14 +11,6 @@ addons:
       - libcurl4-openssl-dev
 
 services: mongodb
-
-env:
-  global:
-    - PYTHONPATH=$TRAVIS_BUILD_DIR/girder:~/vtk-precise64/lib/python2.7/site-packages:~/vtk-precise64/lib
-    - LD_LIBRARY_PATH=~/vtk-precise64/lib
-  matrix:
-    - FLOW_BUILD_R=true R_LIBS_USER=~/R
-    - FLOW_BUILD_R=false
 compiler:
     - gcc
 
@@ -53,34 +45,6 @@ before_install:
     - cmake --version
 
 install:
-    - pwd
-    - echo $PYTHONPATH
-
-    # Build R from source
-    - if ($FLOW_BUILD_R); then
-      wget http://cran.rstudio.com/src/base/R-3/R-3.2.0.tar.gz &&
-      tar xzf R-3.2.0.tar.gz &&
-      cd R-3.2.0 &&
-      ./configure --enable-R-shlib &&
-      make -j3 &&
-      export PATH=$PATH:`pwd`/bin &&
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib:`pwd`/bin &&
-      echo $GITHUB_PAT &&
-      export GITHUB_PAT=2a36e1270e28509d192f4683e1da9cec01c1510d &&
-      which R Rscript &&
-      "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}" &&
-      R --version &&
-      R -e '.libPaths(); sessionInfo()' &&
-      Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))' &&
-      R -e 'options(repos="http://cran.cnr.Berkeley.edu");library(devtools);install_github("hafen/cardoonTools")';
-      fi;
-    # - npm install -g grunt grunt-cli
-
-    # # VTK
-    # - cd $TRAVIS_BUILD_DIR
-    # - wget http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz -O vtk-precise64.tar.gz
-    # - tar xzf vtk-precise64.tar.gz -C ~
-
     # Rerun npm install because of new plugins
     - cd $HOME/girder
     - npm install
