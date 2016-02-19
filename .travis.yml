@@ -57,5 +57,5 @@ script:
   - rm -rf build
   - mkdir build
   - cd build
-  - cmake $HOME/girder
-  - ctest -V -R flow  # Only run flow test(s) for now
+  - cmake -DRUN_CORE_TESTS:BOOL=OFF -DTEST_PLUGINS:STRING=flow -DPYTHON_COVERAGE:BOOL=OFF -DJS_COVERAGE_MINIMUM_PASS:STRING=30 $HOME/girder
+  - ctest -V
