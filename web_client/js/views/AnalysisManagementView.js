@@ -9,8 +9,8 @@
                 var hide = d3.select("#show-script").classed("active");
                 flow.setDisplay(hide ? "vis" : "editor");
                 this.editor.resize();
-                d3.select("#show-script-icon").classed("glyphicon-eye-open", hide);
-                d3.select("#show-script-icon").classed("glyphicon-eye-close", !hide);
+                d3.select("#show-script-icon").classed("icon-eye", hide);
+                d3.select("#show-script-icon").classed("icon-eye-close", !hide);
                 d3.select("#show-script-text").text(hide ? "Show script" : "Hide script");
 
                 if (this.workflowView) {

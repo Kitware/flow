@@ -44,7 +44,7 @@
                 this.containers = [];
                 this.addButton = div.append('button')
                     .attr('class', 'indent btn btn-default');
-                this.addButton.append('span').attr('class', 'glyphicon glyphicon-plus');
+                this.addButton.append('span').attr('class', 'glyphicon icon-plus');
                 this.componentsList = d3.select(this.el).append('div').classed('indent', true);
                 this.addButton.on('click', _.bind(function (d) {
                     var container = this.componentsList.append('div');
@@ -55,7 +55,7 @@
                             this.view.splice(viewIndex, 1);
                             this.containers.splice(viewIndex, 1)[0].remove();
                         }, this))
-                        .append('span').attr('class', 'glyphicon glyphicon-trash');
+                        .append('span').attr('class', 'glyphicon icon-trash');
 
                     this.containers.push(container);
                     this.view.push(new flow.InputsView({

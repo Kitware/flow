@@ -65,7 +65,8 @@ module.exports = function (grunt) {
                     {
                         src: [
                             // @todo get this through npm or something
-                            '<%= plugin.flow.source %>/lib/ace-builds/src-noconflict/ace.js'
+                            '<%= plugin.flow.source %>/lib/ace-builds/src-noconflict/ace.js',
+                            '<%= plugin.flow.source %>/lib/ace-builds/src-noconflict/*.js'
                         ],
                         dest: '<%= staticDir %>/built/plugins/flow/ace.min.js'
                     },

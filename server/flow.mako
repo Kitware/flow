@@ -3,7 +3,8 @@
   <head>
     <title>Flow</title>
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Droid+Sans:400,700">
-    <link rel="stylesheet" href="static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/built/girder.ext.min.css">
+    <link rel="stylesheet" href="static/built/fontello/css/fontello.css">
     <link rel="stylesheet" href="lib/css/d3.dependencyedgebundling.css">
     <link rel="stylesheet" href="lib/css/d3.edgebundling.css">
     <link rel="stylesheet" href="static/built/app.min.css">
@@ -40,7 +41,7 @@
             <div id="dataset-management">
               <div class="row">
                 <div class="col-sm-6">
-                  <div id="upload" class="btn btn-primary"><i class="glyphicon glyphicon-file"></i> Browse or drop files</div>
+                  <div id="upload" class="btn btn-primary"><i class="glyphicon icon-doc-inv"></i> Browse or drop files</div>
                   <div class="form-group hide">
                     <input id="g-files" type="file" multiple="multiple">
                   </div>
@@ -51,7 +52,7 @@
                         <input type="checkbox" class="new-collection-public"> Public
                       </label>
                     </div>
-                    <button class="btn btn-primary new-collection"><span class="glyphicon glyphicon-plus"></span> New collection</button>
+                    <button class="btn btn-primary new-collection"><span class="glyphicon icon-plus"></span> New collection</button>
                   </div>
                 </div>
                 <div class="col-sm-6">
@@ -68,7 +69,7 @@
                       <select class="dataset-format-select form-control"></select>
                       <button class="dataset-download btn btn-primary">Download</button>
                       <button class="dataset-save btn btn-primary hidden">Save to checked collection</button></span>
-                    <button title="Delete dataset" class="dataset-delete btn btn-default"><span class="glyphicon glyphicon-trash"></span></button>
+                    <button title="Delete dataset" class="dataset-delete btn btn-default"><span class="glyphicon icon-trash"></span></button>
                   </div>
                 </div>
               </div>
@@ -93,8 +94,8 @@
                       <input id="analysis-files" type="file" multiple="multiple">
                     </div>
                     <input id="analysis-name" placeholder="Name" type="text" class="form-control">
-                    <button id="analysis-new" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New analysis</button>
-                    <button id="workflow-new" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New workflow</button>
+                    <button id="analysis-new" class="btn btn-primary"><span class="glyphicon icon-plus"></span> New analysis</button>
+                    <button id="workflow-new" class="btn btn-primary"><span class="glyphicon icon-plus"></span> New workflow</button>
                   </div>
                 </div>
               </div>
@@ -106,17 +107,17 @@
             </div>
             <div class="row spacer"></div>
             <div id="analysis-form" class="form-inline">
-              <button id="setup" class="btn btn-primary"><span id="run-icon" class="glyphicon glyphicon-play"></span> Setup and run</button>
+              <button id="setup" class="btn btn-primary"><span id="run-icon" class="glyphicon icon-play"></span> Setup and run</button>
               <button id="analysis-download" class="btn btn-primary">Download</button>
-              <button id="show-script" data-toggle="button" class="btn btn-default"><span id="show-script-icon" class="glyphicon glyphicon-eye-open"></span>&nbsp;<span id="show-script-text">Show script</span></button>
-              <button id="edit" data-toggle="button" class="btn btn-default hidden"><span class="glyphicon glyphicon-edit"></span> Edit</button><span class="edit-controls hidden">
+              <button id="show-script" data-toggle="button" class="btn btn-default"><span id="show-script-icon" class="glyphicon icon-eye"></span>&nbsp;<span id="show-script-text">Show script</span></button>
+              <button id="edit" data-toggle="button" class="btn btn-default hidden"><span class="glyphicon icon-edit"></span> Edit</button><span class="edit-controls hidden">
                 <input placeholder="Name" type="text" class="form-control analysis-edit-name"><span class="analysis-edit-controls">
                   <select id="mode" class="form-control">
                     <option value="r">R</option>
                     <option value="python">Python</option>
                   </select></span>
-                <button id="save" class="btn btn-default"><span class="glyphicon glyphicon-save"></span> Save</button>
-                <button title="Delete analysis" class="delete-analysis btn btn-default"><span class="glyphicon glyphicon-trash"></span></button></span>
+                <button id="save" class="btn btn-default"><span class="glyphicon icon-save"></span> Save</button>
+                <button title="Delete analysis" class="delete-analysis btn btn-default"><span class="glyphicon icon-trash"></span></button></span>
             </div>
             <div class="row spacer edit-controls">
               <div class="col-sm-6 workflow-edit-controls">
@@ -124,12 +125,12 @@
                   <label for="workstep">Select analysis</label>
                   <select id="workstep" class="form-control"></select>
                 </div>
-                <button id="add-workstep" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Add to workflow</button>
+                <button id="add-workstep" class="btn btn-primary"><span class="glyphicon icon-plus"></span>Add to workflow</button>
                 <div class="form-group">
                   <label for="workvis">Select visualization</label>
                   <select id="workvis" class="form-control"></select>
                 </div>
-                <button id="add-workvis" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Add to workflow</button>
+                <button id="add-workvis" class="btn btn-primary"><span class="glyphicon icon-plus"></span>Add to workflow</button>
               </div>
             </div>
             <div class="row edit-controls">
@@ -143,12 +144,12 @@
             <div class="row spacer edit-controls">
               <div class="col-sm-6 analysis-edit-controls">
                 <label>Inputs</label>
-                <button class="btn btn-sm btn-link"><span class="glyphicon glyphicon-plus add-input-variable"></span></button>
+                <button class="btn btn-sm btn-link"><span class="glyphicon icon-plus add-input-variable"></span></button>
                 <div class="input-variables"></div>
               </div>
               <div class="col-sm-6 analysis-edit-controls">
                 <label>Outputs</label>
-                <button class="btn btn-sm btn-link"><span class="glyphicon glyphicon-plus add-output-variable"></span></button>
+                <button class="btn btn-sm btn-link"><span class="glyphicon icon-plus add-output-variable"></span></button>
                 <div class="output-variables"></div>
               </div>
             </div>
@@ -168,8 +169,8 @@
               </div>
             </div>
             <div class="form-inline">
-              <button class="btn btn-primary show-visualization"><span class="glyphicon glyphicon-stats show-icon"></span><span class="show-text"> Update</span></button>
-              <button class="btn btn-primary add-to-presets"><span class="glyphicon glyphicon-plus"></span><span> Add to presets</span></button>
+              <button class="btn btn-primary show-visualization"><span class="glyphicon icon-chart-bar show-icon"></span><span class="show-text"> Update</span></button>
+              <button class="btn btn-primary add-to-presets"><span class="glyphicon icon-plus"></span><span> Add to presets</span></button>
             </div>
             <div class="row">
               <div class="col-sm-6">
@@ -180,8 +181,8 @@
               </div>
             </div>
             <div class="form-inline">
-              <button class="btn btn-primary show-preset"><span class="glyphicon glyphicon-stats"></span><span> Show</span></button>
-              <button class="btn btn-primary save hidden"><span class="glyphicon glyphicon-save"></span><span> Save to checked collection</span></button>
+              <button class="btn btn-primary show-preset"><span class="glyphicon icon-chart-bar"></span><span> Show</span></button>
+              <button class="btn btn-primary save hidden"><span class="glyphicon icon-save"></span><span> Save to checked collection</span></button>
             </div>
             <div class="row">
               <div class="col-sm-12">
@@ -209,9 +210,9 @@
             <pre class="bg-info info-message hidden"></pre>
             <pre class="bg-danger error-message hidden"></pre>
             <div class="inputs"></div>
-            <button class="btn btn-primary run"><span class="glyphicon glyphicon-play run-icon"></span> Run</button>
+            <button class="btn btn-primary run"><span class="glyphicon icon-play run-icon"></span> Run</button>
             <button id="close-analysis-setup" data-dismiss="modal" class="btn btn-default">Close</button>
-            <button id="show-output" data-toggle="button" class="btn btn-default pull-right"><span id="show-output-icon" class="glyphicon glyphicon-eye-open"></span>&nbsp;<span id="show-output-text">Show output log</span></button>
+            <button id="show-output" data-toggle="button" class="btn btn-default pull-right"><span id="show-output-icon" class="glyphicon icon-eye"></span>&nbsp;<span id="show-output-text">Show output log</span></button>
             <pre id="analysis-output" class="hidden"></pre>
           </div>
         </div>
@@ -313,7 +314,7 @@
     <div id="g-dialog-container" class="modal fade"></div>
     <div id="th-dialog-container" class="modal fade"></div>
     <div id="template-container" class="hidden">
-      <div id="variable-template"><span title="Edit variable" class="edit glyphicon glyphicon-pencil"></span>&nbsp;<span class="name"></span>&nbsp;<span title="Delete variable" class="delete glyphicon glyphicon-trash pull-right"></span></div>
+      <div id="variable-template"><span title="Edit variable" class="edit glyphicon icon-pencil"></span>&nbsp;<span class="name"></span>&nbsp;<span title="Delete variable" class="delete glyphicon icon-trash pull-right"></span></div>
     </div>
     <script src="static/built/plugins/flow/libs.min.js" charset="utf-8"></script>
     <script src="static/built/plugins/flow/ace.min.js" charset="utf-8"></script>

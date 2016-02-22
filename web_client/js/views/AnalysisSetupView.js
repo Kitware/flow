@@ -75,8 +75,8 @@
             'click #show-output': function () {
                 var hide = d3.select("#show-output").classed("active");
                 d3.select('#analysis-output').classed("hidden", hide);
-                d3.select("#show-output-icon").classed("glyphicon-eye-open", hide);
-                d3.select("#show-output-icon").classed("glyphicon-eye-close", !hide);
+                d3.select("#show-output-icon").classed("icon-eye", hide);
+                d3.select("#show-output-icon").classed("icon-eye-close", !hide);
                 d3.select("#show-output-text").text(hide ? "Show output log" : "Hide output log");
             },
 

@@ -133,7 +133,7 @@
                 d3.select('#upload')
                     .classed('btn-success', true)
                     .classed('btn-primary', false)
-                    .html('<i class="glyphicon glyphicon-upload"></i> Drop files here');
+                    .html('<i class="glyphicon icon-upload"></i> Drop files here');
             },
 
             'dragleave #upload': function (e) {
@@ -142,7 +142,7 @@
                 d3.select('#upload')
                     .classed('btn-success', false)
                     .classed('btn-primary', true)
-                    .html('<i class="glyphicon glyphicon-file"/></i> Browse or drop files');
+                    .html('<i class="glyphicon icon-doc-inv"/></i> Browse or drop files');
             },
 
             'dragover #upload': function (e) {
@@ -156,7 +156,7 @@
                 d3.select('#upload')
                     .classed('btn-success', false)
                     .classed('btn-primary', true)
-                    .html('<i class="glyphicon glyphicon-file"></i> Browse or drop files');
+                    .html('<i class="glyphicon icon-doc-inv"></i> Browse or drop files');
                 _.each(files, function (file) {
                     this.upload(file);
                 }, this);

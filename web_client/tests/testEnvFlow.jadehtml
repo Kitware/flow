@@ -72,7 +72,7 @@ html(lang="en")
                             .row
                                 .col-sm-6
                                     #upload.btn.btn-primary
-                                        i.glyphicon.glyphicon-file
+                                        i.glyphicon.icon-doc-inv
                                         |  Browse or drop files
                                     .form-group.hide
                                         input#g-files(type="file", multiple="multiple")
@@ -83,7 +83,7 @@ html(lang="en")
                                                 input.new-collection-public(type="checkbox")
                                                 |  Public
                                         button.btn.btn-primary.new-collection
-                                            span.glyphicon.glyphicon-plus
+                                            span.glyphicon.icon-plus
                                             |  New collection
                                 .col-sm-6
                                     ul#collections.list-group
@@ -103,7 +103,7 @@ html(lang="en")
                                             button.dataset-save.btn.btn-primary.hidden
                                                 | Save to checked collection
                                         button.dataset-delete.btn.btn-default(title="Delete dataset")
-                                            span.glyphicon.glyphicon-trash
+                                            span.glyphicon.icon-trash
                 .tab-pane#analysis_tab
                     .container#analysis-management
                         .row
@@ -123,10 +123,10 @@ html(lang="en")
                                             input#analysis-files(type="file", multiple="multiple")
                                         input.form-control#analysis-name(placeholder="Name", type="text")
                                         button.btn.btn-primary#analysis-new
-                                            span.glyphicon.glyphicon-plus
+                                            span.glyphicon.icon-plus
                                             |  New analysis
                                         button.btn.btn-primary#workflow-new
-                                            span.glyphicon.glyphicon-plus
+                                            span.glyphicon.icon-plus
                                             |  New workflow
                         .row.description-container.hide
                             .col-sm-12
@@ -134,17 +134,17 @@ html(lang="en")
                         .row.spacer
                         .form-inline#analysis-form
                             button.btn.btn-primary#setup
-                                span.glyphicon.glyphicon-play#run-icon
+                                span.glyphicon.icon-play#run-icon
                                 |  Setup and run
                             button.btn.btn-primary#analysis-download
                                 | Download
                             button.btn.btn-default#show-script(data-toggle="button")
-                                span.glyphicon.glyphicon-eye-open#show-script-icon
+                                span.glyphicon.icon-eye#show-script-icon
                                 | &nbsp;
                                 span#show-script-text
                                     | Show script
                             button.btn.btn-default.hidden#edit(data-toggle="button")
-                                span.glyphicon.glyphicon-edit
+                                span.glyphicon.icon-edit
                                 |  Edit
                             span.edit-controls.hidden
                                 input.form-control.analysis-edit-name(placeholder="Name", type="text")
@@ -155,10 +155,10 @@ html(lang="en")
                                         option(value="python")
                                             | Python
                                 button.btn.btn-default#save
-                                    span.glyphicon.glyphicon-save
+                                    span.glyphicon.icon-save
                                     |  Save
                                 button.delete-analysis.btn.btn-default(title="Delete analysis")
-                                    span.glyphicon.glyphicon-trash
+                                    span.glyphicon.icon-trash
                         .row.spacer.edit-controls
                             .col-sm-6.workflow-edit-controls
                                 .form-group
@@ -166,14 +166,14 @@ html(lang="en")
                                         | Select analysis
                                     select.form-control#workstep
                                 button.btn.btn-primary#add-workstep
-                                    span.glyphicon.glyphicon-plus
+                                    span.glyphicon.icon-plus
                                     | Add to workflow
                                 .form-group
                                     label(for="workvis")
                                         | Select visualization
                                     select.form-control#workvis
                                 button.btn.btn-primary#add-workvis
-                                    span.glyphicon.glyphicon-plus
+                                    span.glyphicon.icon-plus
                                     | Add to workflow
                         .row.edit-controls
                             .col-sm-12
@@ -185,13 +185,13 @@ html(lang="en")
                                 label
                                     | Inputs
                                 button.btn.btn-sm.btn-link
-                                    span.glyphicon.glyphicon-plus.add-input-variable
+                                    span.glyphicon.icon-plus.add-input-variable
                                 .input-variables
                             .col-sm-6.analysis-edit-controls
                                 label
                                     | Outputs
                                 button.btn.btn-sm.btn-link
-                                    span.glyphicon.glyphicon-plus.add-output-variable
+                                    span.glyphicon.icon-plus.add-output-variable
                                 .output-variables
                 .tab-pane#vis_tab
                     .container#visualization-management
@@ -205,11 +205,11 @@ html(lang="en")
                                 .inputs
                         .form-inline
                             button.btn.btn-primary.show-visualization
-                                span.glyphicon.glyphicon-stats.show-icon
+                                span.glyphicon.icon-chart-bar.show-icon
                                 span.show-text
                                     |  Update
                             button.btn.btn-primary.add-to-presets
-                                span.glyphicon.glyphicon-plus
+                                span.glyphicon.icon-plus
                                 span
                                     |  Add to presets
                         .row
@@ -220,11 +220,11 @@ html(lang="en")
                                     select.form-control.presets
                         .form-inline
                             button.btn.btn-primary.show-preset
-                                span.glyphicon.glyphicon-stats
+                                span.glyphicon.icon-chart-bar
                                 span
                                     |  Show
                             button.btn.btn-primary.save.hidden
-                                span.glyphicon.glyphicon-save
+                                span.glyphicon.icon-save
                                 span
                                     |  Save to checked collection
                         .row
@@ -248,12 +248,12 @@ html(lang="en")
                         pre.bg-danger.error-message.hidden
                         .inputs
                         button.btn.btn-primary.run
-                            span.glyphicon.glyphicon-play.run-icon
+                            span.glyphicon.icon-play.run-icon
                             |  Run
                         button.btn.btn-default#close-analysis-setup(data-dismiss="modal")
                             | Close
                         button.btn.btn-default.pull-right#show-output(data-toggle="button")
-                            span.glyphicon.glyphicon-eye-open#show-output-icon
+                            span.glyphicon.icon-eye#show-output-icon
                             | &nbsp;
                             span#show-output-text
                                 | Show output log
@@ -348,8 +348,8 @@ html(lang="en")
         .modal.fade#th-dialog-container
         .hidden#template-container
             #variable-template
-                span.edit.glyphicon.glyphicon-pencil(title="Edit variable")
+                span.edit.glyphicon.icon-pencil(title="Edit variable")
                 | &nbsp;
                 span.name
                 | &nbsp;
-                span.delete.glyphicon.glyphicon-trash.pull-right(title="Delete variable")
+                span.delete.glyphicon.icon-trash.pull-right(title="Delete variable")
