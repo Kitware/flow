@@ -90,9 +90,16 @@
             return extensions;
         },
 
+        /**
+         * Given a type, return all formats that can be stored on disk (in other words, have
+         * at least 1 extension).
+         **/
         getFormatStringsFromType: function (type) {
             return _.pluck(_.filter(this.validators, function (typeFormat) {
-                return typeFormat.type === type;
+                return (typeFormat.type === type &&
+                        _.has(typeFormat, 'validator') &&
+                        _.has(typeFormat.validator, 'extensions') &&
+                        _.size(typeFormat.validator.extensions) > 0);
             }), 'format');
         },
 
