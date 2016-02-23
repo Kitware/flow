@@ -22,6 +22,22 @@ module.exports = function (grunt) {
                 }
             }
         },
+        concat: {
+            options: {
+                stripBanners: {
+                    block: true,
+                    line: true
+                }
+            },
+            flow: {
+                files: {
+                    '<%= staticDir %>/built/plugins/flow/flow.ext.min.css': [
+                        '<%= plugin.flow.stylesheets %>/d3.dependencyedgebundling.css',
+                        '<%= plugin.flow.stylesheets %>/d3.edgebundling.css'
+                    ]
+                }
+            }
+        },
         stylus: {
             flow: {
                 files: [
@@ -109,6 +125,7 @@ module.exports = function (grunt) {
         },
         default: {
             'jade:flow': {},
+            'concat:flow': {},
             'uglify:flow': {
                 depends: ['jade:flow']
             }

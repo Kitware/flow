@@ -5,10 +5,9 @@
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Droid+Sans:400,700">
     <link rel="stylesheet" href="static/built/girder.ext.min.css">
     <link rel="stylesheet" href="static/built/fontello/css/fontello.css">
-    <link rel="stylesheet" href="lib/css/d3.dependencyedgebundling.css">
-    <link rel="stylesheet" href="lib/css/d3.edgebundling.css">
     <link rel="stylesheet" href="static/built/app.min.css">
     <link rel="stylesheet" href="static/built/plugins/flow/plugin.min.css">
+    <link rel="stylesheet" href="static/built/plugins/flow/flow.ext.min.css">
   </head>
   <body>
     <div style="width:100%;height:100%" class="container">
