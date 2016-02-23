@@ -1,3 +1,17 @@
+- name: r | add R repository
+  shell:
+    echo 'deb http://cran.rstudio.com/bin/linux/ubuntu trusty/' | sudo tee /etc/apt/sources.list.d/cran.list
+    creates=/etc/apt/sources.list.d/cran.list
+  sudo: yes
+
+- name: r | fetch R signing key
+  command: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  sudo: yes
+
+- name: r | update apt cache
+  apt: update_cache=yes
+  sudo: yes
+
 - name: install required libraries
   apt: pkg={{ item }} state=latest
   sudo: yes
@@ -9,6 +23,8 @@
     - libcurl4-openssl-dev
     - libx11-dev
     - xvfb
+    - r-base
+    - r-base-dev
 
 
 - name: start xvfb server
@@ -17,19 +33,6 @@
   poll: 0
   sudo: yes
 
-# - name: r | add R repository
-#   shell:
-#     echo 'deb http://cran.rstudio.com/bin/linux/ubuntu precise/' | sudo tee /etc/apt/sources.list.d/cran.list
-#     creates=/etc/apt/sources.list.d/cran.list
-#   sudo: yes
-
-# - name: r | fetch R signing key
-#   command: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-#   sudo: yes
-
-# - name: r | update apt cache
-#   apt: update_cache=yes
-#   sudo: yes
 
 - name: check for package upgrades
   command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "update.packages(checkBuilt=TRUE, ask=FALSE, repos='http://cran.cnr.Berkeley.edu')"
@@ -45,7 +48,7 @@
     - geiger
     - nlme
     - codetools
-#    - devtools
+    - devtools
     - diversitree
     - phytools
     - dplyr
@@ -53,12 +56,12 @@
     DISPLAY: :7
 
 
-# - name: install github packages
-#   command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "parts<-unlist(strsplit('{{ item }}', '/'));options(repos='http://cran.cnr.Berkeley.edu');library(devtools);install_github(parts[2], parts[1])"
-#   sudo: yes
-#   with_items:
-#     - hafen/cardoonTools
-#     - tangelo-hub/romanescoTools
-#     - arborworkflows/aRbor
-#   environment:
-#     DISPLAY: :7
+- name: install github packages
+  command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "parts<-unlist(strsplit('{{ item }}', '/'));options(repos='http://cran.cnr.Berkeley.edu');library(devtools);install_github(parts[2], parts[1])"
+  sudo: yes
+  with_items:
+    - hafen/cardoonTools
+    - tangelo-hub/romanescoTools
+    - arborworkflows/aRbor
+  environment:
+    DISPLAY: :7
