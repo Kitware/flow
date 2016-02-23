@@ -1,7 +1,0 @@
-Listen 9080
-
-<VirtualHost *:9080>
-    DocumentRoot /vagrant/app
-    ProxyPass /girder http://localhost:9000
-    ProxyPassReverse /girder http://localhost:9000
-</VirtualHost>
