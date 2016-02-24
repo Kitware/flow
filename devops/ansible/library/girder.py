@@ -465,7 +465,7 @@ class GirderClientModule(GirderClient):
 
     # Exclude these methods from both 'raw' mode
     _include_methods = ['get', 'put', 'post', 'delete',
-                        'plugins', 'user', 'assetstore']
+                        'plugins', 'user', 'assetstore', 'setting']
 
     _debug = True
 
@@ -596,6 +596,28 @@ class GirderClientModule(GirderClient):
                 self.changed = True
 
         return ret
+
+    def setting(self, key, value=None):
+        setting_value = self.get('system/setting', parameters={
+            'key': key
+        })
+
+        if self.module.params['state'] == 'present' and setting_value is None:
+            self.put('system/setting', parameters={
+                'key': key,
+                'value': value
+            })
+            self.changed = True
+        elif self.module.params['state'] == 'present':
+            self.changed = False
+        elif self.module.params['state'] == 'absent' and setting_value is None:
+            self.changed = False
+        elif self.module.params['state'] == 'absent':
+            self.delete('system/setting', parameters={
+                'key': key
+            })
+            self.changed = True
+
 
     def user(self, login, password, firstName=None,
              lastName=None, email=None, admin=False):

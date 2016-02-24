@@ -23,16 +23,6 @@
         mode: 0775
       sudo: yes
 
-    - name: r | update apt cache
-      apt: update_cache=yes
-      sudo: yes
-
-    - name: r | install required libraries
-      apt: pkg={{ item }} state=latest
-      sudo: yes
-      with_items:
-        - r-base-dev
-
   roles:
     - role: arbor
       sudo: yes
@@ -55,7 +45,7 @@
       sudo: yes
 
     - role: flow
-      flow_version: "2847a025f244fcda0ea8351154726230f7fa18a3"
+      flow_version: "51d5b97"
       sudo: yes
 
   tasks:
@@ -136,3 +126,13 @@
         password: "letmein"
         put:
           path: "system/restart"
+
+    - name: Disable romanesco.require_auth
+      girder:
+        port: 8080
+        username: "admin"
+        password: "letmein"
+        setting:
+          key: "romanesco.require_auth"
+          value: "false"
+        state: present
