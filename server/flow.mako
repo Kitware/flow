@@ -12,7 +12,7 @@
   <body>
     <div style="width:100%;height:100%" class="container">
       <div id="intro">
-        <div class="row text-center"><img src="static/img/TangeloHub.png" alt="Logo" class="img-rounded"></div>
+        <div class="row text-center"><img src="static/img/${brand}.png" alt="Logo" class="img-rounded"></div>
         <div class="row">
           <p class="lead text-center">Use the panel below to visualize, analyze, or manage your data.</p>
         </div>
