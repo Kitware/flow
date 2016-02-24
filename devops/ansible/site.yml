@@ -45,7 +45,7 @@
       sudo: yes
 
     - role: flow
-      flow_version: "51d5b97"
+      flow_version: "transition-to-girder-plugin"
       sudo: yes
 
   tasks:
@@ -126,6 +126,10 @@
         password: "letmein"
         put:
           path: "system/restart"
+
+    - wait_for:
+        port: 8080
+        delay: 5
 
     - name: Disable romanesco.require_auth
       girder:
