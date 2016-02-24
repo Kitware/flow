@@ -9,6 +9,16 @@ module.exports = function (grunt) {
                 static: '<%= staticDir %>/built/plugins/flow'
             }
         },
+        copy: {
+            brands: {
+                files: [{
+                    expand: true,
+                    flatten: true,
+                    src: '<%= pluginDir %>/flow/web_client/img/*',
+                    dest: '<%= staticDir %>/img/'
+                }]
+            }
+        },
         jade: {
             flow: {
                 files: [{
@@ -126,6 +136,7 @@ module.exports = function (grunt) {
         default: {
             'jade:flow': {},
             'concat:flow': {},
+            'copy:brands': {},
             'uglify:flow': {
                 depends: ['jade:flow']
             }

@@ -9,7 +9,7 @@ html(lang="en")
         .container(style="width:100%;height:100%")
             #intro
                 .row.text-center
-                    img(src="brands/#{brand}.png", alt="Logo", class="img-rounded")
+                    img(src="static/img/#{brand}.png", alt="Logo", class="img-rounded")
                 .row
                     p.lead.text-center
                         | Use the panel below to visualize, analyze, or manage your data.
