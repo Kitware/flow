@@ -14,16 +14,16 @@ Vagrant.configure(2) do |config|
 
   config.vm.network "forwarded_port", guest: 8080, host: 8080
 
-  config.vm.define "flowgrant" do |node| end
+  config.vm.define "flow" do |node| end
 
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "vvvv"
 
     ansible.groups = {
-      "all" => ['flowgrant'],
-      "girder" => ['flowgrant'],
-      "mongo" => ['flowgrant'],
-      "rabbitmq" => ['flowgrant']
+      "all" => ['flow'],
+      "girder" => ['flow'],
+      "mongo" => ['flow'],
+      "rabbitmq" => ['flow']
     }
 
     ansible.extra_vars = {
