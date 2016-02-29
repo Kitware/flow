@@ -11,7 +11,7 @@ if len(sys.argv) < 2:
 arbor_collections_path = sys.argv[1]
 
 # Authenticate with Girder.
-c = GirderClient(host='localhost', port=9000)
+c = GirderClient(host='localhost', port=8080)
 c.authenticate('girder', 'girder')
 
 # Recursively search the specified directory for .json files.

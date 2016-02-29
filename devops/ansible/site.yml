@@ -39,7 +39,7 @@
     - role: girder
       mongodb_ansible_group: girder
       girder_admin_user: girder
-      girder_admin_password: letmein
+      girder_admin_password: girder
       girder_version: "master"
       state: started
       sudo: yes
@@ -77,23 +77,23 @@
         port: 8080
         delay: 5
 
-    - name: Create an 'Admin' user
+    - name: Create an 'Girder' user
       girder:
         port: 8080
         user:
-          firstName: "Admin"
-          lastName: "Admin"
-          login: "admin"
-          password: "letmein"
-          email: "admin@example.com"
+          firstName: "Girder"
+          lastName: "Girder"
+          login: "girder"
+          password: "girder"
+          email: "girder@example.com"
           admin: yes
         state: present
 
     - name: Activate Plugins
       girder:
         port: 8080
-        username: "admin"
-        password: "letmein"
+        username: "girder"
+        password: "girder"
         plugins:
           - romanesco
           - flow
@@ -109,8 +109,8 @@
     - name: Create filesystem assetstore
       girder:
         port: 8080
-        username: "admin"
-        password: "letmein"
+        username: "girder"
+        password: "girder"
         assetstore:
           name: "Filesystem Assetstore"
           type: "filesystem"
@@ -122,8 +122,8 @@
     - name: Restart Flow
       girder:
         port: 8080
-        username: "admin"
-        password: "letmein"
+        username: "girder"
+        password: "girder"
         put:
           path: "system/restart"
 
@@ -134,8 +134,8 @@
     - name: Disable romanesco.require_auth
       girder:
         port: 8080
-        username: "admin"
-        password: "letmein"
+        username: "girder"
+        password: "girder"
         setting:
           key: "romanesco.require_auth"
           value: "false"

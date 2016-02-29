@@ -17,9 +17,9 @@ It's then a matter of cloning this repository and running ``vagrant up``: ::
     vagrant up
 
 When that completes (it will take some time - get a coffee),
-visit `http://localhost:9080/ <http://localhost:9080/>`_ to visit the interface.
+visit `http://localhost:8080/ <http://localhost:8080/>`_ to visit the interface.
 
-To see the Girder interface, visit `http://localhost:9080/girder <http://localhost:9080/girder>`_.
+To see the Girder interface, visit `http://localhost:8080/girder <http://localhost:8080/girder>`_.
 
 To create new analyses and save data, login to Flow or Girder with username `girder` and password `girder`.
 
