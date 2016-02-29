@@ -33,6 +33,14 @@
                 ]
             },
             {
+                name: "barchart",
+                inputs: [
+                    {name: "data", id: "data", type: "table", format: "objectlist"},
+                    {name: "x", id: "x", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}},
+                    {name: "y", id: "y", type: "accessor", format: "text", domain: {input: "data", format: "column.names"}}
+                ]
+            },
+            {
                 name: "dendrogram",
                 inputs: [
                     {name: "data", id: "data", type: "tree", format: "nested"},
