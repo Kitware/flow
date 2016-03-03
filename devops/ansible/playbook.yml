@@ -86,8 +86,14 @@
       - pip
       - pep8
       - virtualenv
-      - girder
-      - girder_client
+
+  - name: install pinned girder
+    sudo: yes
+    pip: name=girder version=1.4.1 state=present
+
+  - name: installed pinned girder_client
+    sudo: yes
+    pip: name=girder_client version=1.1.1 state=present
 
   - name: girder | install girder web client
     command: girder-install web
@@ -114,7 +120,11 @@
       - r-base-dev
 
   - name: romanesco | checkout romanesco
-    git: repo=https://github.com/Kitware/romanesco.git dest=/vagrant/romanesco update=yes
+    git: 
+      repo=https://github.com/Kitware/romanesco.git
+      dest=/vagrant/romanesco
+      version='4c094ca9448ee805a8b7a97be5f5a0981acf579b'
+      update=yes
 
   - name: romanesco | create worker local config file
     copy: src=worker.local.cfg dest=/vagrant/romanesco/romanesco/worker.local.cfg owner=root group=staff mode=0644
