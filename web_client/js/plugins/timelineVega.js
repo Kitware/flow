@@ -32,7 +32,7 @@
         });
 
         function resize() {
-            vg.parse.spec("timeline.json", function (chart) {
+            vg.parse.spec("static/built/plugins/flow/extras/timeline.json", function (chart) {
                 console.log($(that).width() + "," + $(that).height());
                 if ($(that).width() > 0 && $(that).height() > 0) {
                     chart(opt).width($(that).width() - 70).height($(that).height() - 70).update();

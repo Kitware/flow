@@ -17,6 +17,14 @@ module.exports = function (grunt) {
                     src: '<%= pluginDir %>/flow/web_client/img/*',
                     dest: '<%= staticDir %>/img/'
                 }]
+            },
+            extras: {
+                files: [{
+                    expand: true,
+                    flatten: true,
+                    src: '<%= pluginDir %>/flow/web_client/js/extras/*',
+                    dest: '<%= staticDir %>/built/plugins/flow/extras/'
+                }]
             }
         },
         jade: {
