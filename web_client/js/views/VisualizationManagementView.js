@@ -282,7 +282,7 @@
                 // TODO: convert back to the dataset's original format.
                 // (For now we just assume everything is CSV...)
                 blob = new Blob([newDataValue]);
-                flow.girderUpload(blob, dataset.get("name"), null, dataset.id);
+                flow.girderUpload(blob, dataset.get("name"), null, dataset.id || dataset.get('id'));
                 // Also TODO: check for confirmation from Girder that
                 // this new version was actually saved successfully.
             }
