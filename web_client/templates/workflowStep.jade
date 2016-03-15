@@ -9,7 +9,7 @@
 - var isTask = !step.visualization && !step.isOutput && !step.isInput;
 - var editClass = isTask ? 'refresh-step' : '';
 - var editCursor = isTask ? 'pointer' : '';
-- var editIcon = isTask ? '\ue031' : '';
+- var editIcon = isTask ? '\u27f3' : '';
 - var portOffset = 20;
 
 // visibility="hidden",
@@ -54,9 +54,8 @@ g.step(transform="translate(#{step.x},#{step.y})")
         text(
             width=10,
             height=10,
-            x=5,
-            y=18,
-            font-family="Glyphicons Halflings",
+            x=10,
+            y=15,
             class=editClass,
             visibility="hidden",
             style="cursor:#{editCursor}"
