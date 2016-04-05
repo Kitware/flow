@@ -3,7 +3,7 @@
     "description": "Data science environment",
     "version": "0.0.1",
     "dependencies": [
-        "romanesco"
+        "worker"
     ],
     "grunt": {
         "file": "Gruntfile.js"
