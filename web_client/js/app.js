@@ -316,12 +316,12 @@
 
             timer = setTimeout(function () {
                 flow.bootstrapAlert('warning',
-                                    'The Romanesco worker is taking a long time to respond..',
+                                    'The Flow worker is taking a long time to respond..',
                                     false);
             }, 3000);
 
             girder.restRequest({
-                path: 'romanesco_validator'
+                path: 'flow_validator'
             }).done(_.bind(function (data) {
                 clearTimeout(timer);
                 $('#alert').alert('close');
