@@ -153,7 +153,7 @@
                     done(null, new Backbone.Model({type: 'image', format: 'png', data: byteArray}));
                     return;
                 }
-                uri = 'item/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
+                uri = 'item/flow/' + type + '/' + dataset.get('format') + '/' + format;
 
                 girder.restRequest({
                     path: uri,

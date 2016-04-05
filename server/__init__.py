@@ -1,3 +1,4 @@
+import cherrypy
 import os
 from girder.plugins.worker import getCeleryApp
 from girder.utility.model_importer import ModelImporter
@@ -6,6 +7,24 @@ from girder.utility.webroot import Webroot
 from girder.api import access
 from girder.api.rest import Resource
 from girder.api.describe import Description
+
+
+@access.public
+def flowConvertData(inputType, inputFormat, outputFormat, params):
+    content = cherrypy.request.body.read()
+
+    asyncResult = getCeleryApp().send_task('girder_worker.convert', [
+        inputType,
+        {"data": content, "format": inputFormat},
+        {"format": outputFormat}
+    ])
+
+    return asyncResult.get()
+flowConvertData.description = (
+    Description('Convert data from one format to another')
+    .param('inputType', 'The type of the input data')
+    .param('inputFormat', 'The format of the input data')
+    .param('outputFormat', 'The desired output format'))
 
 
 class Validator(Resource):
@@ -51,3 +70,7 @@ def load(info):
                 }
 
     info['apiRoot'].flow_validator = Validator(getCeleryApp())
+    info['apiRoot'].item.route(
+        'POST',
+        ('flow', ':inputType', ':inputFormat', ':outputFormat'),
+        flowConvertData)

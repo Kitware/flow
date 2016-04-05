@@ -54,7 +54,7 @@
 
                         // Stream console output from this analysis.
                         this.eventSource = new window.EventSource(
-                            girder.apiRoot + '/item/' + this.model.get('_id') + '/romanesco/' +
+                            girder.apiRoot + '/item/' + this.model.get('_id') + '/flow/' +
                             this.taskId + '/output?token=' +
                             girder.cookie.find('girderToken'));
 
