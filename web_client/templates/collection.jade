@@ -1,0 +1,25 @@
+.collection
+    span.active-state.glyphicon.icon-eye(
+        title="Toggle collection visibility"
+        style="cursor:pointer"
+        class=model.get('active') ? "" : "disabled-icon"
+    )
+    | &nbsp;
+    span.save-location.glyphicon.icon-pencil(
+        title="Save to this collection"
+        style="cursor:pointer"
+        class=[
+            model.get('saveLocation') ? "" : "disabled-icon",
+            model.get('_accessLevel') > 0 ? "" : "hidden"
+        ]
+    )
+    | &nbsp;
+    span.name= model.get('name')
+    span.pull-right
+        span.delete.glyphicon.icon-trash(
+            title="Delete this collection"
+            style="cursor:pointer"
+            class=[
+                model.get('_accessLevel') > 1 ? "" : "hidden"
+            ]
+        )

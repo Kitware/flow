@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+source "{{venv_root}}/bin/activate"
+
+export PYTHONPATH={{ ansible_env.HOME}}/vtk-precise64/lib/python2.7/site-packages:{{ ansible_env.HOME}}/vtk-precise64/lib:{{ romanesco_install_root }}
+export LD_LIBRARY_PATH={{ ansible_env.HOME}}/vtk-precise64/lib
+
+cd {{ romanesco_install_root }}
+python -m romanesco

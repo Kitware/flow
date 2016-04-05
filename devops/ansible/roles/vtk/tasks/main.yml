@@ -1,0 +1,5 @@
+- name: download
+  get_url: dest={{ ansible_env.HOME}}/vtk.tar.gz url=http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz
+
+- name: extract
+  unarchive: copy=no src={{ ansible_env.HOME}}/vtk.tar.gz dest={{ ansible_env.HOME}}

@@ -5,69 +5,57 @@ python:
 sudo: false
 
 addons:
-    apt:
-        packages:
-            - gfortran
-            - libcurl4-openssl-dev
+  apt:
+    packages:
+      - gfortran
+      - libcurl4-openssl-dev
 
 services: mongodb
-env: PYTHONPATH=$TRAVIS_BUILD_DIR/girder:~/vtk-precise64/lib/python2.7/site-packages:~/vtk-precise64/lib R_LIBS_USER=~/R LD_LIBRARY_PATH=~/vtk-precise64/lib
 compiler:
     - gcc
 
 before_install:
     - vmstat 1 1
-    - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"
+    - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"  # not sure why this is necessary
 
-install:
-    - pwd
-    - echo $PYTHONPATH
-
-    # Build R from source
-    - wget http://cran.rstudio.com/src/base/R-3/R-3.2.0.tar.gz
-    - tar xzf R-3.2.0.tar.gz
-    - cd R-3.2.0
-    - ./configure --enable-R-shlib
-    - make -j3
-    - export PATH=$PATH:`pwd`/bin
-    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib:`pwd`/bin
-    - echo $GITHUB_PAT
-    - export GITHUB_PAT=2a36e1270e28509d192f4683e1da9cec01c1510d
-    - which R Rscript
-    - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
-    - R --version
-    - R -e '.libPaths(); sessionInfo()'
-    - Rscript -e 'install.packages(c("ape","geiger","nlme","devtools"), repos=c("http://cran.cnr.Berkeley.edu"))'
-    - R -e 'options(repos="http://cran.cnr.Berkeley.edu");library(devtools);install_github("hafen/cardoonTools")'
-
-    - pip install tangelo==0.7.0 pep8 coverage
-    - npm install -g grunt grunt-cli
-
-    # Girder
-    - cd $TRAVIS_BUILD_DIR
+    # Setup/install Girder
+    - cd $HOME
     - git clone https://github.com/girder/girder.git
     - cd girder
-    - pip install -r requirements.txt
+    - pip install -r requirements.txt -r requirements-dev.txt
     - npm install
 
-    # VTK
-    - cd $TRAVIS_BUILD_DIR
-    - wget http://midas3.kitware.com/midas/download/bitstream/366970/vtk-precise64-118242.tar.gz -O vtk-precise64.tar.gz
-    - tar xzf vtk-precise64.tar.gz -C ~
-
-    # Romanesco
-    - cd $TRAVIS_BUILD_DIR/girder/plugins
+    # Setup/install Romanesco
+    - cd $HOME/girder/plugins
     - git clone https://github.com/Kitware/romanesco.git
-    - cd $TRAVIS_BUILD_DIR/girder/plugins/romanesco
+    - cd $HOME/girder/plugins/romanesco
     - pip install -r requirements.txt
+    - pip install -e .
+
+    - echo "$TRAVIS_BUILD_DIR"
+    - pwd
+    - cp -r $TRAVIS_BUILD_DIR $HOME/girder/plugins
+    - ls -al $HOME/girder/plugins
+    - ls -al $HOME/girder/plugins/flow
+
+    # Need newer CMake because of external data
+    - cd $HOME
+    - curl -L "http://cmake.org/files/v3.1/cmake-3.1.0-Linux-x86_64.tar.gz" | gunzip -c | tar x
+    - cd cmake-*/bin && export PATH="${PWD}:${PATH}"
+    - cmake --version
+
+install:
+    # Rerun npm install because of new plugins
+    - cd $HOME/girder
+    - npm install
+
+    # Start romanesco
     - python -m romanesco &
 
-    # TangeloHub
-    - cd $TRAVIS_BUILD_DIR
-    - npm install
-
 script:
-    - mkdir build
-    - cd build
-    - cmake ..
-    - ctest -VV -S ../cmake/travis_continuous.cmake
+  - cd $HOME
+  - rm -rf build
+  - mkdir build
+  - cd build
+  - cmake -DRUN_CORE_TESTS:BOOL=OFF -DTEST_PLUGINS:STRING=flow -DPYTHON_COVERAGE:BOOL=OFF -DJS_COVERAGE_MINIMUM_PASS:STRING=30 $HOME/girder && make
+  - ctest -V
