@@ -40,7 +40,7 @@ $(function () {
                         path: 'system/setting',
                         type: 'PUT',
                         data: {
-                            key: 'romanesco.require_auth',
+                            key: 'flow.require_auth',
                             value: 'false'
                         }
                     }).done(function () {

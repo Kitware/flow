@@ -2,13 +2,14 @@ language: python
 python:
     - "2.7"
 
-sudo: false
+sudo: true
 
 addons:
   apt:
     packages:
       - gfortran
       - libcurl4-openssl-dev
+      - rabbitmq-server
 
 services: mongodb
 compiler:
@@ -25,10 +26,10 @@ before_install:
     - pip install -r requirements.txt -r requirements-dev.txt
     - npm install
 
-    # Setup/install Romanesco
+    # Setup/install Girder Worker
     - cd $HOME/girder/plugins
-    - git clone https://github.com/Kitware/romanesco.git
-    - cd $HOME/girder/plugins/romanesco
+    - git clone https://github.com/girder/girder_worker.git
+    - cd $HOME/girder/plugins/girder_worker
     - pip install -r requirements.txt
     - pip install -e .
 
@@ -49,8 +50,11 @@ install:
     - cd $HOME/girder
     - npm install
 
-    # Start romanesco
-    - python -m romanesco &
+    # Start RMQ
+    - sudo service rabbitmq-server start
+
+    # Start girder_worker
+    - python -m girder_worker &
 
 script:
   - cd $HOME
