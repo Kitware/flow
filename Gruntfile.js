@@ -2,10 +2,10 @@ module.exports = function (grunt) {
     grunt.config.merge({
         plugin: {
             flow: {
-                stylesheets: '<%= pluginDir %>/flow/web_client/stylesheets',
-                tests: '<%= pluginDir %>/flow/web_client/tests',
-                source: '<%= pluginDir %>/flow/web_client/js',
-                templates: '<%= pluginDir %>/flow/web_client/templates',
+                stylesheets: '<%= pluginDir %>/flow/web_external/stylesheets',
+                tests: '<%= pluginDir %>/flow/web_external/tests',
+                source: '<%= pluginDir %>/flow/web_external/js',
+                templates: '<%= pluginDir %>/flow/web_external/templates',
                 static: '<%= staticDir %>/built/plugins/flow'
             }
         },
@@ -14,7 +14,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     flatten: true,
-                    src: '<%= pluginDir %>/flow/web_client/img/*',
+                    src: '<%= pluginDir %>/flow/web_external/img/*',
                     dest: '<%= staticDir %>/img/'
                 }]
             },
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     flatten: true,
-                    src: '<%= pluginDir %>/flow/web_client/js/extras/*',
+                    src: '<%= pluginDir %>/flow/web_external/js/extras/*',
                     dest: '<%= staticDir %>/built/plugins/flow/extras/'
                 }]
             }
@@ -143,6 +143,7 @@ module.exports = function (grunt) {
         },
         default: {
             'jade:flow': {},
+            'stylus:flow': {},
             'concat:flow': {},
             'copy:brands': {},
             'uglify:flow': {
@@ -179,7 +180,7 @@ module.exports = function (grunt) {
                 // 'lib/css/d3.edgebundling.css', @todo
                 '/clients/web/static/lib/bootstrap/css/bootstrap.min.css',
                 '/clients/web/static/built/girder.app.min.css',
-                '/' + grunt.config('staticDir') + '/built/plugins/flow/plugin.min.css'
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/flow.min.css'
             ],
             scripts: [
                 '/' + grunt.config('staticDir') + '/built/plugins/flow/testing.js',
