@@ -116,7 +116,7 @@
 
             if (dataIsURI && dataset.id) {
                 dataset.set({
-                    data: girder.apiRoot + '/item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format
+                    data: girder.apiRoot + '/item/' + dataset.id + '/flow/' + type + '/' + dataset.get('format') + '/' + format
                 });
                 if (girder.currentUser) {
                     dataset.set({data: dataset.get('data') + '?token=' + girder.currentUser.get('token')});
@@ -168,7 +168,7 @@
                     done(error);
                 }, this));
             } else {
-                uri = 'item/' + dataset.id + '/romanesco/' + type + '/' + dataset.get('format') + '/' + format;
+                uri = 'item/' + dataset.id + '/flow/' + type + '/' + dataset.get('format') + '/' + format;
                 girder.restRequest({
                     path: uri,
                     error: null
@@ -184,7 +184,7 @@
         performAnalysis: function (analysisId, inputs, outputs, done) {
             var bindings = {inputs: inputs, outputs: outputs};
             girder.restRequest({
-                path: 'item/' + analysisId + '/romanesco',
+                path: 'item/' + analysisId + '/flow',
                 type: 'POST',
                 data: JSON.stringify(bindings),
                 contentType: 'application/json',

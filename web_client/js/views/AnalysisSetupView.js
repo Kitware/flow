@@ -127,14 +127,14 @@
 
         checkTaskResult: function () {
             girder.restRequest({
-                path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/status',
+                path: 'item/' + this.model.get('_id') + '/flow/' + this.taskId + '/status',
                 error: null
             }).done(_.bind(function (result) {
                 console.log(result.status);
 
                 if (result.status === 'SUCCESS') {
                     girder.restRequest({
-                        path: 'item/' + this.model.get('_id') + '/romanesco/' + this.taskId + '/result',
+                        path: 'item/' + this.model.get('_id') + '/flow/' + this.taskId + '/result',
                         error: null
                     }).done(_.bind(function (data) {
                         var result = data.result,
