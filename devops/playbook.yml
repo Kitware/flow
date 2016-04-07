@@ -26,31 +26,31 @@
     with_items:
       - r-base-dev
 
-  - name: romanesco | checkout romanesco
-    git: repo=https://github.com/Kitware/romanesco.git dest=/vagrant/romanesco update=yes
+  - name: girder_worker | checkout girder_worker
+    git: repo=https://github.com/girder/girder_worker.git dest=/vagrant/girder_worker update=yes
 
-  - name: romanesco | create worker local config file
-    copy: src=worker.local.cfg dest=/vagrant/romanesco/romanesco/worker.local.cfg owner=root group=staff mode=0644
+  - name: girder_worker | create worker local config file
+    copy: src=worker.local.cfg dest=/vagrant/girder_worker/girder_worker/worker.local.cfg owner=root group=staff mode=0644
     sudo: yes
 
-  - name: romanesco | install all required pip packages
-    command: python /vagrant/romanesco/scripts/install_requirements.py
+  - name: girder_worker | install all required pip packages
+    command: python /vagrant/girder_worker/scripts/install_requirements.py
     sudo: yes
 
-  - name: romanesco | install girder plugin (also builds web client)
-    command: girder-install plugin -f -s /vagrant/romanesco
+  - name: girder_worker | install girder plugin (also builds web client)
+    command: girder-install plugin -f -s /vagrant/girder_worker
     sudo: yes
     notify:
       - restart girder
 
-  - name: romanesco | copy config file to /etc/init/
-    copy: src=romanesco.conf dest=/etc/init/romanesco.conf owner=root group=staff mode=0644
+  - name: girder_worker | copy config file to /etc/init/
+    copy: src=girder_worker.conf dest=/etc/init/girder_worker.conf owner=root group=staff mode=0644
     sudo: yes
     notify:
-      - restart romanesco
+      - restart girder_worker
 
-  - name: restart romanesco service
-    shell: stop romanesco; start romanesco
+  - name: restart girder_worker service
+    shell: stop girder_worker; start girder_worker
     sudo: yes
 
 
@@ -74,7 +74,7 @@
   - name: girder | wait for girder initialization
     wait_for: port=9000 delay=2
 
-  - name: girder | setup admin user and turn on romanesco plugin
+  - name: girder | setup admin user and turn on girder_worker plugin
     command: python girder-setup.py chdir=/vagrant/devops/ansible
     notify:
       - restart girder
@@ -86,5 +86,5 @@
   - name: girder | wait for girder initialization
     wait_for: port=9000 delay=2
 
-  - name: girder | install easy mode analyses and disable auth requirement for romanesco
+  - name: girder | install easy mode analyses and disable auth requirement for girder_worker
     command: python easymode-setup.py /vagrant/ArborWebApps chdir=/vagrant/devops/ansible

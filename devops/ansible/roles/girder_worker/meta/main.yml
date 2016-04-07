@@ -1,0 +1,8 @@
+---
+
+dependencies:
+  - role: girder_worker-variables
+  - role: girder_worker-install
+  - role: girder_worker-service-install
+  - role: girder_worker-service
+

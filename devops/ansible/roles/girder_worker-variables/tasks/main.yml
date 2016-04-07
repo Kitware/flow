@@ -1,0 +1,68 @@
+---
+
+  - name: girder_worker | service | logic flags | compute
+    set_fact:
+        remove_data_root: "{{ state == 'absent' }}"
+        remove_install_root: "{{ state == 'absent' }}"
+        stop_services: "{{ state == 'absent' }}"
+        do_install: >
+            {{ state == "present" or state == "stopped" or
+               state == "started" or state == "restarted" or
+               state == "reloaded" }}
+        notify_services: >
+            {{ state == "stopped" or state == "started" or
+               state == "restarted" or state == "reloaded" }}
+
+  - name: girder_worker | install root | default | set
+    set_fact:
+        girder_worker_install_root: /opt/girder_worker
+    when: girder_worker_install_root == ""
+
+  - name: girder_worker | install root | parent | probe
+    shell: dirname "{{ girder_worker_install_root }}"
+    register: parent_probe
+
+  - name: girder_worker | install root | parent | record
+    set_fact:
+        girder_worker_install_parent: "{{ parent_probe.stdout }}"
+
+  - name: girder_worker | data root | default | set
+    set_fact:
+        girder_worker_data_root: /data/girder_worker
+    when: girder_worker_data_root == ""
+
+  - name: girder_worker | tmp root | default | set
+    set_fact:
+        girder_worker_tmp_root: "{{ girder_worker_data_root }}/tmp"
+    when: girder_worker_tmp_root == ""
+
+  - name: girder_worker | celery broker | default | set
+    set_fact:
+        girder_worker_celery_broker: >
+            amqp://{{ hostvars[groups[rabbitmq_ansible_group][0]]
+                              ["ansible_" + girder_worker_net_interface]
+                              ["ipv4"]
+                              ["address"] }}
+    when: girder_worker_celery_broker == ""
+
+  - name: girder_worker | install root | probe
+    stat:
+        path: "{{ girder_worker_install_root }}"
+    register: install_root_probe
+
+  - name: girder_worker | install root | flag | record
+    set_fact:
+        create_install_root: >
+            {{ (do_install|bool) and
+                (not (install_root_probe.stat.exists|bool)) }}
+
+  - name: girder_worker | initialized | probe
+    stat:
+        path: "{{ girder_worker_data_root }}/.initialized"
+    register: initialized_probe
+
+  - name: girder_worker | initialized | flag | record
+    set_fact:
+        do_initialization: >
+            {{ (do_install|bool) and
+                (not (initialized_probe.stat.exists|bool)) }}

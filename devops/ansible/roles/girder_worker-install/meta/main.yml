@@ -1,0 +1,12 @@
+---
+
+dependencies:
+  - role: girder_worker-variables
+  - role: user-generate
+    name: "{{ girder_worker_user }}"
+    group: "{{ girder_worker_group }}"
+    crypt_pass: "{{ girder_worker_crypt_pass }}"
+    system: true
+    state: present
+    when: do_install|bool
+

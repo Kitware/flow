@@ -20,7 +20,7 @@
         username: "girder"
         password: "girder"
         plugins:
-          - romanesco
+          - girder_worker
           - flow
         state: present
 
