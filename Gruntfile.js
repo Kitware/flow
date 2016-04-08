@@ -50,6 +50,8 @@ module.exports = function (grunt) {
             flow: {
                 files: {
                     '<%= staticDir %>/built/plugins/flow/flow.ext.min.css': [
+                        '<%= pluginDir %>/flow/node_modules/select2/dist/css/select2.min.css',
+                        '<%= pluginDir %>/flow/node_modules/select2-bootstrap-css/select2-bootstrap.min.css',
                         '<%= plugin.flow.stylesheets %>/d3.dependencyedgebundling.css',
                         '<%= plugin.flow.stylesheets %>/d3.edgebundling.css'
                     ]
@@ -114,6 +116,7 @@ module.exports = function (grunt) {
                             '<%= pluginDir %>/flow/node_modules/jquery-mousewheel/jquery.mousewheel.js',
                             '<%= pluginDir %>/flow/node_modules/proj4/dist/proj4.js',
                             '<%= pluginDir %>/flow/node_modules/gl-matrix/dist/gl-matrix.js',
+                            '<%= pluginDir %>/flow/node_modules/select2/dist/js/select2.min.js',
                             '<%= pluginDir %>/flow/lib/js/d3.js',
                             '<%= pluginDir %>/flow/lib/js/d3.interactiveheatmap.js',
                             '<%= pluginDir %>/flow/lib/js/d3.scatterplotmatrix.js',

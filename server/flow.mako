@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="static/built/girder.ext.min.css">
     <link rel="stylesheet" href="static/built/fontello/css/fontello.css">
     <link rel="stylesheet" href="static/built/app.min.css">
-    <link rel="stylesheet" href="static/built/plugins/flow/flow.min.css">
     <link rel="stylesheet" href="static/built/plugins/flow/flow.ext.min.css">
+    <link rel="stylesheet" href="static/built/plugins/flow/flow.min.css">
   </head>
   <body>
     <div style="width:100%;height:100%" class="container">

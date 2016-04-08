@@ -327,6 +327,12 @@
 
         saveLocationChange: function () {
             this.$('#new-analysis-form').toggleClass('hidden', flow.saveLocation === null);
+        },
+
+        render: function () {
+            this.$('#analysis').select2({
+                width: '100%'
+            });
         }
 
     });
