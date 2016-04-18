@@ -331,6 +331,7 @@
 
         render: function () {
             this.$('#analysis').select2({
+                placeholder: 'Select an analysis',
                 width: '100%'
             });
         }

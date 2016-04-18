@@ -81,7 +81,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="analysis">Select analysis</label>
-                  <select id="analysis" class="form-control"></select>
+                  <select id="analysis" class="form-control"><option></option></select>
                 </div>
               </div>
               <div class="col-sm-6">
