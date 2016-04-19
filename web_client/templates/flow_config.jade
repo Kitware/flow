@@ -1,0 +1,25 @@
+.g-config-breadcrumb-container
+
+p.
+  Configure how Girder should connect to the celery client.
+
+form#g-flow-settings-form(role="form")
+  .form-group
+    label.control-label(for="g-flow-full-access-users") Full access users (JSON list of login names)
+    input.input-sm.form-control#g-flow-full-access-users(
+      type="text", placeholder="Full access users")
+  .form-group
+    label.control-label(for="g-flow-full-access-groups") Full access groups (JSON list of group IDs)
+    input.input-sm.form-control#g-flow-full-access-groups(
+      type="text", placeholder="Full access groups")
+  .form-group
+    label.control-label(for="g-flow-safe-folders") Safe folders (JSON list of folder IDs)
+    input.input-sm.form-control#g-flow-safe-folders(
+      type="text", placeholder="Safe folders")
+  .form-group
+    .checkbox
+      label
+        input#g-flow-require-auth(type="checkbox")
+        |  Require authorization to run tasks
+  p#g-flow-settings-error-message.g-validation-failed-message
+  input.btn.btn-sm.btn-primary(type="submit", value="Save")

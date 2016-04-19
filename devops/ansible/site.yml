@@ -30,9 +30,9 @@
     - role: vtk
       sudo: yes
 
-    - role: romanesco
+    - role: girder_worker
       rabbitmq_ansible_group: rabbitmq
-      romanesco_version: "4c094ca9448ee805a8b7a97be5f5a0981acf579b"
+      girder_worker_version: "master"
       state: started
       sudo: yes
 
@@ -45,7 +45,7 @@
       sudo: yes
 
     - role: flow
-      flow_version: "transition-to-girder-plugin"
+      flow_version: "master"
       sudo: yes
 
   tasks:
@@ -59,8 +59,8 @@
         group: "{{ girder_group }}"
       sudo: yes
 
-    - name: Install flow and romanesco as girder plugins
-      shell: ". {{venv_root}}/bin/activate && girder-install plugin -s -f {{base_dir}}/flow {{base_dir}}/romanesco"
+    - name: Install flow and girder_worker as girder plugins
+      shell: ". {{venv_root}}/bin/activate && girder-install plugin -s -f {{base_dir}}/flow {{base_dir}}/girder_worker"
       become: yes
       become_user: "{{girder_user}}"
       tags:
@@ -95,7 +95,7 @@
         username: "girder"
         password: "girder"
         plugins:
-          - romanesco
+          - girder_worker
           - flow
         state: present
 
@@ -131,12 +131,12 @@
         port: 8080
         delay: 5
 
-    - name: Disable romanesco.require_auth
+    - name: Disable flow.require_auth
       girder:
         port: 8080
         username: "girder"
         password: "girder"
         setting:
-          key: "romanesco.require_auth"
+          key: "flow.require_auth"
           value: "false"
         state: present

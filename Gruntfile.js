@@ -2,10 +2,10 @@ module.exports = function (grunt) {
     grunt.config.merge({
         plugin: {
             flow: {
-                stylesheets: '<%= pluginDir %>/flow/web_client/stylesheets',
-                tests: '<%= pluginDir %>/flow/web_client/tests',
-                source: '<%= pluginDir %>/flow/web_client/js',
-                templates: '<%= pluginDir %>/flow/web_client/templates',
+                stylesheets: '<%= pluginDir %>/flow/web_external/stylesheets',
+                tests: '<%= pluginDir %>/flow/web_external/tests',
+                source: '<%= pluginDir %>/flow/web_external/js',
+                templates: '<%= pluginDir %>/flow/web_external/templates',
                 static: '<%= staticDir %>/built/plugins/flow'
             }
         },
@@ -14,7 +14,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     flatten: true,
-                    src: '<%= pluginDir %>/flow/web_client/img/*',
+                    src: '<%= pluginDir %>/flow/web_external/img/*',
                     dest: '<%= staticDir %>/img/'
                 }]
             },
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     flatten: true,
-                    src: '<%= pluginDir %>/flow/web_client/js/extras/*',
+                    src: '<%= pluginDir %>/flow/web_external/js/extras/*',
                     dest: '<%= staticDir %>/built/plugins/flow/extras/'
                 }]
             }
@@ -50,6 +50,8 @@ module.exports = function (grunt) {
             flow: {
                 files: {
                     '<%= staticDir %>/built/plugins/flow/flow.ext.min.css': [
+                        '<%= pluginDir %>/flow/node_modules/select2/dist/css/select2.min.css',
+                        '<%= pluginDir %>/flow/node_modules/select2-bootstrap-css/select2-bootstrap.min.css',
                         '<%= plugin.flow.stylesheets %>/d3.dependencyedgebundling.css',
                         '<%= plugin.flow.stylesheets %>/d3.edgebundling.css'
                     ]
@@ -114,6 +116,7 @@ module.exports = function (grunt) {
                             '<%= pluginDir %>/flow/node_modules/jquery-mousewheel/jquery.mousewheel.js',
                             '<%= pluginDir %>/flow/node_modules/proj4/dist/proj4.js',
                             '<%= pluginDir %>/flow/node_modules/gl-matrix/dist/gl-matrix.js',
+                            '<%= pluginDir %>/flow/node_modules/select2/dist/js/select2.min.js',
                             '<%= pluginDir %>/flow/lib/js/d3.js',
                             '<%= pluginDir %>/flow/lib/js/d3.interactiveheatmap.js',
                             '<%= pluginDir %>/flow/lib/js/d3.scatterplotmatrix.js',
@@ -143,6 +146,7 @@ module.exports = function (grunt) {
         },
         default: {
             'jade:flow': {},
+            'stylus:flow': {},
             'concat:flow': {},
             'copy:brands': {},
             'uglify:flow': {
@@ -179,7 +183,7 @@ module.exports = function (grunt) {
                 // 'lib/css/d3.edgebundling.css', @todo
                 '/clients/web/static/lib/bootstrap/css/bootstrap.min.css',
                 '/clients/web/static/built/girder.app.min.css',
-                '/' + grunt.config('staticDir') + '/built/plugins/flow/plugin.min.css'
+                '/' + grunt.config('staticDir') + '/built/plugins/flow/flow.min.css'
             ],
             scripts: [
                 '/' + grunt.config('staticDir') + '/built/plugins/flow/testing.js',

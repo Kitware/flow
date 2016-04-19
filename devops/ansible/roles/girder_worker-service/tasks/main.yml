@@ -1,0 +1,8 @@
+---
+
+  - name: girder_worker | service
+    service:
+        name: girder_worker
+        state: "{{ state }}"
+    when: notify_services|bool
+

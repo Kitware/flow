@@ -1,0 +1,8 @@
+[celery]
+app_main={{ girder_worker_main_app_name }}
+broker={{ girder_worker_celery_broker }}
+
+[girder_worker]
+tmp_root={{ girder_worker_tmp_root }}
+plugins_enabled=r,vtk
+plugin_load_path={{ girder_worker_plugin_load_path | join(":") }}

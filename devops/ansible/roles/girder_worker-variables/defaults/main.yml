@@ -1,0 +1,17 @@
+---
+
+    girder_worker_version: master
+    girder_worker_install_root: ""
+    girder_worker_data_root: ""
+
+    girder_worker_user: girder_worker
+    girder_worker_group: girder_worker
+    girder_worker_crypt_pass: ""
+    girder_worker_net_interface: eth0
+
+    girder_worker_main_app_name: girder_worker
+    girder_worker_celery_broker: "amqp://guest@localhost/"
+    girder_worker_tmp_root: ""
+    girder_worker_plugin_load_path: []
+
+    state: started
