@@ -149,6 +149,7 @@ module.exports = function (grunt) {
             'stylus:flow': {},
             'concat:flow': {},
             'copy:brands': {},
+            'copy:extras': {},
             'uglify:flow': {
                 depends: ['jade:flow']
             }
