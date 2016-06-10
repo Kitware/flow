@@ -10,6 +10,8 @@
     - python-dev
     - python-pip
     - python-virtualenv
+    - libffi-dev
+    - libssl-dev
     - libjpeg-dev
     - zlib1g-dev
   when: do_install|bool
