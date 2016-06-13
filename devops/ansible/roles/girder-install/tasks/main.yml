@@ -82,13 +82,11 @@
     args:
       chdir: "{{ girder_install_root }}"
 
-
   - name: Install editable version of girder-client
     pip:
       chdir: "{{ girder_install_root }}/clients/python"
-      extra_args: "-e"
+      extra_args: "-Ue"
       name: "."
-
 
   - name: grunt-cli | install
     npm:
