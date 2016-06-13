@@ -27,7 +27,8 @@ Vagrant.configure(2) do |config|
     }
 
     ansible.extra_vars = {
-      default_user: "vagrant"
+      default_user: "vagrant",
+      flow_version: ENV["FLOW_VERSION"] || `git rev-parse --short HEAD`.delete!("\n")
     }
 
     ansible.playbook = "devops/ansible/site.yml"
