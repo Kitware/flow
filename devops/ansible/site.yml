@@ -32,7 +32,7 @@
 
     - role: girder_worker
       rabbitmq_ansible_group: rabbitmq
-      girder_worker_version: "master"
+      girder_worker_version: "965bd45"
       state: started
       sudo: yes
 
@@ -40,7 +40,7 @@
       mongodb_ansible_group: girder
       girder_admin_user: girder
       girder_admin_password: girder
-      girder_version: "master"
+      girder_version: "v1.5.2"
       state: started
       sudo: yes
 
