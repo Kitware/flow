@@ -69,7 +69,7 @@
             return _.filter(this.validators, function (validator) {
                 return (_.has(validator, 'validator') &&
                         _.has(validator.validator, 'extensions') &&
-                        _.contains(validator.validator.extensions, extension));
+                        _.contains(validator.validator.extensions, extension.toLowerCase()));
             });
         },
 
