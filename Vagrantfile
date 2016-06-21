@@ -5,6 +5,9 @@ Vagrant.configure(2) do |config|
     config.cache.scope = :box
     config.cache.enable :apt
     config.cache.enable :npm
+    config.cache.enable :generic, {
+      "R" => { cache_dir: "/usr/local/lib/R" }
+    }
   end
 
   config.vm.provider "virtualbox" do |v|
