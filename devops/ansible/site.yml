@@ -27,9 +27,6 @@
     - role: arbor
       sudo: yes
 
-    - role: vtk
-      sudo: yes
-
     - role: girder_worker
       rabbitmq_ansible_group: rabbitmq
       girder_worker_version: "965bd45"
