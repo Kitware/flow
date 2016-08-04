@@ -70,6 +70,12 @@
         state: directory
     when: do_install|bool
 
+  - name: Upgrade version of pip
+    pip:
+      extra_args: "--upgrade"
+      name: "pip"
+      virtualenv: "{{venv_root}}"
+
   - name: Install editable version of girder
     pip:
       chdir: "{{ girder_install_root }}"
