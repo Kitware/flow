@@ -301,7 +301,7 @@
         initialize: function () {
             var timer;
 
-            girder.apiRoot = '/api/v1';
+            girder.apiRoot = $('#g-global-info-apiroot').text();
 
             girder.fetchCurrentUser().success(_.bind(function (user) {
                 if (user) {

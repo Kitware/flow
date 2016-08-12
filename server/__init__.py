@@ -16,6 +16,7 @@ from girder.constants import AccessType
 from girder.models.model_base import AccessException, ValidationException
 from girder.plugins.worker import getCeleryApp, PluginSettings
 from girder.utility.model_importer import ModelImporter
+from girder.utility.plugin_utilities import registerPluginWebroot
 from girder.utility.webroot import Webroot
 
 
@@ -142,14 +143,14 @@ def load(info):
     flow_mako = os.path.join(os.path.dirname(__file__), "flow.mako")
     flow_webroot = Webroot(flow_mako)
     flow_webroot.updateHtmlVars({
-        'brand': 'TangeloHub'
+        'brand': 'TangeloHub',
+        'apiRoot': os.path.join(info['serverRootPath'],
+                                info['serverRoot'].vars['apiRoot'])
     })
 
-    # @todo somehow the API lives at /api/v1 and /girder/api/v1
-    info['serverRoot'], info['serverRoot'].girder = (flow_webroot,
-                                                     info['serverRoot'])
 
-    info['serverRoot'].api = info['serverRoot'].girder.api
+    registerPluginWebroot(flow_webroot, info)
+
 
     staticDir = os.path.join(info['pluginRootDir'], 'static')
     if os.path.isdir(staticDir):

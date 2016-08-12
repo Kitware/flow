@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="static/built/plugins/flow/flow.min.css">
   </head>
   <body>
+    <div id="g-global-info-apiroot" class="hide">${apiRoot}</div>
     <div style="width:100%;height:100%" class="container">
       <div id="intro">
         <div class="row text-center"><img src="static/img/${brand}.png" alt="Logo" class="img-rounded"></div>
