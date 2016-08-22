@@ -15,3 +15,6 @@ echo -e "[girder]\nlocalhost" > inventory
 
 # Run ansible on localhost
 ansible-playbook --inventory inventory --connection=local site.yml
+
+# Change branding to Arbor
+sed -i 's/TangeloHub/Arbor/' /opt/girder/plugins/flow/server/__init__.py
