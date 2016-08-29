@@ -118,7 +118,11 @@
                     dataset = this.datasets.get(value);
                     result[id] = dataset.toJSON();
                     if (dataset.get('_id')) {
-                        result[id] = _.extend(result[id], flow.girderItemInput(dataset.get('_id')));
+                        result[id] = {
+                            type: dataset.get('meta').flow.type,
+                            format: dataset.get('meta').flow.format,
+                            itemId: dataset.get('_id')
+                        };
                     }
                 } else if (input.get('type') === 'string') {
                     result[id] = {type: input.get('type'), format: 'text', data: value};

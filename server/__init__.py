@@ -11,12 +11,29 @@ from six import StringIO
 from girder import events
 from girder.api import access, rest
 from girder.api.describe import Description
-from girder.api.rest import Resource
+from girder.api.rest import filtermodel, getCurrentToken, getCurrentUser, Resource
 from girder.constants import AccessType
 from girder.models.model_base import AccessException, ValidationException
 from girder.plugins.worker import getCeleryApp, PluginSettings
+from girder.plugins.worker.utils import girderInputSpec, girderOutputSpec, jobInfoSpec
 from girder.utility.model_importer import ModelImporter
 from girder.utility.webroot import Webroot
+
+
+@filtermodel(model='folder')
+def getCreateOutputsFolder():
+    user = getCurrentUser()
+    folder = ModelImporter.model('folder')
+
+    # @todo Assumes a Private folder will always exist/be accessible
+    privateFolder = list(folder.childFolders(parentType='user',
+                                             parent=user,
+                                             user=user,
+                                             filters={
+                                                 'name': 'Private'
+                                             }))[0]
+
+    return folder.createFolder(privateFolder, 'flow_outputs', reuseExisting=True)
 
 
 class FlowPluginSettings(PluginSettings):
@@ -55,6 +72,11 @@ def validateSettings(event):
 
 
 def runAnalysis(user, analysis, kwargs, item):
+    girderStoredTypeFormat = {
+        'table': 'rows.json'
+    }
+
+    outputsFolder = getCreateOutputsFolder()
     # Create the job record.
     jobModel = ModelImporter.model('job', 'jobs')
     public = False
@@ -64,21 +86,32 @@ def runAnalysis(user, analysis, kwargs, item):
         title=analysis['name'], type='flow_task',
         handler='worker_handler', user=user, public=public)
 
-    # Create a token that is scoped for updating the job.
-    jobToken = jobModel.createJobToken(job)
-    apiUrl = cherrypy.url().rsplit('/', 3)[0]
+    inputs, outputs = {}, {}
 
-    # These parameters are used to get stdout/stderr back from Celery
-    # to Girder.
-    kwargs['jobInfo'] = {
-        'url': '{}/job/{}'.format(apiUrl, job['_id']),
-        'method': 'PUT',
-        'headers': {'Girder-Token': jobToken['_id']},
-        'logPrint': True
+    for (key, val) in kwargs.get('inputs', {}).iteritems():
+        inputs[key] = girderInputSpec(ModelImporter.model('item').load(val['itemId'], force=True),
+                                      resourceType='item',
+                                      token=getCurrentToken() if not public else None,
+                                      dataType=val['type'],
+                                      dataFormat=val['format'])
+
+    for (key, val) in kwargs.get('outputs', {}).iteritems():
+        outputs[key] = girderOutputSpec(outputsFolder,
+                                        token=getCurrentToken() if not public else None,
+                                        name=analysis['name'],
+                                        dataType=val['type'],
+                                        dataFormat=girderStoredTypeFormat[val['type']])
+
+    job['kwargs'] = {
+        'task': analysis,
+        'inputs': inputs,
+        'outputs': outputs,
+        'jobInfo': jobInfoSpec(job)
     }
 
-    job['kwargs'] = kwargs
-    job['args'] = [analysis]
+    job['kwargs']['task']['inputs'][0]['target'] = 'memory'
+    job['kwargs']['task']['outputs'][0]['target'] = 'memory'
+
     job['meta']['flowItemId'] = item['_id']
     job = jobModel.save(job)
 
@@ -215,6 +248,8 @@ def load(info):
 
     @access.public
     def flowRunResult(itemId, jobId, params):
+        import pudb
+        pu.db
         celeryTaskId = getTaskId(jobId)
         job = AsyncResult(celeryTaskId, backend=getCeleryApp().backend)
         return {'result': job.result}
@@ -229,23 +264,21 @@ def load(info):
                     level=AccessType.READ)
     def flowRun(self, item, params):
         # Make sure that we have permission to perform this analysis.
-        # import pudb
-        # pu.db
         user = self.getCurrentUser()
 
-        settings = ModelImporter.model('setting')
-        requireAuth = settings.get(FlowPluginSettings.REQUIRE_AUTH, True)
+        #settings = ModelImporter.model('setting')
+        #requireAuth = settings.get(FlowPluginSettings.REQUIRE_AUTH, True)
 
-        if requireAuth:
-            safeFolders = settings.get(FlowPluginSettings.SAFE_FOLDERS, ())
-            fullAccessUsers = settings.get(FlowPluginSettings.FULL_ACCESS_USERS, ())
-            fullAccessGrps = settings.get(FlowPluginSettings.FULL_ACCESS_GROUPS, ())
-            userGrps = {str(id) for id in user.get('groups', ())}
+        # if requireAuth:
+        #     safeFolders = settings.get(FlowPluginSettings.SAFE_FOLDERS, ())
+        #     fullAccessUsers = settings.get(FlowPluginSettings.FULL_ACCESS_USERS, ())
+        #     fullAccessGrps = settings.get(FlowPluginSettings.FULL_ACCESS_GROUPS, ())
+        #     userGrps = {str(id) for id in user.get('groups', ())}
 
-            if (str(item['folderId']) not in safeFolders and (
-                    not user or user['login'] not in fullAccessUsers) and
-                    not userGrps & set(fullAccessGrps)):
-                raise AccessException('Unauthorized user.')
+            # if (str(item['folderId']) not in safeFolders and (
+            #         not user or user['login'] not in fullAccessUsers) and
+            #         not userGrps & set(fullAccessGrps)):
+            #     raise AccessException('Unauthorized user.')
 
         analysis = item.get('meta', {}).get('analysis')
 
