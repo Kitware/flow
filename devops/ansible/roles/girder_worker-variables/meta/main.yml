@@ -1,9 +1,0 @@
----
-
-dependencies:
-  - role: git-cache
-    repo: git://github.com/girder/girder_worker.git
-    version: "{{ girder_worker_version }}"
-    variable_prefix: girder_worker
-    state: present
-    sudo: yes

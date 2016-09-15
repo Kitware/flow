@@ -1,7 +1,0 @@
----
-
-dependencies:
-  - role: user-generate
-    name: "{{ user }}"
-    system: true
-    state: present
