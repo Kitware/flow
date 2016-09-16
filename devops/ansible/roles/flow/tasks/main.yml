@@ -1,51 +1,26 @@
 ---
-  - name: Probe flow folder
-    stat: path="{{flow_install_root}}"
-    register: path
-    tags: flow
+- name: Install flow system dependencies
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - python-dev
+    - python-pip
+    - python-numpy
+  become: yes
 
-  - name: Get flow from github
-    git:
-      repo: https://github.com/Kitware/flow.git
-      version: "{{ flow_version }}"
-      dest: "{{flow_install_root}}"
-      force: yes
-      accept_hostkey: yes
-    tags:
-      - flow
-      - flow-update
+- name: Ensure flow directory exists
+  file:
+    path: "{{ flow_path }}"
+    state: directory
+    group: "{{ ansible_user_id }}"
+    owner: "{{ ansible_user_id }}"
+    mode: 0755
+  become: yes
 
-  - name: flow | owner | set
-    file:
-        recurse: yes
-        path: "{{ flow_install_root }}"
-        owner: "{{ girder_user }}"
-        group: "{{ girder_group }}"
-        mode: 0755
-    tags:
-      - flow
-      - flow-update
-
-  - name: Install flow system dependencies
-    apt: name={{ item }} state=present update_cache=yes
-    with_items:
-      - python-dev
-      - python-pip
-      - python-numpy
-      - htop
-    tags: flow
-
-  - name: Update pip
-    pip:
-      name: pip
-      virtualenv: "{{venv_root}}"
-      state: latest
-    tags: flow
-
-  - name: girder | virtualenv | owner | set
-    file:
-        recurse: yes
-        path: "{{ venv_root }}"
-        owner: "{{ girder_user }}"
-        group: "{{ girder_group }}"
-    tags: flow
+- name: Get flow from github
+  git:
+    repo: https://github.com/Kitware/flow.git
+    version: "{{ flow_version }}"
+    dest: "{{ flow_path }}"
+    update: no
+    force: no
+    accept_hostkey: yes
