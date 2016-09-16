@@ -1,0 +1,17 @@
+- name: Update Pip
+  pip:
+    name: pip
+    state: latest
+    virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
+
+- name: Install Girder Python requirements
+  pip:
+    requirements: "{{ girder_worker_path }}/requirements.txt"
+    virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
+
+- name: Install Girder and plugin requirements
+  pip:
+    name: "."
+    extra_args: "-e"
+    chdir: "{{ girder_worker_path }}"
+    virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
