@@ -35,5 +35,6 @@ Vagrant.configure(2) do |config|
     }
 
     ansible.playbook = "devops/ansible/site.yml"
+    ansible.galaxy_role_file = "devops/ansible/requirements.yml"
   end
 end

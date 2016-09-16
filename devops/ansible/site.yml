@@ -1,78 +1,51 @@
 - hosts: mongo
-  sudo: yes
   roles:
-    - role: mongodb
-      state: started
+    - role: Stouts.mongodb
+      become: yes
 
 - hosts: rabbitmq
-  sudo: yes
+  vars:
+    rabbitmq_users_remove: []
+
   roles:
-    - role: rabbitmq
-      state: started
+    - role: Stouts.rabbitmq
+      become: yes
 
 - hosts: girder
   vars:
-    base_dir: /opt
-    girder_user: "girder"
-    girder_group: "girder"
-  pre_tasks:
-    - name: Create virtualenv folder
-      file:
-        path: "{{venv_root}}"
-        state: directory
-        mode: 0775
-      sudo: yes
+    girder_path: "/opt/girder"
+    girder_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
+    girder_version: "master"
+    girder_worker_path: "/opt/girder_worker"
+    girder_worker_version: "master"
+    girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
+    flow_path: "/opt/flow"
+    flow_version: "master"
 
   roles:
     - role: arbor
-      sudo: yes
-
-    - role: girder_worker
-      rabbitmq_ansible_group: rabbitmq
-      girder_worker_version: "965bd45"
-      state: started
-      sudo: yes
-
-    - role: girder
-      mongodb_ansible_group: girder
-      girder_admin_user: girder
-      girder_admin_password: girder
-      girder_version: "v1.5.2"
-      state: started
-      sudo: yes
-
+    - role: girder.girder
     - role: flow
-      flow_version: "master"
-      sudo: yes
+    - role: girder_worker
 
-  tasks:
-    - name: Set permissions on virtualenv folder
-      file:
-        path: "{{venv_root}}"
-        recurse: yes
-        state: directory
-        mode: 0775
-        owner: "{{ girder_user }}"
-        group: "{{ girder_group }}"
-      sudo: yes
-
-    - name: Install flow and girder_worker as girder plugins
-      shell: ". {{venv_root}}/bin/activate && girder-install plugin -s -f {{base_dir}}/flow {{base_dir}}/girder_worker"
+  post_tasks:
+    - name: Start Girder Worker
+      service:
+        name: girder_worker
+        state: started
       become: yes
-      become_user: "{{girder_user}}"
-      tags:
-        - test
-        - flow-update
 
-# Configure plugins and girder
-- hosts: girder
-  sudo: yes
-  tags:
-    - test
-  tasks:
-    - wait_for:
-        port: 8080
-        delay: 5
+    - name: Install Flow Plugin
+      shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ flow_path }}"
+
+    - name: Install Girder Worker Plugin
+      shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ girder_worker_path }}"
+
+    - name: Install girder-client
+      pip:
+        name: girder-client
+        state: present
+      become: yes
 
     - name: Create an 'Girder' user
       girder:
@@ -99,9 +72,11 @@
     - name: Create assetstore directory
       file:
         path: "/opt/data"
-        owner: "girder"
-        group: "girder"
         state: directory
+        group: "{{ ansible_user_id }}"
+        owner: "{{ ansible_user_id }}"
+        mode: 0755
+      become: yes
 
     - name: Create filesystem assetstore
       girder:
@@ -114,7 +89,6 @@
           root: "/opt/data"
           current: true
         state: present
-
 
     - name: Restart Flow
       girder:

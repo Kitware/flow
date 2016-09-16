@@ -1,0 +1,4 @@
+- src: Stouts.mongodb
+- src: Stouts.rabbitmq
+- name: girder.girder
+  src: https://github.com/girder/ansible-role-girder
