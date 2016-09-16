@@ -20,7 +20,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "flow" do |node| end
 
   config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "vvvv"
+    ansible.verbose = ENV["ANSIBLE_VERBOSE"] | ""
 
     ansible.groups = {
       "all" => ['flow'],
