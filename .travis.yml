@@ -24,6 +24,11 @@ before_install:
     - git clone https://github.com/girder/girder.git
     - cd girder
     - pip install -r requirements.txt -r requirements-dev.txt
+    - nvm install v2.3.3
+    - npm install -g npm
+    - node --version
+    - npm --version
+    - npm prune
     - npm install
 
     # Setup/install Girder Worker
