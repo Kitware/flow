@@ -1,0 +1,2 @@
+girder_worker_path: "/opt/girder_worker"
+girder_worker_version: "master"
