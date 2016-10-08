@@ -27,7 +27,7 @@ folderId = folderSearch['folder'][0]['_id']
 
 # Disable authorization requirements for running romanesco tasks
 c.put('system/setting', parameters={
-    'key': 'romanesco.require_auth',
+    'key': 'flow.require_auth',
     'value': 'false'
 })
 
