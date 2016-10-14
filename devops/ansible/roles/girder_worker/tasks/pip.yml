@@ -15,3 +15,9 @@
     extra_args: "-e"
     chdir: "{{ girder_worker_path }}"
     virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
+
+- name: Install Girder Worker plugin requirements
+  pip:
+    requirements: "{{ girder_worker_path }}/girder_worker/plugins/{{ item }}/requirements.txt"
+    virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
+  with_items: "{{ girder_worker_plugins }}"
