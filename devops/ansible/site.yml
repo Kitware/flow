@@ -15,8 +15,9 @@
   vars:
     girder_path: "/opt/girder"
     girder_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
-    girder_version: "master"
+    girder_version: "v1.7.0"
     girder_worker_path: "/opt/girder_worker"
+    girder_worker_plugins: ["r"]
     girder_worker_version: "master"
     girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     flow_path: "/opt/flow"
@@ -29,17 +30,22 @@
     - role: girder_worker
 
   post_tasks:
-    - name: Start Girder Worker
-      service:
-        name: girder_worker
-        state: started
-      become: yes
-
     - name: Install Flow Plugin
       shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ flow_path }}"
 
     - name: Install Girder Worker Plugin
       shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ girder_worker_path }}"
+
+    - name: Copy Girder Worker configuration
+      template:
+        src=girder_worker.local.cfg.j2
+        dest="{{ girder_worker_path }}/girder_worker/worker.local.cfg"
+
+    - name: Start Girder Worker
+      service:
+        name: girder_worker
+        state: started
+      become: yes
 
     - name: Install girder-client
       pip:
