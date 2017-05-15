@@ -57,7 +57,7 @@ for root, dirs, files in os.walk(arbor_collections_path):
         collection = collection_search['collection'][0]
 
     # Get the 'Analyses' folder for this collection.
-    analysis_folder = c.load_or_create_folder('Analyses', collection['_id'], 'collection')
+    analysis_folder = c.loadOrCreateFolder('Analyses', collection['_id'], 'collection')
     folder_id = analysis_folder['_id']
 
     # Read this analysis into a Python dictionary and upload it to Girder.
