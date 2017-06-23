@@ -17,7 +17,7 @@
     girder_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     girder_version: "v1.7.0"
     girder_worker_path: "/opt/girder_worker"
-    girder_worker_plugins: ["r"]
+    girder_worker_plugins: ["types", "r"]
     girder_worker_version: "master"
     girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     flow_path: "/opt/flow"
