@@ -16,8 +16,15 @@
     chdir: "{{ girder_worker_path }}"
     virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
 
+- name: Check if requirements.txt for each plugin exists
+  stat:
+    path: "{{ girder_worker_path }}/girder_worker/plugins/{{ item }}/requirements.txt"
+  with_items: "{{ girder_worker_plugins }}"
+  register: requirements_files
+
 - name: Install Girder Worker plugin requirements
   pip:
-    requirements: "{{ girder_worker_path }}/girder_worker/plugins/{{ item }}/requirements.txt"
+    requirements: "{{ item.stat.path }}"
     virtualenv: "{{ girder_worker_virtualenv | default(omit) }}"
-  with_items: "{{ girder_worker_plugins }}"
+  with_items: "{{ requirements_files.results }}"
+  when: item.stat.exists
