@@ -18,7 +18,7 @@
     girder_version: "v1.7.0"
     girder_worker_path: "/opt/girder_worker"
     girder_worker_plugins: ["r"]
-    girder_worker_version: "master"
+    girder_worker_version: "8dfe69b"
     girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     flow_path: "/opt/flow"
     flow_version: "master"
@@ -30,6 +30,11 @@
     - role: girder_worker
 
   post_tasks:
+    - name: Pin npm to v3 (for Girder 1.x)
+      command: "npm install -g npm@3"
+      become: yes
+      become_user: root
+
     - name: Install Flow Plugin
       shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ flow_path }}"
 
@@ -71,7 +76,7 @@
         username: "girder"
         password: "girder"
         plugins:
-          - girder_worker
+          - worker
           - flow
         state: present
 
@@ -115,5 +120,5 @@
         password: "girder"
         setting:
           key: "flow.require_auth"
-          value: "false"
+          value: false
         state: present
