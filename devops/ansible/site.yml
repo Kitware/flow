@@ -1,5 +1,11 @@
 - hosts: mongo
   pre_tasks:
+    - name: Update package list
+      apt:
+        update_cache: true
+      become: true
+      become_user: root
+      
     - name: Install python system libraries
       apt:
         name:
