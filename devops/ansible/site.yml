@@ -36,7 +36,7 @@
     celery_executable: "{{ girder_virtualenv }}/bin/celery"
     girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     flow_path: "/opt/flow"
-    flow_version: "master"
+    flow_version: "pin-grunt-shell"
 
   pre_tasks:
     # Just for creating the virtualenv. Otherwise
