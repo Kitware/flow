@@ -1,4 +1,3 @@
-- src: Stouts.mongodb
+- src: ansible-role-mongodb
+  src: https://github.com/UnderGreen/ansible-role-mongodb
 - src: Stouts.rabbitmq
-- name: girder.girder
-  src: https://github.com/girder/ansible-role-girder
