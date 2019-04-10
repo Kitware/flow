@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/xenial64"
 
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
@@ -31,7 +31,8 @@ Vagrant.configure(2) do |config|
 
     ansible.extra_vars = {
       default_user: "vagrant",
-      flow_version: ENV["FLOW_VERSION"] || `git rev-parse --short HEAD`.delete!("\n")
+      flow_version: ENV["FLOW_VERSION"] || `git rev-parse --short HEAD`.delete!("\n"),
+      ansible_python_interpreter: "/usr/bin/python3"
     }
 
     ansible.playbook = "devops/ansible/site.yml"
