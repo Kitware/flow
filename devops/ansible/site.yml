@@ -25,6 +25,7 @@
 - hosts: girder
   vars:
     girder_path: "/opt/girder"
+    girder_build_executable: "{{ ansible_user_dir }}/.virtualenvs/girder/bin/girder-install"
     girder_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     girder_version: "v1.7.0"
     girder_worker_user: "{{ ansible_user_id }}"
