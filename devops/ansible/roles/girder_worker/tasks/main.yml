@@ -24,8 +24,16 @@
 - include: pip.yml
   when: girder_worker_virtualenv is defined
 
-- name: Install girder_worker service
+- name: Install service (systemd)
   template:
-    src: "upstart.girder_worker.conf.j2"
-    dest: "/etc/init/girder_worker.conf"
-  become: yes
+    src: "girder_worker.service.j2"
+    dest: "/etc/systemd/system/girder_worker.service"
+  become: true
+  become_user: root
+
+- name: Reload units (systemd)
+  systemd:
+    name: girder_worker
+    daemon_reload: yes
+  become: true
+  become_user: root
