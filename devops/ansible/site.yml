@@ -1,6 +1,23 @@
 - hosts: mongo
+  pre_tasks:
+    - name: Update package list
+      apt:
+        update_cache: true
+      become: true
+      become_user: root
+      
+    - name: Install python system libraries
+      apt:
+        name:
+          - python3-pip
+          - python-pip
+          - python-virtualenv
+          - python-dev
+      become: true
+      become_user: root
+
   roles:
-    - role: Stouts.mongodb
+    - role: ansible-role-mongodb
       become: yes
 
 - hosts: rabbitmq
@@ -14,18 +31,32 @@
 - hosts: girder
   vars:
     girder_path: "/opt/girder"
+    girder_build_executable: "{{ ansible_user_dir }}/.virtualenvs/girder/bin/girder-install"
     girder_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     girder_version: "v1.7.0"
+    girder_worker_user: "{{ ansible_user_id }}"
     girder_worker_path: "/opt/girder_worker"
     girder_worker_plugins: ["r"]
     girder_worker_version: "8dfe69b"
+    girder_worker_executable: "{{ girder_virtualenv }}/bin/girder-worker"
+    celery_executable: "{{ girder_virtualenv }}/bin/celery"
     girder_worker_virtualenv: "{{ ansible_user_dir }}/.virtualenvs/girder"
     flow_path: "/opt/flow"
-    flow_version: "master"
+    flow_version: "pin-grunt-shell"
+
+  pre_tasks:
+    # Just for creating the virtualenv. Otherwise
+    # girder is trying to use the ansible_python which
+    # is python3.
+    - name: Explicitly create virtualenv for girder
+      pip:
+        name: requests
+        virtualenv: "{{ girder_virtualenv }}"
+        virtualenv_python: "/usr/bin/python"
 
   roles:
+    - role: girder
     - role: arbor
-    - role: girder.girder
     - role: flow
     - role: girder_worker
 
@@ -34,6 +65,11 @@
       command: "npm install -g npm@3"
       become: yes
       become_user: root
+
+    - name: Pin pip < 10
+      pip:
+        name: pip == 9.0.3
+        virtualenv: "{{ girder_virtualenv }}"
 
     - name: Install Flow Plugin
       shell: "{{ girder_virtualenv }}/bin/girder-install plugin -s {{ flow_path }}"

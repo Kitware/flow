@@ -1,6 +1,6 @@
 - name: r | add R repository
   shell:
-    echo 'deb http://cran.rstudio.com/bin/linux/ubuntu trusty-cran35/' | sudo tee /etc/apt/sources.list.d/cran.list
+    echo 'deb http://cran.rstudio.com/bin/linux/ubuntu xenial-cran35/' | sudo tee /etc/apt/sources.list.d/cran.list
     creates=/etc/apt/sources.list.d/cran.list
   become: yes
 
@@ -13,19 +13,23 @@
   become: yes
 
 - name: install required libraries
-  apt: pkg={{ item }} state=latest
-  become: yes
-  with_items:
-    - mesa-common-dev
-    - libglu1-mesa-dev
-    - libgsl0-dev
-    - zlib1g-dev
-    - libcurl4-openssl-dev
-    - libx11-dev
-    - xvfb
-    - r-base
-    - r-base-dev
-
+  apt:
+    name:
+      - mesa-common-dev
+      - libglu1-mesa-dev
+      - libgsl0-dev
+      - zlib1g-dev
+      - libcurl4-openssl-dev
+      - libx11-dev
+      - xvfb
+      - r-base
+      - r-base-dev
+      - libfreetype6-dev
+      - libmagick++-dev
+      - libssl-dev
+    update_cache: true
+  become: true
+  become_user: root
 
 - name: start xvfb server
   command: Xvfb :7 -screen 0 1280x1024x24
@@ -35,7 +39,7 @@
 
 
 - name: check for package upgrades
-  command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "update.packages(checkBuilt=TRUE, ask=FALSE, repos='http://cran.cnr.Berkeley.edu')"
+  command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "update.packages(checkBuilt=TRUE, ask=FALSE, repos='http://cran.cnr.Berkeley.edu', INSTALL_opts = c('--no-lock'))"
   become: yes
 
 

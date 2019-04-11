@@ -7,7 +7,4 @@ girder_worker_version: "master"
 girder_install_root: "{{base_dir}}/girder"
 girder_version: "master"
 
-flow_install_root: "{{base_dir}}/flow"
-flow_version: "master"
-
 venv_root: "{{base_dir}}/.girderenv"
