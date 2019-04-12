@@ -142,7 +142,7 @@ def load(info):
     flow_mako = os.path.join(os.path.dirname(__file__), "flow.mako")
     flow_webroot = Webroot(flow_mako)
     flow_webroot.updateHtmlVars({
-        'brand': 'TangeloHub'
+        'brand': 'Arbor'
     })
 
     # @todo somehow the API lives at /api/v1 and /girder/api/v1
