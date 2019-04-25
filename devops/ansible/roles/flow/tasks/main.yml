@@ -16,9 +16,9 @@
     mode: 0755
   become: yes
 
-- name: Get flow from github
+- name: Get Arbor from github
   git:
-    repo: https://github.com/Kitware/flow.git
+    repo: https://github.com/arborworkflows/Arbor-Version-1
     version: "{{ flow_version }}"
     dest: "{{ flow_path }}"
     update: no
